@@ -1,0 +1,58 @@
+
+# Séance d'info du 03-02-2022
+===============================
+
+---
+
+[Lien vers le groupe Teams](https://teams.microsoft.com/l/team/19%3a1PyM1mIAE8RltmCrW7LWFpIDlxBP_HpmO6jHthKtZPk1%40thread.tacv2/conversations?groupId=d3822f0a-0364-465c-922d-7c88fcd06299&tenantId=5f31c5b4-f2e8-4772-8dd6-f268037b1eca)
+
+
+
+2 parties du projet :
+
+- Créer le jeu 
+- Créer une IA
+
+
+Séance encadrée par assistant 1x/semaine
+==> Surtout pour les questions
+
+! Travailler en dehors !
+
+- Design UI et Structures de données.
+- Découpage et spécifications des fonctions.
+- 
+
+
+Conseil d'utiliser le module blessed plutôt que color
+
+Définition du contrat
+
+---
+
+Jeu : Loup-Garou - Alpha & Omega
+
+- Ordres données en même temps
+
+Durant 1 tour , j1 et J2 lane ordre
+- recup ordres
+- executer ordre j1 et J2
+
+- 1 - Pacification
+- 2 - Attaque
+- 3 - Déplacement
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
