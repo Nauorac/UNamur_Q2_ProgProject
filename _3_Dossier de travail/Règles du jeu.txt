@@ -1,0 +1,152 @@
+
+Règles du jeu :
+---------------
+
+TOUR 1 :
+	J1 - Pacify
+	J2 - Pacify
+
+	J1 - Bonuses
+	J2 - Bonuses
+	
+	J1 - Feed
+	J2 - Feed
+
+	J1 - ...
+	J2 - ...
+	
+	...
+	...
+
+TOUR 2 :
+	J1 - Pacify
+	J2 - Pacify
+
+	J1 - Bonuses
+	J2 - Bonuses
+	
+	J1 - Feed
+	J2 - Feed
+
+	J1 - ...
+	J2 - ...
+
+
+
+Init : Chaque loup commence avec 100 E
+
+==> Si E loup = 0 => Redevint humain |
+Peut plus attaquer tant que pas gagné E
+
+
+Phase 1 : Ordres
+----------------
+
+Règles de syntaxe des inputs des joueurs :
+
+Déplacement = @ = r1-c1:@r2-c2
+Attaque = * = r1-c1:*r2-c2
+Nourrir = < = r1-c1:<r2-c2
+Pacifier = @ = r1-c1:pacify
+
+Exemple multi : 
+12-12:*12-13 12-14:*12-13 10-10:pacify
+10-10:@10-11 12-10:@12-11 19-20:*20-20 20-20:<20-20
+
+
+Chaîne de 12 caractères
+
+Le 7 eme caractère détermine la fonction a appeler :
+* => Attack
+@ => Move
+< => Feed
+p => Pacify
+
+
+Besoin d'une fonction pour parser les ordres et les dispatcher aux différentes fonctions.
+
+pattern, match, search
+
+Phase 2 : Pacification
+-----------------------
+
+Tous les garous (amis et ennemis) à max 6 cases
+Cout : 40 pts E (au loup Omega qui lance le sort)
+Return = Empeche l'attaque pendant 1 tour
+Calcul distance = loup1 (r1,c1) et loup2 (r2,c2) = (|r2-r1|,|c2-c1|)
+
+def pacify():
+
+Phase 3 : Assignation Bonus
+----------------------------
+
+Uniquement valable pour les attaques.
+10 pts E / loup à max 2 cases !! Sauf si alpha alors bonus = 30 si max 4 cases
+
+def bonus(loup(coords, E)):
+	check nbr-ami rayon 2
+		+ 10 * nbr_ami
+	check alpha rayon 4
+	
+
+
+Phase 4 : Se nourrir
+--------------------
+
+<= 1 case
+Consomme E source jusqu'à max
+
+
+def feed(loup(coords, E), food(coords, E):
+	
+	
+	return loup(coords, E), food(coords, E)
+
+
+
+Phase 5 : Combats
+-----------------
+
+Attaque <= 1 case
+Valeur attaque = 1/10eme E (arrondi au plus proche)
+
+
+def attack():
+	
+
+
+Phase 6 : Déplacements
+----------------------
+
+1 case max dans les 8 directions
+
+
+def move((r1,c1),(r2,c2)):
+"""Move a werewolf
+    
+    Parameters
+    ----------
+    start_coord : Origin coordinates (list)
+    dest_coord : Destination coordinates (list)
+    
+    Returns
+    -------
+    Nothing
+	
+	Raises
+    ------
+    IOError: if there is no werewolf at origin coordinates
+	IOError: if the destinations coordinates are further than 1 
+    
+    """
+
+-------------
+================
+
+def populate 
+
+agréger les coords des 3 dicos afin de faciliter la création de la map
+
+
+
+
