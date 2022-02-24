@@ -1,12 +1,11 @@
 #-*- coding: utf-8 -*-
-import blessed, math, os, time
-
 """
 Index
 ------
 - Generic Tools
-    - is_entity_at
+    - entity_at
     - range
+    - energy
 - Game Functions
     - pacify
     - bonus
@@ -19,20 +18,19 @@ Index
 Glossary
 --------
 ww = werewolf = loup-garou
+E = energy
+******************************
 
-"""
-
-"""
 ========================================
             GENERIC TOOLS
 =======================================
 """
-def is_entity_at(ww_coords):
+def entity_at(ww_coords):
     # indiquer un nom de liste
     """
     Description of the function
 	---------------------------
-    Check if there is an entity at given position
+    Check if there entity(ies) at given position
 
     Uses:
     -----
@@ -43,12 +41,11 @@ def is_entity_at(ww_coords):
 
     Args:
     -----
-
     ww_coords : Coordinates - (x, y) - type (list)
 
     Returns:
     --------
-    list (bool, type of entity)
+    boolean
 
    	Version:
 	--------
@@ -56,25 +53,30 @@ def is_entity_at(ww_coords):
 	code : Author (v.1.0 - dd/mm/yyyy)
     """
 
-def range(ray,(x,y)):
+def range(ray, ww_coords):
     """
    	Description of the function
 	---------------------------
     Check and count number of entity in range
 
+    Uses:
+    -----
+    - 
+
     Args:
-        ray : range around the entity (int)
-        (x,y) : position of the central entity (list)
+    -----
+    ray : range around the entity (int)
+    ww_coords : Coordinates - (x, y) - type (list)
 
     Returns:
+    --------
+    list - entities in range
 
    	Version:
 	--------
 	Specification : Sébastien Baudoux (v.1.0 - 21/02/2022)
 	code : Author (v.1.0 - dd/mm/yyyy)
-
     """
-
 
 def energy(ww_coords):
 	"""
@@ -84,26 +86,24 @@ def energy(ww_coords):
 
     Uses:
     -----
-    ...
+    - For Omega to launch pacify
+    - After an attack
+        => If Alpha E == 0 ==> Game finished
+        => If E of a ww ==0 ==> being-human
 
     Args:
     -----
-
     ww_coords : Coordinates - (x, y) - type (list)
 
     Returns:
     --------
-
 	int : energy of the werewolf
 
 	Version:
 	--------
 	Specification : Sébastien Baudoux (v.1.0 - 21/02/2022)
 	code : Author (v.1.0 - dd/mm/yyyy)
-
 	"""
-
-
 
 """
 ==========================================================
@@ -111,34 +111,32 @@ def energy(ww_coords):
 ========================================================
     """
 
-
 def pacify(ww_coords):
     """
 	Description of the function
 	---------------------------
-
-
-    # Pensez à créer un dico temp des loups pacifiés
+    Launch "Pacify" on all arounds and in range werewolf
+    Update Omega energy
 
     Uses:
     -----
-    ...
+    Only used by Omegas
+    ** Reminder
+    * For each ww at range <= 6
+    * Cost : 40 E
 
     Args:
     -----
-
-    Arg : Description - type
+    ww_coords : Coordinates - (x, y) - type (list)
 
     Returns:
     --------
-
-	type : Description
+	list : list of pacified wolf for this turn.
 
 	Version:
 	--------
-	specification : Author (v.1.0 - dd/mm/yyyy)
+	specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
 	code : Author (v.1.0 - dd/mm/yyyy)
-
 	"""
 
 
@@ -146,86 +144,72 @@ def bonus(ww_coords):
     """
 	Description of the function
 	---------------------------
-    Check allied ww in range and give bonuses.
-
+    Check allied ww in range, calculate and give bonuse.
 
     Uses:
     -----
     Each turn, for each player, for each werewolf
+    ** Reminder
+    * Bonus only for attack.
+    * E = E + (10*ww_number(in range <=2) + (30 if alpha range <= 4)
 
     Args:
     -----
-
     w_coords : Coordinates - (x, y) - type (list)
 
     Returns:
     --------
-
 	type : Description
 
 	Version:
 	--------
-	specification : Author (v.1.0 - dd/mm/yyyy)
+	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
 	code : Author (v.1.0 - dd/mm/yyyy)
-
 	"""
 
-
-def feed(ww_coords, food(coords, E):
+def feed(ww_coords):
     """
 	Description of the function
 	---------------------------
-
-
-    Uses:
-    -----
-    ...
+    Update/Upgrade ww energy if food in range
 
     Args:
     -----
-
-    Arg : Description - type
+    ww_coords : Coordinates - (x, y) - type (list)
 
     Returns:
     --------
-
 	type : Description
 
 	Version:
 	--------
-	specification : Author (v.1.0 - dd/mm/yyyy)
+	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
 	code : Author (v.1.0 - dd/mm/yyyy)
-
 	"""
 
-
-    def fight(ww_coords_Attack, ww_coords_Defend):
+def fight(ww_coords_Attack, ww_coords_Defend):
 	"""
 	Description of the function
 	---------------------------
     Make damage to ww2 from ww1
-
-    Uses:
-    -----
-    When a valid attack order is given
+    ** Reminder
+    * Strenght = E/10 (rounded nearest)
 
     Args:
     -----
-
-    ww_coords_Attack : Coordinateso of the attacker - (x, y) - type (list)
+    ww_coords_Attack : Coordinates of the attacker - (x, y) - type (list)
     ww_coords_Defend : Coordinates of the defender -  (x, y) - type (list)
 
     Returns:
     --------
-
 	Nothing or just a log message.
 
 	Version:
 	--------
-	specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
+	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
 	code : Author (v.1.0 - dd/mm/yyyy)
-
 	"""
+
 
 def being_human(ww_coords):
     """
@@ -240,22 +224,19 @@ def being_human(ww_coords):
 
     Args:
     -----
-
     ww_coords : Coordinates - (x, y) - type (list)
 
     Returns:
     --------
-
 	Nothing or just a log message.
 
 	Version:
 	--------
-	specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
+	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
 	code : Author (v.1.0 - dd/mm/yyyy)
-
 	"""
 
-    def move(start_coord, dest_coord):
+def move(start_coord, dest_coord):
     """
     Description of the function:
     ----------------------------
@@ -281,92 +262,4 @@ def being_human(ww_coords):
 	--------
 	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
 	Code : Author (v.1.0 - dd/mm/yyyy)
-
     """
-
-"""
-Fonctions créés par Trésor 
-
-"""
-def pacification(is_in_range,wolf_energy ,entity_at):
-    # Il n'est pas nécessaire d'avoir l'énergie  ;)
-
-    """to pacify the enermy.
-    parameters
-    ----------
-    is_in_range:the number of entity around (str)
-    wolf_energy : the energy of the omega(int)
-    entity_at:the type of entity in the range (str)
-    Returns
-    --------
-    result : stops the enemy from attacking and reduces the omega energy(int)
-    Version:
-	--------
-	specification : Author (v.1.0 - dd/mm/yyyy)
-    """
-        ...
-
-
-#fct_bonuses
-    def bonus(loup(coords, E),food):
-            # Il ne faut pas la fct food mais bien is_in_range  ;)
-        """tells us the bonus gain.
-        parameters
-        ----------
-        loup(coords,E: the position the entity(int)
-        food: the type of food(str)
-        returns
-        -------
-        result : energy increase(int)
-        Version:
-	    --------
-	    specification : Author (v.1.0 - dd/mm/yyyy)
-        """
-        #####
-    def fight(wolf_energy ,is_in_range,bonus):
-           """combat each other.
-        parameters:
-        ----------
-        is_in_range :the number of entity around (str)
-
-        wolf_energy  : the energy of wolf(int)
-        bonus : the gain point of wolf(int)
-
-        Returns:
-        --------
-        result : reduces wolf energy
-
-        type : Description
-
-        Version:
-        --------
-        specification : Author (v.1.0 - dd/mm/yyyy)
-        """
-
-    def being_human(wolf_energy):
-        """ turns to human form.
-        parameters
-        ----------
-        wolf_energy : the energy of wolf(int)
-        Returns:
-        --------
-        result : reduces wolf energy
-
-        Version:
-        --------
-        specification : Author (v.1.0 - dd/mm/yyyy)
-        """
-    def wolf_energy(energy=100):
-        """ the wolfs energy.
-        parameters
-        ----------
-        energy: the energy of wolf (int; default :100)
-        Returns:
-        --------
-        result : reduces wolf energy
-
-        Version:
-        --------
-        specification : Author (v.1.0 - dd/mm/yyyy)
-
-       """

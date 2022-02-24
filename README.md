@@ -22,6 +22,8 @@ Ajout des 2 documents de consignes
 
 # Rappel des échéances
 
+* 24/02 - Ajout de 2 nouveaux memebres dans les groupe : Aleksander et William
+
 - 21/02 - 27/03 : implémentation du jeu avec IA naïve 
   - 28/03 : rapport + module + vidéo + README
 
@@ -29,7 +31,7 @@ Ajout des 2 documents de consignes
   - 21/03 : rapport28/03 - 01/05 : implémentation et test de l’IA 
   - 02/05 : rapport + module + vidéo
 
-- 02/05 - 12/05 : tournoi opposant les IAs 
-  - 06/05 : maps / 12/05 : tournoi
+- 02/05 - 12/05 : Tournoi opposant les IAs 
+  - 06/05 : maps / 12/05 : Tournoi
 
 ---

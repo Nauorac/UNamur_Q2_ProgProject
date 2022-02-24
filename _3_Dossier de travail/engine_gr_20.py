@@ -3,9 +3,6 @@
 import blessed, math, os, time
 term = blessed.Terminal()
 
-
-
-
 # other functions
 """
 ========================================
@@ -13,36 +10,8 @@ term = blessed.Terminal()
 =======================================
 """
 def is_entity_at((x,y)):
-    """
-    Check if there is an entity at gived position
-
-    Args:
-    
-
-
-    Returns:
-        list with a bool and a type
-        [bool]: [description]
-        [type]
-    """
 
 def is_in_range(ray,(x,y)):
-    """
-    Check and count number of entity in range
-
-    Args:
-        ray (_type_): _description_
-
-    Returns:
-        number of each of them
-        _type_: _description_
-    """
-
-
-
-
-
-
 
 # main function
 def play_game(map_path, group_1, type_1, group_2, type_2):

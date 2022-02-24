@@ -3,7 +3,13 @@
                     A.I. ENGINE
     =================================
 """
+"""
+Il faut définir 
 
+
+
+
+"""
 
 def orders_generator():
     """Description of the function
