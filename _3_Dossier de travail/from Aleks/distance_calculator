@@ -1,0 +1,48 @@
+def distance_calculator (target_1 , target_2 ):
+" The fonction calculate the distance between the 2 ants
+
+Parameters
+----------
+
+target_1 : The position of the ant of the player (str)
+ 
+target_2 : The position of the ant enemy (str)
+
+Returns
+-------
+
+Returns the distance between the chosen ants
+
+"""
+
+    def distance_calculator(target_1,target_2):
+
+
+        x1,y1 = target_1.split(',')
+        x2,y2 = target_2.split(',')
+
+        distance_x = abs(x2-x1)
+
+        distance_y = abs(y2-y1)
+
+
+
+
+        if distance_x > distance_y:
+
+            distance_target = distance_x
+
+        else:
+
+            distance_target = distance_y
+
+
+        return distance_target
+    
+
+
+    "specification : Erwin Wembo (v1. 19/03/2021)
+    implementation : Erwin Wembo (v3 26/03/2021)"
+
+    
+

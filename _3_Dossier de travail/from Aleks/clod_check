@@ -1,0 +1,16 @@
+def clod_check({ant}, clod_type, {map}):
+    """Checks if a ant has already in it's possesion a clod if not it can pick up a clod.
+    
+    Parameters
+    ----------
+    clod_type: What type of clod is it(str) 
+    ant: data concerning the ants (dict)
+    Notes
+    -----
+
+    Returns
+    -------
+    ant: data concerning the ants (dict)
+    map: the map (dict)
+
+    """

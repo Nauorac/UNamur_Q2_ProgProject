@@ -1,0 +1,32 @@
+def strength (level):
+"""Increase the strength of the ants depending of the level. This function calls the function level
+
+Parameters
+----------
+
+ant : The data concerning the ants on the map (dict)
+
+
+Returns
+-------
+
+Returns the strength of the ants
+
+"""
+
+If level = 1:
+  return strength = 1
+
+Elif level = 2:
+  return strength = 2
+
+Elif level = 3:
+  return strength = 3
+
+Else:
+  return "error"
+  
+ 
+"specification : Erwin Wembo (v1. 19/03/2021)
+implementation : Erwin Wembo (v3 26/03/2021)"
+

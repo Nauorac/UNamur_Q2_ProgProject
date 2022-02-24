@@ -1,0 +1,34 @@
+def level_ant (map):
+"""Calculate the level of the ants of each player dependind of the number of clods the player has
+
+Parameters
+---------
+
+map : The data about the used map (dict)
+
+
+Returns
+------
+
+Returns the level of the ants. Wich can be level 1,2,3"""
+
+ """
+ 
+ clods_calculation (map)
+
+If clods_calculation <= 2:
+   return level = 1
+
+Elif clods_calculation >= 3 and clods_calculation <= 5 :
+   return level = 2
+
+Elif clods_calculation >= 6 and clods_calculation >= 8:
+   return level = 3
+
+Else:
+   return "error"
+
+
+
+"specification : Erwin Wembo (v1. 19/03/2021)
+implementation : Erwin Wembo (v3 26/03/2021)"
