@@ -12,6 +12,7 @@ Index
     - bonus
     - feed
     - attack
+    - being_human
     - move
 -------------------------
 -------------------------
@@ -26,11 +27,12 @@ ww = werewolf = loup-garou
             GENERIC TOOLS
 =======================================
 """
-
-
 def is_entity_at(ww_coords):
     # indiquer un nom de liste
-    """ Check if there is an entity at given position
+    """
+    Description of the function
+	---------------------------
+    Check if there is an entity at given position
 
     Uses:
     -----
@@ -50,12 +52,14 @@ def is_entity_at(ww_coords):
 
    	Version:
 	--------
-	specification : Sébastien Baudoux (v.1.0 - 21/02/2022)
+	Specification : Sébastien Baudoux (v.1.0 - 21/02/2022)
 	code : Author (v.1.0 - dd/mm/yyyy)
     """
 
 def range(ray,(x,y)):
     """
+   	Description of the function
+	---------------------------
     Check and count number of entity in range
 
     Args:
@@ -66,19 +70,55 @@ def range(ray,(x,y)):
 
    	Version:
 	--------
-	specification : Sébastien Baudoux (v.1.0 - 21/02/2022)
+	Specification : Sébastien Baudoux (v.1.0 - 21/02/2022)
 	code : Author (v.1.0 - dd/mm/yyyy)
 
     """
+
+
+def energy(ww_coords):
+	"""
+	Description of the function
+	---------------------------
+    Return the energy of the werewolf at given position
+
+    Uses:
+    -----
+    ...
+
+    Args:
+    -----
+
+    ww_coords : Coordinates - (x, y) - type (list)
+
+    Returns:
+    --------
+
+	int : energy of the werewolf
+
+	Version:
+	--------
+	Specification : Sébastien Baudoux (v.1.0 - 21/02/2022)
+	code : Author (v.1.0 - dd/mm/yyyy)
+
+	"""
+
+
 
 """
 ==========================================================
                     GAMERULES CYCLE
 ========================================================
     """
-def pacify():
-    """Description of the function
 
+
+def pacify(ww_coords):
+    """
+	Description of the function
+	---------------------------
+
+
+    # Pensez à créer un dico temp des loups pacifiés
 
     Uses:
     -----
@@ -101,12 +141,37 @@ def pacify():
 
 	"""
 
-def bonus((x,y)):
-        """AI is creating summary for bonus
-        """
+
+def bonus(ww_coords):
+    """
+	Description of the function
+	---------------------------
+    Check allied ww in range and give bonuses.
 
 
-def feed(loup(coords, E), food(coords, E):
+    Uses:
+    -----
+    Each turn, for each player, for each werewolf
+
+    Args:
+    -----
+
+    w_coords : Coordinates - (x, y) - type (list)
+
+    Returns:
+    --------
+
+	type : Description
+
+	Version:
+	--------
+	specification : Author (v.1.0 - dd/mm/yyyy)
+	code : Author (v.1.0 - dd/mm/yyyy)
+
+	"""
+
+
+def feed(ww_coords, food(coords, E):
     """
 	Description of the function
 	---------------------------
@@ -134,29 +199,30 @@ def feed(loup(coords, E), food(coords, E):
 	"""
 
 
-    def fight(ww_coords_1, ww_coords_2):
+    def fight(ww_coords_Attack, ww_coords_Defend):
 	"""
 	Description of the function
 	---------------------------
-    
+    Make damage to ww2 from ww1
 
     Uses:
     -----
-    ...
+    When a valid attack order is given
 
     Args:
     -----
 
-    Arg : Description - type
+    ww_coords_Attack : Coordinateso of the attacker - (x, y) - type (list)
+    ww_coords_Defend : Coordinates of the defender -  (x, y) - type (list)
 
     Returns:
     --------
 
-	type : Description
+	Nothing or just a log message.
 
 	Version:
 	--------
-	specification : Author (v.1.0 - dd/mm/yyyy)
+	specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
 	code : Author (v.1.0 - dd/mm/yyyy)
 
 	"""

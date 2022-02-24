@@ -20,7 +20,7 @@ def myfunction(...):
    
 	Version:
 	--------
-	specification : Author (v.1.0 - dd/mm/yyyy)
+	Specification : Author (v.1.0 - dd/mm/yyyy)
 	code : Author (v.1.0 - dd/mm/yyyy)
 	
 	"""

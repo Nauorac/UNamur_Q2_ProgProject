@@ -1,9 +1,11 @@
 # UNamur_Q2_ProgProject
+
 Espace de travail pour le projet de programmation du Q2
 
 ---
 
 Membres du groupe :
+
 - Sébastien BAUDOUX : sebastien.baudoux@student.unamur.be
 - William Auspert : william.2001.auspert@gmail.com
 - Tresor TIENTCHEU : tresor.tientcheu@student.unamur.be
@@ -13,20 +15,12 @@ Membres du groupe :
 
 Ajout des 2 documents de consignes
 
-* [Methodologie](https://github.com/Carouan/UNamur_Q2_ProgProject/blob/main/Methodologie.pdf)
-* [Details](https://github.com/Carouan/UNamur_Q2_ProgProject/blob/main/Details.pdf)
+- [Methodologie](https://github.com/Carouan/UNamur_Q2_ProgProject/blob/main/Methodologie.pdf)
+- [Details](https://github.com/Carouan/UNamur_Q2_ProgProject/blob/main/Details.pdf)
 
 ---
-Rappel des échéances
 
-- 31/01 - 06/02 : découverte du projet
-  - 07/02 : réglement groupe + analyse réflexive
-
-- 31/01 - 13/02 : design UI et structures de données 
-  - 14/02 : rapport
-
-- 14/02 - 20/02 : découpage et spécification des fonctions 
-  - 21/02 : rapport + module
+# Rappel des échéances
 
 - 21/02 - 27/03 : implémentation du jeu avec IA naïve 
   - 28/03 : rapport + module + vidéo + README
