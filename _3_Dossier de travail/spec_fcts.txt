@@ -1,5 +1,7 @@
 def myfunction(...):
-	"""Description of the function
+	"""
+	Description of the function
+	---------------------------
 	
 
     Uses:

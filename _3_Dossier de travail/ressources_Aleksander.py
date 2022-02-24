@@ -1,18 +1,16 @@
 def load_map(maplink):
     """Creates a map / Shows the map to the players by using the information that are containted in the cpx file.
-    
     Parameters
     ----------
     map_link: file that will contain the map info (file)
-
+    
     Notes
     -----
 	map_link should be a .txt file
-
+ 
     Returns
     -------
     map: the map (dict)
-
     Version 
 	−−−−−−−
 	specification : Aleksander Besler (v.1 17/02/22)
