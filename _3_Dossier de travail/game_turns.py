@@ -20,13 +20,14 @@ Glossary
 ww = werewolf = loup-garou
 E = energy
 ******************************
+"""
 
+"""
 ========================================
             GENERIC TOOLS
 =======================================
 """
-def entity_at(ww_coords):
-    # indiquer un nom de liste
+def entity_at(entity_coords): # VALIDE
     """
     Description of the function
 	---------------------------
@@ -41,17 +42,25 @@ def entity_at(ww_coords):
 
     Args:
     -----
-    ww_coords : Coordinates - (x, y) - type (list)
+    entity_coords : Coordinates - (x, y) - type (list)
 
     Returns:
     --------
-    boolean
+    (bool, string, string, int) : list that contain true or false, dict_name, type, energy - list
 
    	Version:
 	--------
 	Specification : Sébastien Baudoux (v.1.0 - 21/02/2022)
 	code : Author (v.1.0 - dd/mm/yyyy)
     """
+    # Validée
+    for key, values in foods.items():
+        if key == entity_coords:
+            return ["foods", values[0], values[1], ]
+    for key, values in teams.items():
+        if key == entity_coords:
+            return [values[0], values[1], values[2], ]
+    return False
 
 def range(ray, ww_coords):
     """
@@ -61,7 +70,7 @@ def range(ray, ww_coords):
 
     Uses:
     -----
-    - 
+    -
 
     Args:
     -----
@@ -77,6 +86,38 @@ def range(ray, ww_coords):
 	Specification : Sébastien Baudoux (v.1.0 - 21/02/2022)
 	code : Author (v.1.0 - dd/mm/yyyy)
     """
+    flag = 0
+    nbr_entity = 0
+    nbr_ally = 0
+    nbr_enemy = 0
+    for i in team1:
+        x = abs(i[0]-entity[0])
+        y = abs(i[1]-entity[1])
+        if x == 0 and y == 0:
+            flag += 1
+        elif (x <= rayon) and (y <= rayon):
+            nbr_entity += 1
+    if flag == 1:
+        nbr_ally = nbr_entity
+    else:
+        nbr_enemy = nbr_entity
+    flag = 0
+    nbr_entity = 0
+    for j in team2:
+        x = abs(j[0]-entity[0])
+        y = abs(j[1]-entity[1])
+        if x == 0 and y == 0:
+            flag += 1
+        elif (x <= rayon) and (y <= rayon):
+            nbr_entity += 1
+    if flag == 1:
+        nbr_ally = nbr_entity
+    else:
+        nbr_enemy = nbr_entity
+
+
+    #print("nbr ally : "+str(nbr_ally)+"")
+    #print("nbr ennemy : "+str(nbr_enemy)+"")
 
 def energy(ww_coords):
 	"""
@@ -105,12 +146,14 @@ def energy(ww_coords):
 	code : Author (v.1.0 - dd/mm/yyyy)
 	"""
 
+    
+    
+    
 """
 ==========================================================
                     GAMERULES CYCLE
 ========================================================
     """
-
 def pacify(ww_coords):
     """
 	Description of the function
@@ -139,7 +182,6 @@ def pacify(ww_coords):
 	code : Author (v.1.0 - dd/mm/yyyy)
 	"""
 
-
 def bonus(ww_coords):
     """
 	Description of the function
@@ -167,25 +209,50 @@ def bonus(ww_coords):
 	code : Author (v.1.0 - dd/mm/yyyy)
 	"""
 
-def feed(ww_coords):
+def feed(ww_coords, entity_coords): # VALIDE
     """
 	Description of the function
 	---------------------------
-    Update/Upgrade ww energy if food in range
+    Update ww energy if food in range and update food energy
 
     Args:
     -----
     ww_coords : Coordinates - (x, y) - type (list)
+    entity_coords : Coordinates - (x, y) - type (list)
 
     Returns:
     --------
-	type : Description
+	Nothing or just a log message.
 
 	Version:
 	--------
 	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
 	code : Author (v.1.0 - dd/mm/yyyy)
 	"""
+    check_food = entity_at(entity_coords)
+    check_ww = entity_at(ww_coords)
+    # Test if food exist
+    if check_food != False:
+        # Test if the ww exist and if energy < 100
+        if (check_ww != False) and (check_ww[0] != "foods") and (check_ww[2] < 100):
+            food_E = check_food[2]
+            ww_E = check_ww[2]
+            while (food_E > 0) and (ww_E < 100):
+                food_E -= 1
+                #print(food_E)
+                ww_E += 1
+            if food_E == 0:
+                print("The "+check_food[1]+" have been completely eaten.")
+                foods.pop(entity_coords)
+            else:
+                check_food[2] = food_E
+            check_food.pop(0)
+            check_ww[2] = ww_E
+            foods.update({entity_coords: check_food})
+            teams.update({ww_coords: check_ww})
+        else:
+            print("There is no food there.")
+
 
 def fight(ww_coords_Attack, ww_coords_Defend):
 	"""
@@ -209,7 +276,6 @@ def fight(ww_coords_Attack, ww_coords_Defend):
 	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
 	code : Author (v.1.0 - dd/mm/yyyy)
 	"""
-
 
 def being_human(ww_coords):
     """
