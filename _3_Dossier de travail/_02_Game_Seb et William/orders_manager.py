@@ -1,23 +1,25 @@
+#-*- coding: utf-8 -*-
+from game_turns import *
+
+"""
+Dictionnaires de tests basés sur le fichier "Short example.ano"
+"""
 
 entities = {(2, 1): [1, "alpha", 60], (1, 1): [1, "omega", 100], (2, 2): [1, "normal", 100],
             (5, 5): [2, "alpha", 100], (6, 6): [2, "omega", 100], (6, 5): [2, "normal", 100],
             (2, 4): [0, "berries", 10], (6, 1): [0, "apples", 30], (5, 3): [0, "mice", 50], (1, 6): [0, "rabbits", 75], (4, 4): [0, "deers", 100]}
 
 """
+TEST ordres complets pour P1 et P2
 orders_P1 = "  10-10:@10-11   12-10:*12-11 19-20:*20-20  2-1:<2-4  12-72:<27-48 17-20:pacify"
 orders_P2 = "7-10:<8-11 22-10:@12-11 19-20:*14-15 45-99:pacify"
 """
-
+# Test ordre light pour nourriture P1
 orders_P1 = "2-1:<4-4"
 orders_P2 = ""
 
-def entity_at(entity_coords):  # VALIDE
-    for key, values in entities.items():
-        if key == entity_coords:
-            return [values[0], values[1], values[2]]
-
 #fct test feed
-def feed(list):
+"""def feed(list):
     #is_ww = entity_at(list[0])
     # Comme la ligne ci-dessous fonctionne on peut supprimer la fonction entity_at
     is_ww = entities[list[0]]
@@ -44,7 +46,7 @@ def feed(list):
             else:
                 print("Your werewolf energy is already at max.")
     else:
-        print("This is not food.")
+        print("This is not food.")"""
 
 
 
@@ -91,13 +93,35 @@ def hacher(string):
         hach_order = [order_type, origine, destination]
     return hach_order
 
-
+game_turn = 0
+print("Game turn : "+str(game_turn)+"")
 """
 ==========================================================
                     ORDERS MANAGER
 ========================================================
     """
-def orders_manager(orders_P1, orders_P2):
+def orders_manager(orders_P1, orders_P2, game_turn):
+    """
+	Description of the function
+	---------------------------
+    The order manager rules every game stages.
+    His job is to clean and sort players orders and dispatch them to related functions.
+    The order manager make a complete turn.
+
+    Args:
+    -----
+    orders_P1 : string that contains ordres from player 1 - type (string)
+    orders_P2 : string that contains ordres from player 2 - type (string)
+
+    Returns:
+    --------
+	Nothing or just a log message.
+
+	Version:
+	--------
+	Specification : Sébastien Baudoux (v.1.0 - 03/03/2022)
+	code : Sébastien Baudoux (v.1.0 - 03/03/2022)
+	"""
     # Convert Player 1 orders in a list
     cleanP1 = orders_P1.split()
     # Convert Player 2 orders in a list
@@ -117,7 +141,6 @@ def orders_manager(orders_P1, orders_P2):
     while i < len(cleanP1):
         current_order = cleanP1[i]
         listcurord = hacher(current_order)
-        #print(listcurord)
         # Il faut rajouter pour chaque ordre un check afin de s'assurer que le ww est bien de la bonne équipe
         # if entity_at(listcurord[1])[0] == 1
         if listcurord[0] == "<":
@@ -159,27 +182,24 @@ def orders_manager(orders_P1, orders_P2):
         while len(pacify_P2) > 0:
             pacify(pacify_P2[0])
             pacify_P2.pop(0)
+
     # ---------------------
     # --- BONUSES PHASE ---
     # ---------------------
-    #bonuses(P1)
-    # Il faut créer une liste (ou sous-dictionnaire) avec tout les ww du Player 1
-    # Puis while sur cette liste et envoyer à fct bonuses
-    #def make_team_P1():
+    # --- bonuses(P1) ---
+    #Make a team_P1 dictionnary that contains all alive werewolfs from player 1
     team1 = {}
     for key, values in entities.items():
         if values[0] == 1:
-            #ajouter au dictionnaire team1
             team1.update({key:values})
     if len(team1) > 0:
         print("Player 1 bonus phase.")
         for keys in team1:
-            # Je ne parviens pas à acceder et retirer du dico
+            # Send to bonus function each werewolf from team 1 dictionnary
             coords = [keys]
             bonus(coords)
-
-
-    #bonuses(P2)
+    # --- bonuses(P2) ---
+    #Make a team_P2 dictionnary that contains all alive werewolfs from player 2
     team2 = {}
     for key, values in entities.items():
         if values[0] == 1:
@@ -188,10 +208,9 @@ def orders_manager(orders_P1, orders_P2):
     if len(team2) > 0:
         print("Player 2 bonus phase.")
         for keys in team2:
-            # Je ne parviens pas à acceder et retirer du dico
+            # Send to bonus function each werewolf from team 21 dictionnary
             coords = [keys]
             bonus(coords)
-
 
     # ------------------
     # --- FEED PHASE ---
@@ -199,7 +218,6 @@ def orders_manager(orders_P1, orders_P2):
     # Check if Player 1 given feeds orders and run them.
     if len(feeds_orders_P1) > 0:
         print("Player 1 feed phase.")
-        #print(feeds_orders_P1)
         while len(feeds_orders_P1) > 0:
             feed(feeds_orders_P1[0][1:3])
             feeds_orders_P1.pop(0)
@@ -242,10 +260,11 @@ def orders_manager(orders_P1, orders_P2):
             move(move_orders_P2[0][1:3])
             move_orders_P2.pop(0)
 
-    #return = (game_turns += 1)
+    game_turn += 1
+    return game_turn
 
-orders_manager(orders_P1, orders_P2)
 
+print("Game turn : "+str(orders_manager(orders_P1, orders_P2, game_turn))+"")
 
 
 
