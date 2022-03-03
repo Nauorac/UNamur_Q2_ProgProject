@@ -91,6 +91,7 @@ def range(ray, ww_coords):
     nbr_ally = 0
     nbr_enemy = 0
     for i in team1:
+        #Rajouter un test pour voir si c'est un food
         x = abs(i[0]-entity[0])
         y = abs(i[1]-entity[1])
         if x == 0 and y == 0:
@@ -146,9 +147,6 @@ def energy(ww_coords):
 	code : Author (v.1.0 - dd/mm/yyyy)
 	"""
 
-    
-    
-    
 """
 ==========================================================
                     GAMERULES CYCLE
@@ -158,7 +156,7 @@ def pacify(ww_coords):
     """
 	Description of the function
 	---------------------------
-    Launch "Pacify" on all arounds and in range werewolf
+    Launch "Pacify" on all around, and in range werewolfs
     Update Omega energy
 
     Uses:
@@ -209,7 +207,7 @@ def bonus(ww_coords):
 	code : Author (v.1.0 - dd/mm/yyyy)
 	"""
 
-def feed(ww_coords, entity_coords): # VALIDE
+def feed(ww_coords, entity_coords): # 
     """
 	Description of the function
 	---------------------------
@@ -229,6 +227,10 @@ def feed(ww_coords, entity_coords): # VALIDE
 	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
 	code : Author (v.1.0 - dd/mm/yyyy)
 	"""
+    check_food = entity_at(entity_coords)
+    if check_food[0] == 0:
+        print("It's food")
+    
     check_food = entity_at(entity_coords)
     check_ww = entity_at(ww_coords)
     # Test if food exist
@@ -252,7 +254,6 @@ def feed(ww_coords, entity_coords): # VALIDE
             teams.update({ww_coords: check_ww})
         else:
             print("There is no food there.")
-
 
 def fight(ww_coords_Attack, ww_coords_Defend):
 	"""
