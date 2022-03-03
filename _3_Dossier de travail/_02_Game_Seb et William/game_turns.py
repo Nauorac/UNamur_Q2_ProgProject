@@ -4,17 +4,25 @@ Dictionnaires de tests basés sur le fichier "Short example.ano"
 """
 size = (6, 6)
 
-entities = {(2, 1): [1, "alpha", 60], (1, 1): [1, "omega", 100], (2, 2): [1, "normal", 100],
+entities = {(2, 1): [1, "alpha", 57], (1, 1): [1, "omega", 100], (2, 2): [1, "normal", 100],
             (5, 5): [2, "alpha", 100], (6, 6): [2, "omega", 100], (6, 5): [2, "normal", 100],
             (2, 4): [0, "berries", 10], (6, 1): [0, "apples", 30], (5, 3): [0, "mice", 50], (1, 6): [0, "rabbits", 75], (4, 4): [0, "deers", 100]}
 
 """
+TEST ordres complets pour P1 et P2
+orders_P1 = "  10-10:@10-11   12-10:*12-11 19-20:*20-20  2-1:<2-4  12-72:<27-48 17-20:pacify"
+orders_P2 = "7-10:<8-11 22-10:@12-11 19-20:*14-15 45-99:pacify"
+"""
+# Test ordre light pour pacify P1
+orders_P1 = "1-1:pacify 2-2:*6-5"
+orders_P2 = ""
+"""
 Index
 ------
 - Generic Tools
-    - entity_at #PLUS NECESSAIRE A PRIORI
-    - range
-    - energy
+    - in_range
+    - hacher
+    - order_manager
 - Game Functions
     - pacify
     - bonus
@@ -30,13 +38,14 @@ ww = werewolf = loup-garou
 E = energy
 ******************************
 """
-
+game_turn = 0
+print("Game turn : "+str(game_turn)+"")
 """
 ========================================
             GENERIC TOOLS
 =======================================
 """
-def entity_at(entity_coords): # VALIDE
+def entity_at(entity_coords): # VALIDE -- A SUPPRIMER NORMALEMENT
     """
     Description of the function
 	---------------------------
@@ -71,7 +80,7 @@ def entity_at(entity_coords): # VALIDE
             return [values[0], values[1], values[2], ]
     return False
 
-def range(ray, ww_coords):
+def in_range(range, omega_coord):# VALIDE
     """
    	Description of the function
 	---------------------------
@@ -95,73 +104,73 @@ def range(ray, ww_coords):
 	Specification : Sébastien Baudoux (v.1.0 - 21/02/2022)
 	code : Author (v.1.0 - dd/mm/yyyy)
     """
-    flag = 0
     nbr_entity = 0
-    nbr_ally = 0
-    nbr_enemy = 0
-    for i in team1:
-        #Rajouter un test pour voir si c'est un food
-        x = abs(i[0]-entity[0])
-        y = abs(i[1]-entity[1])
-        if x == 0 and y == 0:
-            flag += 1
-        elif (x <= rayon) and (y <= rayon):
-            nbr_entity += 1
-    if flag == 1:
-        nbr_ally = nbr_entity
-    else:
-        nbr_enemy = nbr_entity
-    flag = 0
-    nbr_entity = 0
-    for j in team2:
-        x = abs(j[0]-entity[0])
-        y = abs(j[1]-entity[1])
-        if x == 0 and y == 0:
-            flag += 1
-        elif (x <= rayon) and (y <= rayon):
-            nbr_entity += 1
-    if flag == 1:
-        nbr_ally = nbr_entity
-    else:
-        nbr_enemy = nbr_entity
+    ww_in_range = {}
+    key = []
+    for key, values in entities.items():
+        #Test if entity is a werewolf
+        if values[0] == 1 or values[0] == 2:
+            x = abs(key[0]-omega_coord[0])
+            y = abs(key[1]-omega_coord[1])
+            if x == 0 and y == 0:
+                ...  # current = omega
+            elif (x <= range) and (y <= range):
+                nbr_entity += 1
+                ww_in_range.update({key: values})
+    return ww_in_range
 
-
-    #print("nbr ally : "+str(nbr_ally)+"")
-    #print("nbr ennemy : "+str(nbr_enemy)+"")
-
-def energy(ww_coords):
-	"""
-	Description of the function
+def hacher(string): #Refaire la spec
+    """
+    Description of the function
 	---------------------------
-    Return the energy of the werewolf at given position
+    Check if there entity(ies) at given position
 
     Uses:
     -----
-    - For Omega to launch pacify
-    - After an attack
-        => If Alpha E == 0 ==> Game finished
-        => If E of a ww ==0 ==> being-human
+    1) To populate the map
+    2) To permit or not the feed
+    3) To permit or not the attack
+    4) To permit or not a move
 
     Args:
     -----
-    ww_coords : Coordinates - (x, y) - type (list)
+    entity_coords : Coordinates - (x, y) - type (list)
 
     Returns:
     --------
-	int : energy of the werewolf
+    (bool, string, string, int) : list that contain true or false, dict_name, type, energy - list
 
-	Version:
+   	Version:
 	--------
 	Specification : Sébastien Baudoux (v.1.0 - 21/02/2022)
 	code : Author (v.1.0 - dd/mm/yyyy)
-	"""
-
+    """
+    ordre = string
+    #print(ordre)
+    #Split gauche droite
+    gd = ordre.split(":")
+    #Split origine X et origine Y
+    c = gd[0].split("-")
+    #Création de la liste avec les coordonnées d'origine X, Y
+    origine = (int(c[0]), int(c[1]))
+    #Test si l'ordre est pacify
+    if gd[1] == "pacify":
+        order_type = gd[1]
+        hach_order = origine
+    else:
+        #Sinon débute le split des coordonnées de destination
+        e = gd[1].split("-")
+        z = e[0][1:]
+        order_type = e[0][0]
+        destination = (int(z), int(e[1]))
+        hach_order = [order_type, origine, destination]
+    return hach_order
 """
 ==========================================================
                     GAMERULES CYCLE
 ========================================================
     """
-def pacify(ww_coords):
+def pacify(rayon, omega, pacified_werewolves):# VALIDE
     """
 	Description of the function
 	---------------------------
@@ -188,6 +197,18 @@ def pacify(ww_coords):
 	specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
 	code : Author (v.1.0 - dd/mm/yyyy)
 	"""
+    if entities[omega][1] == "omega":
+        if entities[omega][2] < 40:
+            print("Omega don't have enough energy to pacify")
+        #For each ww at range <= 6
+        else:
+            for key in in_range(rayon, omega):
+                pacified_werewolves.append(key)
+            print("These werewolves has been pacified for this turn " +
+                  str(pacified_werewolves)+"")
+    else:
+        print("Not omega")
+    return pacified_werewolves
 
 def bonus(ww_coords):
     """
@@ -262,11 +283,10 @@ def feed(list): # VALIDE
     else:
         print("This is not food.")
 
-
-def fight(listat):
-	"""
-	Description of the function
-	---------------------------
+def fight(listat, pacified_werewolves):  # VALIDE
+    """
+    Description of the function
+    ---------------------------
     Make damage to ww2 from ww1
     ** Reminder
     * Strenght = E/10 (rounded nearest)
@@ -277,20 +297,23 @@ def fight(listat):
 
     Returns:
     --------
-	Nothing or just a log message.
+    Nothing or just a log message.
 
-	Version:
-	--------
-	Specification : Sébastien Baudoux (v.2.0 - 03/03/2022)
-	code : Sébastien Baudoux (v.1.0 - 03/03/2022)
+    Version:
+    --------
+    Specification : Sébastien Baudoux (v.2.0 - 03/03/2022)
+    code : Sébastien Baudoux (v.1.0 - 03/03/2022)
     """
-    attacker = entities[listat[0]]
-    defender = entities[listat[1]]
-    attack_strength = (attacker[2]/10)
-    defender[2] = defender[2] - attack_strength
-    print(""+str(defender[1]+" loose "+str(attack_strength)+", his energy is now : "+str(defender[2]))+"")
-    entities.update({listat[1]: defender})
-
+    #verifier si attaquant est dans pacified_werewolves
+    if listat[0] in pacified_werewolves:
+        print("This werewolf "+str(listat[0])+" has been pacified this turn.")
+    else:
+        attacker = entities[listat[0]]
+        defender = entities[listat[1]]
+        attack_strength = (attacker[2]/10)
+        defender[2] = defender[2] - attack_strength
+        print(""+str(defender[1]+" loose "+str(attack_strength)+", his energy is now : "+str(defender[2]))+"")
+        entities.update({listat[1]: defender})
 
 def being_human(ww_coords):
     """
@@ -317,7 +340,7 @@ def being_human(ww_coords):
 	code : Author (v.1.0 - dd/mm/yyyy)
 	"""
 
-def move(listmov):
+def move(listmov): # VALIDE
     """
     Description of the function:
     ----------------------------
@@ -358,3 +381,180 @@ def move(listmov):
             print("Can't move there, this space is not empty.")
     else:
         print("Can't move out of boardgame.")
+
+
+"""
+========================================
+            ORDER MANAGER
+=======================================
+"""
+def orders_manager(orders_P1, orders_P2, game_turn):
+    """
+	Description of the function
+	---------------------------
+    The order manager rules every game stages.
+    His job is to clean and sort players orders and dispatch them to related functions.
+    The order manager make a complete turn.
+
+    Args:
+    -----
+    orders_P1 : string that contains ordres from player 1 - type (string)
+    orders_P2 : string that contains ordres from player 2 - type (string)
+
+    Returns:
+    --------
+	Nothing or just a log message.
+
+	Version:
+	--------
+	Specification : Sébastien Baudoux (v.1.0 - 03/03/2022)
+	code : Sébastien Baudoux (v.1.0 - 03/03/2022)
+	"""
+    # Convert Player 1 orders in a list
+    cleanP1 = orders_P1.split()
+    # Convert Player 2 orders in a list
+    cleanP2 = orders_P2.split()
+    # Initialize lists of differents orders for each players.
+    pacify_P1 = []
+    pacify_P2 = []
+    feeds_orders_P1 = []
+    feeds_orders_P2 = []
+    attacks_orders_P1 = []
+    attacks_orders_P2 = []
+    move_orders_P1 = []
+    move_orders_P2 = []
+
+    # Populate lists orders for player 1
+    i = 0
+    while i < len(cleanP1):
+        current_order = cleanP1[i]
+        listcurord = hacher(current_order)
+        # Il faut rajouter pour chaque ordre un check afin de s'assurer que le ww est bien de la bonne équipe
+        # if entity_at(listcurord[1])[0] == 1
+        if listcurord[0] == "<":
+            feeds_orders_P1.append(listcurord)
+        elif listcurord[0] == "*":
+            attacks_orders_P1.append(listcurord)
+        elif listcurord[0] == "@":
+            move_orders_P1.append(listcurord)
+        else:
+            pacify_P1.append(listcurord)
+        i += 1
+    # Populate lists orders for player 2
+    i = 0
+    while i < len(cleanP2):
+        current_order = cleanP2[i]
+        listcurord = hacher(current_order)
+        if listcurord[0] == "<":
+            feeds_orders_P2.append(listcurord)
+        elif listcurord[0] == "*":
+            attacks_orders_P2.append(listcurord)
+        elif listcurord[0] == "@":
+            move_orders_P2.append(listcurord)
+        else:
+            pacify_P2.append(listcurord)
+        i += 1
+
+    # --------------------
+    # --- PACIFY PHASE ---
+    # --------------------
+
+    pacified_werewolves = []
+
+    # Check if Player 1 given pacify order and run it.
+    if len(pacify_P1) > 0:
+        print("Player 1 pacify phase.")
+        while len(pacify_P1) > 0:
+            # Rajouter les arguments rayon et pacified_werewolfs
+            pacify(3, pacify_P1[0], pacified_werewolves)
+            pacify_P1.pop(0)
+    # Check if Player 2 given pacify order and run it.
+    if len(pacify_P2) > 0:
+        print("Player 2 pacify phase.")
+        while len(pacify_P2) > 0:
+            # Rajouter les arguments rayon et pacified_werewolfs
+            pacify(3, pacify_P2[0], pacified_werewolves)
+            pacify_P2.pop(0)
+
+    # ---------------------
+    # --- BONUSES PHASE ---
+    # ---------------------
+    # --- bonuses(P1) ---
+    #Make a team_P1 dictionnary that contains all alive werewolfs from player 1
+    team1 = {}
+    for key, values in entities.items():
+        if values[0] == 1:
+            team1.update({key: values})
+    if len(team1) > 0:
+        print("Player 1 bonus phase.")
+        for keys in team1:
+            # Send to bonus function each werewolf from team 1 dictionnary
+            coords = [keys]
+            bonus(coords)
+    # --- bonuses(P2) ---
+    #Make a team_P2 dictionnary that contains all alive werewolfs from player 2
+    team2 = {}
+    for key, values in entities.items():
+        if values[0] == 1:
+            #ajouter au dictionnaire team2
+            team2.update({key: values})
+    if len(team2) > 0:
+        print("Player 2 bonus phase.")
+        for keys in team2:
+            # Send to bonus function each werewolf from team 21 dictionnary
+            coords = [keys]
+            bonus(coords)
+
+    # ------------------
+    # --- FEED PHASE ---
+    # ------------------
+    # Check if Player 1 given feeds orders and run them.
+    if len(feeds_orders_P1) > 0:
+        print("Player 1 feed phase.")
+        while len(feeds_orders_P1) > 0:
+            feed(feeds_orders_P1[0][1:3])
+            feeds_orders_P1.pop(0)
+    # Check if Player 2 given feeds orders and run them.
+    if len(feeds_orders_P2) > 0:
+        print("Player 2 feed phase.")
+        while len(feeds_orders_P2) > 0:
+            feed(feeds_orders_P2[0][1:3])
+            feeds_orders_P2.pop(0)
+
+    # --------------------
+    # --- ATTACK PHASE ---
+    # --------------------
+    # Check if Player 1 given attacks orders and run them.
+    if len(attacks_orders_P1) > 0:
+        print("Player 1 attack phase.")
+        while len(attacks_orders_P1) > 0:
+            fight(attacks_orders_P1[0][1:3], pacified_werewolves)
+            attacks_orders_P1.pop(0)
+    # Check if Player 2 given attacks orders and run them.
+    if len(attacks_orders_P2) > 0:
+        print("Player 2 attack phase.")
+        while len(attacks_orders_P2) > 0:
+            fight(attacks_orders_P2[0][1:3], pacified_werewolves)
+            attacks_orders_P2.pop(0)
+
+    # ------------------
+    # --- MOVE PHASE ---
+    # ------------------
+    # Check if Player 1 given move orders and run them.
+    if len(move_orders_P1) > 0:
+        print("Player 1 move phase.")
+        while len(move_orders_P1) > 0:
+            move(move_orders_P1[0][1:3])
+            move_orders_P1.pop(0)
+    # Check if Player 2 given move orders and run them.
+    if len(move_orders_P2) > 0:
+        print("Player 2 move phase.")
+        while len(move_orders_P2) > 0:
+            move(move_orders_P2[0][1:3])
+            move_orders_P2.pop(0)
+
+    game_turn += 1
+    return game_turn
+
+
+print("Game turn : "+str(orders_manager(orders_P1, orders_P2, game_turn))+"")

@@ -15,30 +15,58 @@ TEST ordres complets pour P1 et P2
 orders_P1 = "  10-10:@10-11   12-10:*12-11 19-20:*20-20  2-1:<2-4  12-72:<27-48 17-20:pacify"
 orders_P2 = "7-10:<8-11 22-10:@12-11 19-20:*14-15 45-99:pacify"
 """
-# Test ordre light pour nourriture P1
-orders_P1 = "2-2:@3-3"
+# Test ordre light pour pacify P1
+orders_P1 = "1-1:pacify 2-2:*6-5"
 orders_P2 = ""
+
+def in_range(range, omega_coord):
+    nbr_entity = 0
+    ww_in_range = {}
+    key = []
+    for key, values in entities.items():
+        #Test if entity is a werewolf
+        if values[0] == 1 or values[0] == 2:
+            x = abs(key[0]-omega_coord[0])
+            y = abs(key[1]-omega_coord[1])
+            if x == 0 and y == 0:
+                ... #current = omega
+            elif (x <= range) and (y <= range):
+                nbr_entity += 1
+                ww_in_range.update({key:values})
+    return ww_in_range
+
+in_range(2,(1,1))
+
+#fct test pacify
+def pacify(rayon, omega, pacified_werewolves):
+    if entities[omega][1] == "omega":
+        if entities[omega][2] < 40:
+            print("Omega don't have enough energy to pacify")
+        #For each ww at range <= 6
+        else:
+            for key in in_range(rayon,omega):
+                pacified_werewolves.append(key)
+            print("These werewolves has been pacified for this turn "+str(pacified_werewolves)+"")
+    else:
+        print("Not omega")
+    return pacified_werewolves
+
+
+def fight(listat, pacified_werewolves):  # VALIDE
+    #verifier si attaquant est dans pacified_werewolves
+    if listat[0] in pacified_werewolves:
+        print("This werewolf "+str(listat[0])+" has been pacified this turn.")
+    else:
+        attacker = entities[listat[0]]
+        defender = entities[listat[1]]
+        attack_strength = (attacker[2]/10)
+        defender[2] = defender[2] - attack_strength
+        print(""+str(defender[1]+" loose "+str(attack_strength)+", his energy is now : "+str(defender[2]))+"")
+        entities.update({listat[1]: defender})
 
 #fct test bonus
 def bonus(list):
     print(list)
-
-#fct move feed
-def move(listmov):
-    #Check if destination is not out of the boardgame.
-    if listmov[1][0] <= size[0] and listmov[1][1] <= size[1]:
-        #Check is the destination is empty
-        if not (listmov[1] in entities):
-            x = int(abs(listmov[1][0]-listmov[0][0]))
-            y = int(abs(listmov[1][1]-listmov[0][1]))
-            if x == 1 and y == 1:
-                print("Move possible")
-            else:
-                print("Move out of range")
-        else:
-            print("Can't move there, this space is not empty.")
-    else:
-        print("Can't move out of boardgame.")
 
 def hacher(string):
     ordre = string
@@ -52,7 +80,7 @@ def hacher(string):
     #Test si l'ordre est pacify
     if gd[1] == "pacify":
         order_type = gd[1]
-        hach_order = [origine]
+        hach_order = origine
     else:
         #Sinon débute le split des coordonnées de destination
         e = gd[1].split("-")
@@ -139,17 +167,22 @@ def orders_manager(orders_P1, orders_P2, game_turn):
     # --------------------
     # --- PACIFY PHASE ---
     # --------------------
+
+    pacified_werewolves = []
+
     # Check if Player 1 given pacify order and run it.
     if len(pacify_P1) > 0:
         print("Player 1 pacify phase.")
         while len(pacify_P1) > 0:
-            pacify(pacify_P1[0])
+            # Rajouter les arguments rayon et pacified_werewolfs
+            pacify(3, pacify_P1[0], pacified_werewolves)
             pacify_P1.pop(0)
     # Check if Player 2 given pacify order and run it.
     if len(pacify_P2) > 0:
         print("Player 2 pacify phase.")
         while len(pacify_P2) > 0:
-            pacify(pacify_P2[0])
+            # Rajouter les arguments rayon et pacified_werewolfs
+            pacify(3, pacify_P2[0], pacified_werewolves)
             pacify_P2.pop(0)
 
     # ---------------------
@@ -204,13 +237,13 @@ def orders_manager(orders_P1, orders_P2, game_turn):
     if len(attacks_orders_P1) > 0:
         print("Player 1 attack phase.")
         while len(attacks_orders_P1) > 0:
-            fight(attacks_orders_P1[0][1:3])
+            fight(attacks_orders_P1[0][1:3], pacified_werewolves)
             attacks_orders_P1.pop(0)
     # Check if Player 2 given attacks orders and run them.
     if len(attacks_orders_P2) > 0:
         print("Player 2 attack phase.")
         while len(attacks_orders_P2) > 0:
-            fight(attacks_orders_P2[0][1:3])
+            fight(attacks_orders_P2[0][1:3], pacified_werewolves)
             attacks_orders_P2.pop(0)
 
     # ------------------
