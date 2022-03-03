@@ -214,7 +214,7 @@ def bonus(ww_coords):
 	code : Author (v.1.0 - dd/mm/yyyy)
 	"""
 
-def feed(list): # 
+def feed(list): # VALIDE
     """
 	Description of the function
 	---------------------------
@@ -230,7 +230,7 @@ def feed(list): #
 
 	Version:
 	--------
-	Specification : Sébastien Baudoux (v.1.0 - 03/03/2022)
+	Specification : Sébastien Baudoux (v.2.0 - 03/03/2022)
 	code : Sébastien Baudoux (v.1.0 - 03/03/2022)
 	"""
     is_ww = entities[list[0]]
@@ -260,7 +260,8 @@ def feed(list): #
     else:
         print("This is not food.")
 
-def fight(ww_coords_Attack, ww_coords_Defend):
+
+def fight(listat):
 	"""
 	Description of the function
 	---------------------------
@@ -270,8 +271,7 @@ def fight(ww_coords_Attack, ww_coords_Defend):
 
     Args:
     -----
-    ww_coords_Attack : Coordinates of the attacker - (x, y) - type (list)
-    ww_coords_Defend : Coordinates of the defender -  (x, y) - type (list)
+    list : list that contains attacker coordinates and defender coordinates - type (list)
 
     Returns:
     --------
@@ -279,9 +279,16 @@ def fight(ww_coords_Attack, ww_coords_Defend):
 
 	Version:
 	--------
-	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
-	code : Author (v.1.0 - dd/mm/yyyy)
-	"""
+	Specification : Sébastien Baudoux (v.2.0 - 03/03/2022)
+	code : Sébastien Baudoux (v.1.0 - 03/03/2022)
+    """
+    attacker = entities[listat[0]]
+    defender = entities[listat[1]]
+    attack_strength = (attacker[2]/10)
+    defender[2] = defender[2] - attack_strength
+    print(""+str(defender[1]+" loose "+str(attack_strength)+", his energy is now : "+str(defender[2]))+"")
+    entities.update({listat[1]: defender})
+
 
 def being_human(ww_coords):
     """

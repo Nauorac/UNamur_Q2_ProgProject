@@ -1,11 +1,11 @@
 #-*- coding: utf-8 -*-
-from game_turns import *
+
 
 """
 Dictionnaires de tests basés sur le fichier "Short example.ano"
 """
 
-entities = {(2, 1): [1, "alpha", 60], (1, 1): [1, "omega", 100], (2, 2): [1, "normal", 100],
+entities = {(2, 1): [1, "alpha", 57], (1, 1): [1, "omega", 100], (2, 2): [1, "normal", 100],
             (5, 5): [2, "alpha", 100], (6, 6): [2, "omega", 100], (6, 5): [2, "normal", 100],
             (2, 4): [0, "berries", 10], (6, 1): [0, "apples", 30], (5, 3): [0, "mice", 50], (1, 6): [0, "rabbits", 75], (4, 4): [0, "deers", 100]}
 
@@ -15,44 +15,12 @@ orders_P1 = "  10-10:@10-11   12-10:*12-11 19-20:*20-20  2-1:<2-4  12-72:<27-48 
 orders_P2 = "7-10:<8-11 22-10:@12-11 19-20:*14-15 45-99:pacify"
 """
 # Test ordre light pour nourriture P1
-orders_P1 = "2-1:<4-4"
+orders_P1 = "2-1:*6-6"
 orders_P2 = ""
-
-#fct test feed
-"""def feed(list):
-    #is_ww = entity_at(list[0])
-    # Comme la ligne ci-dessous fonctionne on peut supprimer la fonction entity_at
-    is_ww = entities[list[0]]
-    is_food = entities[list[1]]
-    if is_food and is_food[0] == 0:
-        if is_ww and is_ww[0] == 1:
-            if is_ww[2] < 100:
-                food_E = is_food[2]
-                ww_E = is_ww[2]
-                toteaten = 0
-                while (food_E > 0) and (ww_E < 100):
-                    food_E -= 1
-                    ww_E += 1
-                    toteaten += 1
-                if food_E == 0:
-                    print("The "+is_food[1]+" have been completely eaten.")
-                    entities.pop(list[1])
-                else:
-                    is_food[2] = food_E
-                is_ww[2] = ww_E
-                entities.update({list[1]: is_food})
-                entities.update({list[0]: is_ww})
-                print("The werewolf at "+str(list[0])+" has eat "+str(toteaten)+" energy from "+str(entities[list[1]][1])+" at "+str(list[1])+".")
-            else:
-                print("Your werewolf energy is already at max.")
-    else:
-        print("This is not food.")"""
 
 
 
 #fct test pacify
-
-
 def pacify(list):
     ...
     print(list)
@@ -61,10 +29,17 @@ def pacify(list):
 def bonus(list):
     print(list)
 
+
+
 #fct attack feed
-def attack(list):
-    ...
-    print(list)
+def fight(listat):
+
+    attacker = entities[listat[0]]
+    defender = entities[listat[1]]
+    attack_strength = (attacker[2]/10)
+    defender[2] = defender[2] - attack_strength
+    print(""+str(defender[1]+" loose "+str(attack_strength)+", his energy is now : "+str(defender[2]))+"")
+    entities.update({listat[1]: defender})
 
 #fct move feed
 def move(list):
@@ -235,13 +210,13 @@ def orders_manager(orders_P1, orders_P2, game_turn):
     if len(attacks_orders_P1) > 0:
         print("Player 1 attack phase.")
         while len(attacks_orders_P1) > 0:
-            attack(attacks_orders_P1[0][1:3])
+            fight(attacks_orders_P1[0][1:3])
             attacks_orders_P1.pop(0)
     # Check if Player 2 given attacks orders and run them.
     if len(attacks_orders_P2) > 0:
         print("Player 2 attack phase.")
         while len(attacks_orders_P2) > 0:
-            attack(attacks_orders_P2[0][1:3])
+            fight(attacks_orders_P2[0][1:3])
             attacks_orders_P2.pop(0)
 
     # ------------------
