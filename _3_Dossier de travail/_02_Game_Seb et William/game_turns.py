@@ -2,6 +2,8 @@
 """
 Dictionnaires de tests basés sur le fichier "Short example.ano"
 """
+size = (6, 6)
+
 entities = {(2, 1): [1, "alpha", 60], (1, 1): [1, "omega", 100], (2, 2): [1, "normal", 100],
             (5, 5): [2, "alpha", 100], (6, 6): [2, "omega", 100], (6, 5): [2, "normal", 100],
             (2, 4): [0, "berries", 10], (6, 1): [0, "apples", 30], (5, 3): [0, "mice", 50], (1, 6): [0, "rabbits", 75], (4, 4): [0, "deers", 100]}
@@ -315,7 +317,7 @@ def being_human(ww_coords):
 	code : Author (v.1.0 - dd/mm/yyyy)
 	"""
 
-def move(start_coord, dest_coord):
+def move(listmov):
     """
     Description of the function:
     ----------------------------
@@ -340,5 +342,19 @@ def move(start_coord, dest_coord):
     Version:
 	--------
 	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
-	Code : Author (v.1.0 - dd/mm/yyyy)
+	Code : Sébastien Baudoux (v.1.0 - 03/03/2022)
     """
+    #Check if destination is not out of the boardgame.
+    if listmov[1][0] <= size[0] and listmov[1][1] <= size[1]:
+        #Check is the destination is empty
+        if not (listmov[1] in entities):
+            x = int(abs(listmov[1][0]-listmov[0][0]))
+            y = int(abs(listmov[1][1]-listmov[0][1]))
+            if x == 1 and y == 1:
+                print("Move possible")
+            else:
+                print("Move out of range")
+        else:
+            print("Can't move there, this space is not empty.")
+    else:
+        print("Can't move out of boardgame.")

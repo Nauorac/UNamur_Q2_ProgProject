@@ -4,6 +4,7 @@
 """
 Dictionnaires de tests basés sur le fichier "Short example.ano"
 """
+size = (6, 6)
 
 entities = {(2, 1): [1, "alpha", 57], (1, 1): [1, "omega", 100], (2, 2): [1, "normal", 100],
             (5, 5): [2, "alpha", 100], (6, 6): [2, "omega", 100], (6, 5): [2, "normal", 100],
@@ -15,36 +16,29 @@ orders_P1 = "  10-10:@10-11   12-10:*12-11 19-20:*20-20  2-1:<2-4  12-72:<27-48 
 orders_P2 = "7-10:<8-11 22-10:@12-11 19-20:*14-15 45-99:pacify"
 """
 # Test ordre light pour nourriture P1
-orders_P1 = "2-1:*6-6"
+orders_P1 = "2-2:@3-3"
 orders_P2 = ""
-
-
-
-#fct test pacify
-def pacify(list):
-    ...
-    print(list)
 
 #fct test bonus
 def bonus(list):
     print(list)
 
-
-
-#fct attack feed
-def fight(listat):
-
-    attacker = entities[listat[0]]
-    defender = entities[listat[1]]
-    attack_strength = (attacker[2]/10)
-    defender[2] = defender[2] - attack_strength
-    print(""+str(defender[1]+" loose "+str(attack_strength)+", his energy is now : "+str(defender[2]))+"")
-    entities.update({listat[1]: defender})
-
 #fct move feed
-def move(list):
-    ...
-    print(list)
+def move(listmov):
+    #Check if destination is not out of the boardgame.
+    if listmov[1][0] <= size[0] and listmov[1][1] <= size[1]:
+        #Check is the destination is empty
+        if not (listmov[1] in entities):
+            x = int(abs(listmov[1][0]-listmov[0][0]))
+            y = int(abs(listmov[1][1]-listmov[0][1]))
+            if x == 1 and y == 1:
+                print("Move possible")
+            else:
+                print("Move out of range")
+        else:
+            print("Can't move there, this space is not empty.")
+    else:
+        print("Can't move out of boardgame.")
 
 def hacher(string):
     ordre = string
