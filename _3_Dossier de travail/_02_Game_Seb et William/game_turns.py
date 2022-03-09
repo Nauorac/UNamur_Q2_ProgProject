@@ -1,5 +1,7 @@
 #-*- coding: utf-8 -*-
 """
+Ce fichier regroupe toutes les fonctions realtives aux actions du jeu ainsi que la gestion des ordres des 2 joueurs.
+
 Dictionnaires de tests basés sur le fichier "Short example.ano"
 """
 size = (6, 6)
@@ -13,8 +15,8 @@ TEST ordres complets pour P1 et P2
 orders_P1 = "  10-10:@10-11   12-10:*12-11 19-20:*20-20  2-1:<2-4  12-72:<27-48 17-20:pacify"
 orders_P2 = "7-10:<8-11 22-10:@12-11 19-20:*14-15 45-99:pacify"
 """
-# Test ordre light pour pacify P1
-orders_P1 = "1-1:pacify 2-2:*6-5"
+# Test ordre light pour P1
+orders_P1 = "1-1:<2-2 3-1:<2-3"
 orders_P2 = ""
 """
 Index
@@ -49,7 +51,7 @@ def entity_at(entity_coords): # VALIDE -- A SUPPRIMER NORMALEMENT
     """
     Description of the function
 	---------------------------
-    Check if there entity(ies) at given position
+    Check if there entity(ies) in entities dictionnary
 
     Uses:
     -----
@@ -64,20 +66,17 @@ def entity_at(entity_coords): # VALIDE -- A SUPPRIMER NORMALEMENT
 
     Returns:
     --------
-    (bool, string, string, int) : list that contain true or false, dict_name, type, energy - list
+    (int, string, int) : list that contain team of entity, name of entity, energy - list
 
    	Version:
 	--------
-	Specification : Sébastien Baudoux (v.1.0 - 21/02/2022)
-	code : Author (v.1.0 - dd/mm/yyyy)
+	Specification : Sébastien Baudoux (v.2.0 - 09/03/2022)
+	Code : Sébastien Baudoux (v.2.0 - 09/03/2022)
     """
     # Validée
-    for key, values in foods.items():
+    for key, values in entities.items():
         if key == entity_coords:
-            return ["foods", values[0], values[1], ]
-    for key, values in teams.items():
-        if key == entity_coords:
-            return [values[0], values[1], values[2], ]
+            return [values[0], values[1], values[2]]
     return False
 
 def in_range(range, omega_coord):# VALIDE
@@ -256,32 +255,34 @@ def feed(list): # VALIDE
 	Specification : Sébastien Baudoux (v.2.0 - 03/03/2022)
 	code : Sébastien Baudoux (v.1.0 - 03/03/2022)
 	"""
-    is_ww = entities[list[0]]
-    is_food = entities[list[1]]
-    if is_food and is_food[0] == 0:
-        if is_ww and is_ww[0] == 1:
-            if is_ww[2] < 100:
-                food_E = is_food[2]
-                ww_E = is_ww[2]
-                toteaten = 0
-                while (food_E > 0) and (ww_E < 100):
-                    food_E -= 1
-                    ww_E += 1
-                    toteaten += 1
-                if food_E == 0:
-                    print("The "+is_food[1]+" have been completely eaten.")
-                    entities.pop(list[1])
+    if entity_at[entities[list[0]]]:
+        is_ww = entities[list[0]]
+    if entity_at[entities[list[1]]]:
+        is_food = entities[list[1]]
+        if is_food and is_food[0] == 0:
+            if is_ww and is_ww[0] == 1:
+                if is_ww[2] < 100:
+                    food_E = is_food[2]
+                    ww_E = is_ww[2]
+                    toteaten = 0
+                    while (food_E > 0) and (ww_E < 100):
+                        food_E -= 1
+                        ww_E += 1
+                        toteaten += 1
+                    if food_E == 0:
+                        print("The "+is_food[1]+" have been completely eaten.")
+                        entities.pop(list[1])
+                    else:
+                        is_food[2] = food_E
+                    is_ww[2] = ww_E
+                    entities.update({list[1]: is_food})
+                    entities.update({list[0]: is_ww})
+                    print("The werewolf at "+str(list[0])+" has eat "+str(
+                        toteaten)+" energy from "+str(entities[list[1]][1])+" at "+str(list[1])+".")
                 else:
-                    is_food[2] = food_E
-                is_ww[2] = ww_E
-                entities.update({list[1]: is_food})
-                entities.update({list[0]: is_ww})
-                print("The werewolf at "+str(list[0])+" has eat "+str(
-                    toteaten)+" energy from "+str(entities[list[1]][1])+" at "+str(list[1])+".")
-            else:
-                print("Your werewolf energy is already at max.")
-    else:
-        print("This is not food.")
+                    print("Your werewolf energy is already at max.")
+        else:
+            print("This is not food.")
 
 def fight(listat, pacified_werewolves):  # VALIDE
     """
@@ -512,7 +513,9 @@ def orders_manager(orders_P1, orders_P2, game_turn):
     if len(feeds_orders_P1) > 0:
         print("Player 1 feed phase.")
         while len(feeds_orders_P1) > 0:
+            print(feeds_orders_P1)
             feed(feeds_orders_P1[0][1:3])
+            
             feeds_orders_P1.pop(0)
     # Check if Player 2 given feeds orders and run them.
     if len(feeds_orders_P2) > 0:

@@ -1,0 +1,48 @@
+I.A
+-----
+
+Penser à différents mode:
+- Agressif
+- Défensif
+
+---
+Si Défensif :
+**********
+(
+Stratégie :
+- L'alpha fuit quasi tout le temps
+- L'omega suis l'alpha et pacifie si plus d'ennemis que d'amis autour de lui.
+- Les normaux fight l'ennemi le plus proche de l'alpha.
+)
+
+if E Alpha < 70
+  feed 
+elif only 1 ennemy range 1
+  fight
+elif 2 ennemy range 1
+  move away 
+
+if E omega < 50
+  feed 
+elif alpha_coord > 3
+  move to alpha 
+elif nbr ennemy > nbr ally
+  pacify
+
+if E normal < 30
+  feed
+elif move to ennemy near alpha and fight it
+
+Si offensif :
+*********
+(
+Stratégie :
+Quasi idem sauf comportement normaux.
+
+- L'alpha fuit quasi tout le temps
+- L'omega suis l'alpha et pacifie si plus d'ennemis que d'amis autour de lui.
+
+- All normal rush to ennemy alpha
+)
+.
+
