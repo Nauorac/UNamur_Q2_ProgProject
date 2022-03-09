@@ -16,7 +16,7 @@ orders_P1 = "  10-10:@10-11   12-10:*12-11 19-20:*20-20  2-1:<2-4  12-72:<27-48 
 orders_P2 = "7-10:<8-11 22-10:@12-11 19-20:*14-15 45-99:pacify"
 """
 # Test ordre light pour P1
-orders_P1 = "1-1:<2-2 3-1:<2-3"
+orders_P1 = "1-1:<2-4 2-2:<6-1"
 orders_P2 = ""
 """
 Index
@@ -255,34 +255,34 @@ def feed(list): # VALIDE
 	Specification : Sébastien Baudoux (v.2.0 - 03/03/2022)
 	code : Sébastien Baudoux (v.1.0 - 03/03/2022)
 	"""
-    if entity_at[entities[list[0]]]:
-        is_ww = entities[list[0]]
-    if entity_at[entities[list[1]]]:
-        is_food = entities[list[1]]
-        if is_food and is_food[0] == 0:
-            if is_ww and is_ww[0] == 1:
-                if is_ww[2] < 100:
-                    food_E = is_food[2]
-                    ww_E = is_ww[2]
-                    toteaten = 0
-                    while (food_E > 0) and (ww_E < 100):
-                        food_E -= 1
-                        ww_E += 1
-                        toteaten += 1
-                    if food_E == 0:
-                        print("The "+is_food[1]+" have been completely eaten.")
-                        entities.pop(list[1])
-                    else:
-                        is_food[2] = food_E
-                    is_ww[2] = ww_E
-                    entities.update({list[1]: is_food})
-                    entities.update({list[0]: is_ww})
-                    print("The werewolf at "+str(list[0])+" has eat "+str(
-                        toteaten)+" energy from "+str(entities[list[1]][1])+" at "+str(list[1])+".")
+    #if entity_at[entities[list[0]]]:
+    is_ww = entities[list[0]]
+    #if entity_at[entities[list[1]]]:
+    is_food = entities[list[1]]
+    if is_food and is_food[0] == 0:
+        if is_ww and is_ww[0] == 1:
+            if is_ww[2] < 100:
+                food_E = is_food[2]
+                ww_E = is_ww[2]
+                toteaten = 0
+                while (food_E > 0) and (ww_E < 100):
+                    food_E -= 1
+                    ww_E += 1
+                    toteaten += 1
+                if food_E == 0:
+                    print("The "+is_food[1]+" have been completely eaten.")
+                    entities.pop(list[1])
                 else:
-                    print("Your werewolf energy is already at max.")
-        else:
-            print("This is not food.")
+                    is_food[2] = food_E
+                is_ww[2] = ww_E
+                entities.update({list[1]: is_food})
+                entities.update({list[0]: is_ww})
+                print("The werewolf at "+str(list[0])+" has eat "+str(
+                    toteaten)+" energy from "+str(entities[list[1]][1])+" at "+str(list[1])+".")
+            else:
+                print("Your werewolf energy is already at max.")
+    else:
+        print("This is not food.")
 
 def fight(listat, pacified_werewolves):  # VALIDE
     """
@@ -313,10 +313,18 @@ def fight(listat, pacified_werewolves):  # VALIDE
         defender = entities[listat[1]]
         attack_strength = (attacker[2]/10)
         defender[2] = defender[2] - attack_strength
+        if defender[2] == 0:
+            if defender[1] == "alpha":
+                # Appel de la fonction FINISH qui conclue la partie
+                ...
+            elif defender[1] == "omega":
+                defender[1] == "Human"
+            else:
+                defender[1] = "human"
         print(""+str(defender[1]+" loose "+str(attack_strength)+", his energy is now : "+str(defender[2]))+"")
         entities.update({listat[1]: defender})
 
-def being_human(ww_coords):
+def being_human(ww_coords):# Pas necessaire puisque cela ce fait en une 2 lignes dans la fonction fight
     """
     Description of the function:
     ----------------------------
