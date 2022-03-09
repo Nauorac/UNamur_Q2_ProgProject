@@ -24,13 +24,16 @@ Index
 - Generic Tools
     - in_range
     - hacher
+    - AT_RANGE
+    """
+    # IL FAUT TESTER SI LES ENTITES SONT A PORTEE l'UNE DE LAUTRE POUR FEED AND FIGHT
+    """
     - order_manager
 - Game Functions
     - pacify
     - bonus
     - feed
-    - attack
-    - being_human
+    - fight
     - move
 -------------------------
 -------------------------
@@ -264,6 +267,9 @@ def feed(list): # VALIDE
             if is_ww[2] < 100:
                 food_E = is_food[2]
                 ww_E = is_ww[2]
+                # Check if it's a werewolf or a human and put a "mutate" flag for that
+                if ww_E == 0:
+                    mutate = 1
                 toteaten = 0
                 while (food_E > 0) and (ww_E < 100):
                     food_E -= 1
@@ -276,6 +282,12 @@ def feed(list): # VALIDE
                     is_food[2] = food_E
                 is_ww[2] = ww_E
                 entities.update({list[1]: is_food})
+                # If the "werewolf" was human, turn it into omega (if it was it in the past) or into werewolf
+                if mutate == 1:
+                    if is_ww[1] == "Human":
+                        is_ww[1] = "omega"
+                    else:
+                        is_ww[1] = "normal"
                 entities.update({list[0]: is_ww})
                 print("The werewolf at "+str(list[0])+" has eat "+str(
                     toteaten)+" energy from "+str(entities[list[1]][1])+" at "+str(list[1])+".")
@@ -305,7 +317,7 @@ def fight(listat, pacified_werewolves):  # VALIDE
     Specification : Sébastien Baudoux (v.2.0 - 03/03/2022)
     code : Sébastien Baudoux (v.1.0 - 03/03/2022)
     """
-    #verifier si attaquant est dans pacified_werewolves
+    #Check if attacker is in [pacified_werewolves]
     if listat[0] in pacified_werewolves:
         print("This werewolf "+str(listat[0])+" has been pacified this turn.")
     else:
@@ -523,7 +535,6 @@ def orders_manager(orders_P1, orders_P2, game_turn):
         while len(feeds_orders_P1) > 0:
             print(feeds_orders_P1)
             feed(feeds_orders_P1[0][1:3])
-            
             feeds_orders_P1.pop(0)
     # Check if Player 2 given feeds orders and run them.
     if len(feeds_orders_P2) > 0:
