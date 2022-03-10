@@ -29,6 +29,9 @@ P2_game_mode = int(input("Select game mode for player 2 => 0 (Local) OR 1 (Lan) 
 # Human or I.A.
 P2_type = int(input("Select game type for player 2 => 0 (Human) OR 1 (I.A.) : "))
 
+
+
+"""
 # ------------------
 #        Summary
 # ------------------
@@ -53,3 +56,4 @@ if P2_type == 0:
 else:
     print("I.A. ---")
 print("*********************")
+"""

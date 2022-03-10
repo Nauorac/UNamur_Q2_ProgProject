@@ -1,8 +1,5 @@
 
 import os
-#
-# Corrections en cours
-#
 
 # Se mettre dans le dossier contenant le fichier .ano
 # "C:/Users/Seb/Documents/GitHub/UNamur_Q2_ProgProject/_3_Dossier de travail/_00_Global/Short example.ano"
@@ -35,6 +32,7 @@ with open("example.ano", "r+") as file:
         else:
             x = int(j[0])
             y = int(j[1])
+            # Add "0" as first list value element for food to make to "food team" identified with 0
             values = [0, (j[2]), int((j[3]))]
             entities.update({(x, y): values})
 
