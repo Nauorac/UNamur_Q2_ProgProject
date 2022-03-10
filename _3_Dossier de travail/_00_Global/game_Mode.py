@@ -1,6 +1,20 @@
 #
 # SELECTION OF ONE OF THE SIX DIFFERENT GAME MODE
 #
+# Cases :
+# 1) P1 - Local - Human | P2 - Local - Human
+# 2) P1 - Local - Human | P2 - Local - IA
+# 3) P1 - Local - IA    | P2 - Local - IA
+# 4) P1 - Local - Human | P2 - Lan - Human
+# 5) P1 - Local - IA    | P2 - Lan - IA
+# 6) P1 - Local - IA    | P2 - Lan - Human
+
+# Si on veut arbitrer on peut rajouter 3 autres type de game
+
+# 7) P1 - Lan - Human   | P2 - Lan - Human
+# 8) P1 - Lan - IA      | P2 - Lan - IA
+# 9) P1- Lan - Human    | P2 - Lan - IA
+#
 # Selection player 1
 # ------------------
 #Local OR Lan

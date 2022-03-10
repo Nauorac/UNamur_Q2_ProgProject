@@ -125,7 +125,7 @@ def hacher(string): #Refaire la spec
     """
     Description of the function
 	---------------------------
-    Check if there entity(ies) at given position
+
 
     Uses:
     -----
@@ -238,6 +238,7 @@ def bonus(ww_coords):
 	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
 	code : Author (v.1.0 - dd/mm/yyyy)
 	"""
+    
 
 def feed(list): # VALIDE
     """
@@ -320,6 +321,7 @@ def fight(listat, pacified_werewolves):  # VALIDE
     #Check if attacker is in [pacified_werewolves]
     if listat[0] in pacified_werewolves:
         print("This werewolf "+str(listat[0])+" has been pacified this turn.")
+    # Faire un elif pour checker si E = 0 car human can't attack
     else:
         attacker = entities[listat[0]]
         defender = entities[listat[1]]
@@ -335,31 +337,6 @@ def fight(listat, pacified_werewolves):  # VALIDE
                 defender[1] = "human"
         print(""+str(defender[1]+" loose "+str(attack_strength)+", his energy is now : "+str(defender[2]))+"")
         entities.update({listat[1]: defender})
-
-def being_human(ww_coords):# Pas necessaire puisque cela ce fait en une 2 lignes dans la fonction fight
-    """
-    Description of the function:
-    ----------------------------
-    Check the energy of a werewolf and turn it into human if == 0
-    For reminder : Humans can only feed
-
-    Uses:
-    -----
-    Function use after attack phase.
-
-    Args:
-    -----
-    ww_coords : Coordinates - (x, y) - type (list)
-
-    Returns:
-    --------
-	Nothing or just a log message.
-
-	Version:
-	--------
-	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
-	code : Author (v.1.0 - dd/mm/yyyy)
-	"""
 
 def move(listmov): # VALIDE
     """
@@ -500,6 +477,8 @@ def orders_manager(orders_P1, orders_P2, game_turn):
     # ---------------------
     # --- BONUSES PHASE ---
     # ---------------------
+    # Store bonus of each ww in a separated list
+    
     # --- bonuses(P1) ---
     #Make a team_P1 dictionnary that contains all alive werewolfs from player 1
     team1 = {}

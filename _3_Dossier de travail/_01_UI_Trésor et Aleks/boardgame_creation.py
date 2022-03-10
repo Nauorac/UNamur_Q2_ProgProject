@@ -19,7 +19,7 @@ for i in range(1,7):
     for j in range(1,7):
         print(i,j)
         if (i,j) in entities:
-            print("yes")
+            #print("yes")
             boardgame[(i,j)] = entity_at((i,j))
             #thisdict[(5, 5)] = ["pouet", 10]
             print(boardgame[(i,j)])
