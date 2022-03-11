@@ -11,29 +11,30 @@ Index
 ------
 INITIALIZE - global - line 51
     - def game_settings() - line 68
-    - def data_import()
-    - def remote connection()
-    - def play game()
-U.I.
-    - def boardgame manager()
-GAME CYCLE
-    - GENERIC TOOLS
-        - def game loop()
-        - def hash()
-        - def in_range()
-        - def at_range()
-        - def entity_at()
-        - def finish()
-    - GAME FUNCTIONS
-        - def pacify()
-        - def bonus()
-        - def feed()
-        - def fight()
-        - def move()
-    - ORDER MANAGER
-        - def order_manager()
-I.A.
-
+    - def data_import() - line 135
+    - def connection() - line 198
+    - def close_connection() - line 205
+    - def play game() - line 209
+U.I. - line 
+    - def boardgame manager() - line 233
+GAME CYCLE - line 
+    - GENERIC TOOLS - line 
+        - def game_loop() - line 245
+        - def hash() - line 
+        - def entity_at() - line 
+        - def in_range() - line 
+        - def at_range() - line 
+        - def finish() - line 
+    - GAME FUNCTIONS - line 376
+        - def pacify() - line 
+        - def bonus() - line 
+        - def feed() - line 
+        - def fight() - line 
+        - def move() - line 
+    - ORDER MANAGER - line 592
+        - def orders_manager() - line 614
+I.A. - line 788
+    - def_orders_generator() - line 
 
 -------------------------
 Glossary
@@ -130,8 +131,7 @@ def game_settings(): # VALID
     return ["P1", group_1, P1_game_mode, P1_type, "P2", group_2, P2_game_mode, P2_type]
 #print(game_settings())
 
-
-# Sortir et mettre comme arguments size et entitties
+# Sortir et mettre comme arguments size et entities
 def data_import():
     """
 	Description of the function
@@ -201,6 +201,10 @@ def connection():
     elif P2_game_mode == 'remote':
         connection = create_connection(group_1, group_2)
 
+# close connection, if necessary
+def close_connection():
+    if type_1 == 'remote' or type_2 == 'remote':
+        close_connection(connection)
 
 def play_game(map_path, group_1, type_1, group_2, type_2):
     """Play a game.
@@ -219,23 +223,6 @@ def play_game(map_path, group_1, type_1, group_2, type_2):
     If there is an external referee, set group id to 0 for remote player.
     """
 
-# close connection, if necessary
-def close_connection():
-    if type_1 == 'remote' or type_2 == 'remote':
-        close_connection(connection)
-
-"""
-Mode_selection
-	Input : mode selection
-	Local
-		Human VS Human
-		Human VS I.A.
-		I.A. VS I.A.
-	Lan
-		Human VS Human
-		Human VS I.A.
-		I.A. VS I.A.
-"""
 game_turn = 0
 
 """
@@ -261,7 +248,7 @@ def game_loop():
     # Vérifier numéro de tour
     ...
 
-def hacher(string):  # Refaire la spec
+def hash(string):  # Refaire la spec
     """
 	Description of the function
 	---------------------------
@@ -390,13 +377,215 @@ def finish():
 ****************
 """
 # TESTER SI ENTITES A PORTEE POUR FEED AND FIGHT
-"""
-- pacify
-- bonus
-- feed
-- fight
-- move
-"""
+
+def pacify(rayon, omega, pacified_werewolves):  # VALIDE
+    """
+	Description of the function
+	---------------------------
+    Launch "Pacify" on all around, and in range werewolfs
+    Update Omega energy
+
+    Uses:
+    -----
+    Only used by Omegas
+    ** Reminder
+    * For each ww at range <= 6
+    * Cost : 40 E
+
+    Args:
+    -----
+    ww_coords : Coordinates - (x, y) - type (list)
+
+    Returns:
+    --------
+	list : list of pacified wolf for this turn.
+
+	Version:
+	--------
+	specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
+	code : Author (v.1.0 - dd/mm/yyyy)
+	"""
+    if entities[omega][1] == "omega":
+        if entities[omega][2] < 40:
+            print("Omega don't have enough energy to pacify")
+        #For each ww at range <= 6
+        else:
+            for key in in_range(rayon, omega):
+                pacified_werewolves.append(key)
+            print("These werewolves has been pacified for this turn " +
+                  str(pacified_werewolves)+"")
+    else:
+        print("Not omega")
+    return pacified_werewolves
+
+def bonus(ww_coords):
+    """
+	Description of the function
+	---------------------------
+    Check allied ww in range, calculate and give bonuse.
+
+    Uses:
+    -----
+    Each turn, for each player, for each werewolf
+    ** Reminder
+    * Bonus only for attack.
+    * E = E + (10*ww_number(in range <=2) + (30 if alpha range <= 4)
+
+    Args:
+    -----
+    w_coords : Coordinates - (x, y) - type (list)
+
+    Returns:
+    --------
+	type : Description
+
+	Version:
+	--------
+	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
+	Code : Author (v.1.0 - dd/mm/yyyy)
+	"""
+
+def feed(list):  # VALIDE
+    """
+	Description of the function
+	---------------------------
+    Update ww energy if food in range and update food energy
+
+    Args:
+    -----
+    list : list that contains ww_coords and entity_coords - type (list)
+
+    Returns:
+    --------
+	Nothing or just a log message.
+
+	Version:
+	--------
+	Specification : Sébastien Baudoux (v.2.0 - 03/03/2022)
+	code : Sébastien Baudoux (v.1.0 - 03/03/2022)
+	"""
+    #if entity_at[entities[list[0]]]:
+    is_ww = entities[list[0]]
+    #if entity_at[entities[list[1]]]:
+    is_food = entities[list[1]]
+    if is_food and is_food[0] == 0:
+        if is_ww and is_ww[0] == 1:
+            if is_ww[2] < 100:
+                food_E = is_food[2]
+                ww_E = is_ww[2]
+                # Check if it's a werewolf or a human and put a "mutate" flag for that
+                if ww_E == 0:
+                    mutate = 1
+                toteaten = 0
+                while (food_E > 0) and (ww_E < 100):
+                    food_E -= 1
+                    ww_E += 1
+                    toteaten += 1
+                if food_E == 0:
+                    print("The "+is_food[1]+" have been completely eaten.")
+                    entities.pop(list[1])
+                else:
+                    is_food[2] = food_E
+                is_ww[2] = ww_E
+                entities.update({list[1]: is_food})
+                # If the "werewolf" was human, turn it into omega (if it was it in the past) or into werewolf
+                if mutate == 1:
+                    if is_ww[1] == "Human":
+                        is_ww[1] = "omega"
+                    else:
+                        is_ww[1] = "normal"
+                entities.update({list[0]: is_ww})
+                print("The werewolf at "+str(list[0])+" has eat "+str(
+                    toteaten)+" energy from "+str(entities[list[1]][1])+" at "+str(list[1])+".")
+            else:
+                print("Your werewolf energy is already at max.")
+    else:
+        print("This is not food.")
+
+def fight(listat, pacified_werewolves):  # VALIDE
+    """
+    Description of the function
+    ---------------------------
+    Make damage to ww2 from ww1
+    ** Reminder
+    * Strenght = E/10 (rounded nearest)
+
+    Args:
+    -----
+    list : list that contains attacker coordinates and defender coordinates - type (list)
+
+    Returns:
+    --------
+    Nothing or just a log message.
+
+    Version:
+    --------
+    Specification : Sébastien Baudoux (v.2.0 - 03/03/2022)
+    code : Sébastien Baudoux (v.1.0 - 03/03/2022)
+    """
+    #Check if attacker is in [pacified_werewolves]
+    if listat[0] in pacified_werewolves:
+        print("This werewolf "+str(listat[0])+" has been pacified this turn.")
+    # Faire un elif pour checker si E = 0 car human can't attack
+    else:
+        attacker = entities[listat[0]]
+        defender = entities[listat[1]]
+        attack_strength = (attacker[2]/10)
+        defender[2] = defender[2] - attack_strength
+        if defender[2] == 0:
+            if defender[1] == "alpha":
+                # Appel de la fonction FINISH qui conclue la partie
+                ...
+            elif defender[1] == "omega":
+                defender[1] == "Human"
+            else:
+                defender[1] = "human"
+        print(""+str(defender[1]+" loose "+str(attack_strength) +
+              ", his energy is now : "+str(defender[2]))+"")
+        entities.update({listat[1]: defender})
+
+def move(listmov):  # VALIDE
+    """
+    Description of the function:
+    ----------------------------
+    Move a werewolf
+
+    Parameters
+    ----------
+    start_coord : Origin coordinates - (x, y) - type (list)
+    dest_coord : Destination coordinates - (x, y) - type (list)
+
+    Returns
+    -------
+    Nothing or just a log message.
+
+    Raises
+    ------
+    IOError: if there is no werewolf at origin coordinates
+    IOError: if the destinations coordinates are further than 1
+    IOError: if the destinations coordinates are occupied by an entity
+    IOError: if the destination is outside the boardgame
+
+    Version:
+	--------
+	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
+	Code : Sébastien Baudoux (v.1.0 - 03/03/2022)
+    """
+    #Check if destination is not out of the boardgame.
+    if listmov[1][0] <= size[0] and listmov[1][1] <= size[1]:
+        #Check is the destination is empty
+        if not (listmov[1] in entities):
+            x = int(abs(listmov[1][0]-listmov[0][0]))
+            y = int(abs(listmov[1][1]-listmov[0][1]))
+            if x == 1 and y == 1:
+                print("Move possible")
+            else:
+                print("Move out of range")
+        else:
+            print("Can't move there, this space is not empty.")
+    else:
+        print("Can't move out of boardgame.")
+
 
 """
 *******************
@@ -462,7 +651,7 @@ def orders_manager(orders_P1, orders_P2, game_turn):
     i = 0
     while i < len(cleanP1):
         current_order = cleanP1[i]
-        listcurord = hacher(current_order)
+        listcurord = hash(current_order)
         # Il faut rajouter pour chaque ordre un check afin de s'assurer que le ww est bien de la bonne équipe
         # if entity_at(listcurord[1])[0] == 1
         if listcurord[0] == "<":
@@ -478,7 +667,7 @@ def orders_manager(orders_P1, orders_P2, game_turn):
     i = 0
     while i < len(cleanP2):
         current_order = cleanP2[i]
-        listcurord = hacher(current_order)
+        listcurord = hash(current_order)
         if listcurord[0] == "<":
             feeds_orders_P2.append(listcurord)
         elif listcurord[0] == "*":

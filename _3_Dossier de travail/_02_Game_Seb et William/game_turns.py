@@ -172,6 +172,7 @@ def hacher(string): #Refaire la spec
                     GAMERULES CYCLE
 ========================================================
     """
+    
 def pacify(rayon, omega, pacified_werewolves):# VALIDE
     """
 	Description of the function
