@@ -236,9 +236,9 @@ def bonus(ww_coords):
 	Version:
 	--------
 	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
-	code : Author (v.1.0 - dd/mm/yyyy)
+	Code : Author (v.1.0 - dd/mm/yyyy)
 	"""
-    
+
 
 def feed(list): # VALIDE
     """

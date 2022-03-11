@@ -9,28 +9,29 @@ Each section and functions are referenced with the line number.
 
 Index
 ------
-INITIALIZE
-    - game_mode
-    - data_import
-    - Remote connection
-    - Play game
+INITIALIZE - global - line 51
+    - def game_settings() - line 68
+    - def data_import()
+    - def remote connection()
+    - def play game()
 U.I.
-    - boardgame manager
+    - def boardgame manager()
 GAME CYCLE
     - GENERIC TOOLS
-        - game loop
-        - hash
-        - in_range
-        - at_range
-        - entity_at
-        - finish
-    - ORDER MANAGER
+        - def game loop()
+        - def hash()
+        - def in_range()
+        - def at_range()
+        - def entity_at()
+        - def finish()
     - GAME FUNCTIONS
-        - pacify
-        - bonus
-        - feed
-        - fight
-        - move
+        - def pacify()
+        - def bonus()
+        - def feed()
+        - def fight()
+        - def move()
+    - ORDER MANAGER
+        - def order_manager()
 I.A.
 
 
@@ -45,10 +46,10 @@ ww = werewolf
 E = energy
 ******************************
 """
-# TESTER SI ENTITES A PORTEE POUR FEED AND FIGHT
+
 """
 ========================================
-            INITIALIZE
+            INITIALIZE - global 
 =======================================
 """
 # SELECTION OF ONE OF THE SIX DIFFERENT GAME MODE
@@ -65,7 +66,7 @@ E = energy
 # 8) P1 - Lan - IA      | P2 - Lan - IA
 # 9) P1- Lan - Human    | P2 - Lan - IA
 """
-def game_settings():
+def game_settings(): # VALID
     """
 	Description of the function
 	---------------------------
@@ -78,8 +79,8 @@ def game_settings():
 
 	Version:
 	--------
-	Specification : Author (v.1.0 - dd/mm/yyyy)
-	Code : Author (v.1.0 - dd/mm/yyyy)
+	Specification : Sébastien Baudoux (v.2.0 - 11/03/2022)
+	Code : Sébastien Baudoux (v.3.0 - 11/03/2022)
 	"""
     # Selection player 1
     # ------------------
@@ -129,6 +130,7 @@ def game_settings():
     return ["P1", group_1, P1_game_mode, P1_type, "P2", group_2, P2_game_mode, P2_type]
 #print(game_settings())
 
+
 # Sortir et mettre comme arguments size et entitties
 def data_import():
     """
@@ -152,8 +154,8 @@ def data_import():
 
 	Version:
 	--------
-	Specification : Author (v.1.0 - dd/mm/yyyy)
-	Code : Author (v.1.0 - dd/mm/yyyy)
+	Specification : Sébastien Baudoux (v.1.0 - 10/03/2022)
+	Code : Sébastien Baudoux (v.2.0 - 10/03/2022)
 	"""
     # Ask for ano file path
     path = input("Please give the path to the .ano file : ")
@@ -217,6 +219,11 @@ def play_game(map_path, group_1, type_1, group_2, type_2):
     If there is an external referee, set group id to 0 for remote player.
     """
 
+# close connection, if necessary
+def close_connection():
+    if type_1 == 'remote' or type_2 == 'remote':
+        close_connection(connection)
+
 """
 Mode_selection
 	Input : mode selection
@@ -239,11 +246,164 @@ game_turn = 0
 def boardgame_manager()
     ...
 
-    """
+"""
 ==========================================================
                     GAME CYCLE
 ========================================================
+        ***************
+         GENERIC TOOLS
+        ***************
 """
+
+def game_loop():
+
+    # Demander les ordres et les envoyer au orders manager
+    # Vérifier numéro de tour
+    ...
+
+def hacher(string):  # Refaire la spec
+    """
+	Description of the function
+	---------------------------
+
+
+    Uses:
+    -----
+    ...
+
+    Args:
+    -----
+
+    Arg : Description - type
+
+    Returns:
+    --------
+
+	type : Description
+
+	Version:
+	--------
+	Specification : Author (v.1.0 - dd/mm/yyyy)
+	Code : Author (v.1.0 - dd/mm/yyyy)
+	"""
+    ordre = string
+    #print(ordre)
+    #Split gauche droite
+    gd = ordre.split(":")
+    #Split origine X et origine Y
+    c = gd[0].split("-")
+    #Création de la liste avec les coordonnées d'origine X, Y
+    origine = (int(c[0]), int(c[1]))
+    #Test si l'ordre est pacify
+    if gd[1] == "pacify":
+        order_type = gd[1]
+        hach_order = origine
+    else:
+        #Sinon débute le split des coordonnées de destination
+        e = gd[1].split("-")
+        z = e[0][1:]
+        order_type = e[0][0]
+        destination = (int(z), int(e[1]))
+        hach_order = [order_type, origine, destination]
+    return hach_order
+
+def entity_at(entity_coords): # VALIDE -- A SUPPRIMER NORMALEMENT
+    """
+    Description of the function
+    ---------------------------
+    Check if there entity(ies) in entities dictionnary
+
+    Uses:
+    -----
+    1) To populate the map
+        2) To permit or not the feed
+        3) To permit or not the attack
+        4) To permit or not a move
+
+        Args:
+        -----
+        entity_coords: Coordinates - (x, y) - type(list)
+
+        Returns:
+        --------
+        (int, string, int): list that contain team of entity, name of entity, energy - list
+
+   	Version:
+    --------
+    Specification: Sébastien Baudoux(v.2.0 - 09/03/2022)
+    Code: Sébastien Baudoux(v.2.0 - 09/03/2022)
+    """
+    # Validée
+    for key, values in entities.items():
+        if key == entity_coords:
+            return [values[0], values[1], values[2]]
+    return False
+
+def in_range(range, omega_coord):# VALIDE
+    """
+   	Description of the function
+        - --------------------------
+        Check and count number of entity in range
+
+        Uses:
+        -----
+        -
+
+        Args:
+        -----
+        ray: range around the entity(int)
+        ww_coords: Coordinates - (x, y) - type(list)
+
+        Returns:
+        --------
+        list - entities in range
+
+   	Version:
+        --------
+        Specification: Sébastien Baudoux(v.1.0 - 21/02/2022)
+        code: Author(v.1.0 - dd/mm/yyyy)
+        """
+    nbr_entity = 0
+    ww_in_range = {}
+    key = []
+    for key, values in entities.items():
+        #Test if entity is a werewolf
+        if values[0] == 1 or values[0] == 2:
+            x = abs(key[0]-omega_coord[0])
+            y = abs(key[1]-omega_coord[1])
+            if x == 0 and y == 0:
+                ...  # current = omega
+            elif (x <= range) and (y <= range):
+                nbr_entity += 1
+                ww_in_range.update({key: values})
+    return ww_in_range
+
+def at_range():
+    ...
+
+def finish():
+    ...
+
+"""
+****************
+    GAME FUNCTIONS
+****************
+"""
+# TESTER SI ENTITES A PORTEE POUR FEED AND FIGHT
+"""
+- pacify
+- bonus
+- feed
+- fight
+- move
+"""
+
+"""
+*******************
+    ORDERS MANAGEMENT
+*********************
+"""
+
 # Input : Orders P1 & P2
 # Get orders of player 1 and notify them to player 2, if necessary
 def get_orders():
@@ -262,6 +422,177 @@ def get_orders():
             if P1_game_mode == 'remote':
                 notify_remote_orders(connection, orders)
 
+def orders_manager(orders_P1, orders_P2, game_turn):
+    """
+	Description of the function
+	---------------------------
+    The order manager rules every game stages.
+    His job is to clean and sort players orders and dispatch them to related functions.
+    The order manager make a complete turn.
+
+    Args:
+    -----
+    orders_P1 : string that contains ordres from player 1 - type (string)
+    orders_P2 : string that contains ordres from player 2 - type (string)
+
+    Returns:
+    --------
+	Nothing or just a log message.
+
+	Version:
+	--------
+	Specification : Sébastien Baudoux (v.1.0 - 03/03/2022)
+	code : Sébastien Baudoux (v.1.0 - 03/03/2022)
+	"""
+    # Convert Player 1 orders in a list
+    cleanP1 = orders_P1.split()
+    # Convert Player 2 orders in a list
+    cleanP2 = orders_P2.split()
+    # Initialize lists of differents orders for each players.
+    pacify_P1 = []
+    pacify_P2 = []
+    feeds_orders_P1 = []
+    feeds_orders_P2 = []
+    attacks_orders_P1 = []
+    attacks_orders_P2 = []
+    move_orders_P1 = []
+    move_orders_P2 = []
+
+    # Populate lists orders for player 1
+    i = 0
+    while i < len(cleanP1):
+        current_order = cleanP1[i]
+        listcurord = hacher(current_order)
+        # Il faut rajouter pour chaque ordre un check afin de s'assurer que le ww est bien de la bonne équipe
+        # if entity_at(listcurord[1])[0] == 1
+        if listcurord[0] == "<":
+            feeds_orders_P1.append(listcurord)
+        elif listcurord[0] == "*":
+            attacks_orders_P1.append(listcurord)
+        elif listcurord[0] == "@":
+            move_orders_P1.append(listcurord)
+        else:
+            pacify_P1.append(listcurord)
+        i += 1
+    # Populate lists orders for player 2
+    i = 0
+    while i < len(cleanP2):
+        current_order = cleanP2[i]
+        listcurord = hacher(current_order)
+        if listcurord[0] == "<":
+            feeds_orders_P2.append(listcurord)
+        elif listcurord[0] == "*":
+            attacks_orders_P2.append(listcurord)
+        elif listcurord[0] == "@":
+            move_orders_P2.append(listcurord)
+        else:
+            pacify_P2.append(listcurord)
+        i += 1
+
+    # --------------------
+    # --- PACIFY PHASE ---
+    # --------------------
+
+    pacified_werewolves = []
+
+    # Check if Player 1 given pacify order and run it.
+    if len(pacify_P1) > 0:
+        print("Player 1 pacify phase.")
+        while len(pacify_P1) > 0:
+            # Rajouter les arguments rayon et pacified_werewolfs
+            pacify(3, pacify_P1[0], pacified_werewolves)
+            pacify_P1.pop(0)
+    # Check if Player 2 given pacify order and run it.
+    if len(pacify_P2) > 0:
+        print("Player 2 pacify phase.")
+        while len(pacify_P2) > 0:
+            # Rajouter les arguments rayon et pacified_werewolfs
+            pacify(3, pacify_P2[0], pacified_werewolves)
+            pacify_P2.pop(0)
+
+    # ---------------------
+    # --- BONUSES PHASE ---
+    # ---------------------
+    # Store bonus of each ww in a separated list
+
+    # --- bonuses(P1) ---
+    #Make a team_P1 dictionnary that contains all alive werewolfs from player 1
+    team1 = {}
+    for key, values in entities.items():
+        if values[0] == 1:
+            team1.update({key: values})
+    if len(team1) > 0:
+        print("Player 1 bonus phase.")
+        for keys in team1:
+            # Send to bonus function each werewolf from team 1 dictionnary
+            coords = [keys]
+            bonus(coords)
+    # --- bonuses(P2) ---
+    #Make a team_P2 dictionnary that contains all alive werewolfs from player 2
+    team2 = {}
+    for key, values in entities.items():
+        if values[0] == 1:
+            #ajouter au dictionnaire team2
+            team2.update({key: values})
+    if len(team2) > 0:
+        print("Player 2 bonus phase.")
+        for keys in team2:
+            # Send to bonus function each werewolf from team 21 dictionnary
+            coords = [keys]
+            bonus(coords)
+
+    # ------------------
+    # --- FEED PHASE ---
+    # ------------------
+    # Check if Player 1 given feeds orders and run them.
+    if len(feeds_orders_P1) > 0:
+        print("Player 1 feed phase.")
+        while len(feeds_orders_P1) > 0:
+            print(feeds_orders_P1)
+            feed(feeds_orders_P1[0][1:3])
+            feeds_orders_P1.pop(0)
+    # Check if Player 2 given feeds orders and run them.
+    if len(feeds_orders_P2) > 0:
+        print("Player 2 feed phase.")
+        while len(feeds_orders_P2) > 0:
+            feed(feeds_orders_P2[0][1:3])
+            feeds_orders_P2.pop(0)
+
+    # --------------------
+    # --- ATTACK PHASE ---
+    # --------------------
+    # Check if Player 1 given attacks orders and run them.
+    if len(attacks_orders_P1) > 0:
+        print("Player 1 attack phase.")
+        while len(attacks_orders_P1) > 0:
+            fight(attacks_orders_P1[0][1:3], pacified_werewolves)
+            attacks_orders_P1.pop(0)
+    # Check if Player 2 given attacks orders and run them.
+    if len(attacks_orders_P2) > 0:
+        print("Player 2 attack phase.")
+        while len(attacks_orders_P2) > 0:
+            fight(attacks_orders_P2[0][1:3], pacified_werewolves)
+            attacks_orders_P2.pop(0)
+
+    # ------------------
+    # --- MOVE PHASE ---
+    # ------------------
+    # Check if Player 1 given move orders and run them.
+    if len(move_orders_P1) > 0:
+        print("Player 1 move phase.")
+        while len(move_orders_P1) > 0:
+            move(move_orders_P1[0][1:3])
+            move_orders_P1.pop(0)
+    # Check if Player 2 given move orders and run them.
+    if len(move_orders_P2) > 0:
+        print("Player 2 move phase.")
+        while len(move_orders_P2) > 0:
+            move(move_orders_P2[0][1:3])
+            move_orders_P2.pop(0)
+
+    game_turn += 1
+    return game_turn
+
 
 """
 =================================
@@ -270,7 +601,4 @@ def get_orders():
 def_orders_generator():
 """
 
-    # close connection, if necessary
-    if type_1 == 'remote' or type_2 == 'remote':
 
-        close_connection(connection)
