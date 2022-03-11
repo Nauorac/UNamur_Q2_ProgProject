@@ -1,6 +1,8 @@
-# Gestion des tours 
+# Gestion des tours
 #   -----------
 # Et fct FINISH
+
+
 
 def loop():
     

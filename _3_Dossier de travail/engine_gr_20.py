@@ -1,19 +1,205 @@
 #-*- coding: utf-8 -*-
-
 import blessed, math, os, time
 term = blessed.Terminal()
+"""
+EXPLANATIONS
+~~~~~~~~~~~~
+For a better comprehension of this file we've made an index.
+Each section and functions are referenced with the line number.
 
-# other functions
+Index
+------
+INITIALIZE
+    - game_mode
+    - data_import
+    - Remote connection
+    - Play game
+U.I.
+    - boardgame manager
+GAME CYCLE
+    - GENERIC TOOLS
+        - game loop
+        - hash
+        - in_range
+        - at_range
+        - entity_at
+        - finish
+    - ORDER MANAGER
+    - GAME FUNCTIONS
+        - pacify
+        - bonus
+        - feed
+        - fight
+        - move
+I.A.
+
+
+-------------------------
+Glossary
+--------
+Px = Player x
+group_x = Group number of player x
+Px_game_mode = Local or remote game mode of player x
+Px_type = Is player x is human or I.A.
+ww = werewolf
+E = energy
+******************************
+"""
+# TESTER SI ENTITES A PORTEE POUR FEED AND FIGHT
 """
 ========================================
-            GENERIC TOOLS
+            INITIALIZE
 =======================================
 """
-def is_entity_at((x,y)):
+# SELECTION OF ONE OF THE SIX DIFFERENT GAME MODE
+"""
+# Cases :
+# 1) P1 - Local - Human | P2 - Local - Human
+# 2) P1 - Local - Human | P2 - Local - IA
+# 3) P1 - Local - IA    | P2 - Local - IA
+# 4) P1 - Local - Human | P2 - Lan - Human
+# 5) P1 - Local - IA    | P2 - Lan - IA
+# 6) P1 - Local - IA    | P2 - Lan - Human
+# If we want arbitrate we could add 3 more game type
+# 7) P1 - Lan - Human   | P2 - Lan - Human
+# 8) P1 - Lan - IA      | P2 - Lan - IA
+# 9) P1- Lan - Human    | P2 - Lan - IA
+"""
+def game_settings():
+    """
+	Description of the function
+	---------------------------
+    Function that ask with inputs to select all the game settings.
 
-def is_in_range(ray,(x,y)):
+    Returns:
+    --------
+    ["P1", group_1, P1_game_mode, P1_type, "P2", group_2, P2_game_mode, P2_type]
+	type : Description
 
-# main function
+	Version:
+	--------
+	Specification : Author (v.1.0 - dd/mm/yyyy)
+	Code : Author (v.1.0 - dd/mm/yyyy)
+	"""
+    # Selection player 1
+    # ------------------
+    #Local OR Remote
+    P1_game_mode = int(
+        input('Select game mode for player 1 => 0 (Local) OR 1 (Remote) : '))
+    # If Remote ask for group number
+    if P1_game_mode == 1:
+        P1_game_mode = "remote"
+        group_1 = int(input("Please enter the group number for player 1 : "))
+    else:
+        P1_game_mode = "local"
+        group_1 = 20
+    # Human or I.A.
+    P1_type = int(
+        input("Select game type for player 1 => 0 (Human) OR 1 (I.A.) : "))
+    if P1_type == 1:
+        P1_type = "I.A."
+    else:
+        P1_type = "Human"
+    # ------------------
+    # Selection player 2
+    # ------------------
+    #Local OR Remote
+    P2_game_mode = int(
+        input("Select game mode for player 2 => 0 (Local) OR 1 (Remote) : "))
+    # If Remote ask for group number
+    if P2_game_mode == 1:
+        P2_game_mode = "remote"
+        group_2 = int(input("Please enter the group number for player 2 : "))
+    else:
+        P2_game_mode = "local"
+        group_1 = 20
+    # Human or I.A.
+    P2_type = int(
+        input("Select game type for player 2 => 0 (Human) OR 1 (I.A.) : "))
+    if P2_type == 1:
+        P2_type = "I.A."
+    else:
+        P2_type = "Human"
+
+    # P1 from group number on local/remote and it's a human/IA
+    print(f"Player 1 from group : {group_1} on {P1_game_mode} and it's a {P1_type}.")
+    # P2 from group number on local/remote and it's a human/IA
+    print(f"Player 2 is from group : {group_2} on {P2_game_mode} and it's a {P2_type}.")
+
+    return ["P1", group_1, P1_game_mode, P1_type, "P2", group_2, P2_game_mode, P2_type]
+#print(game_settings())
+
+# Sortir et mettre comme arguments size et entitties
+def data_import():
+    """
+	Description of the function
+	---------------------------
+
+
+    Uses:
+    -----
+    ...
+
+    Args:
+    -----
+
+    Arg : Description - type
+
+    Returns:
+    --------
+
+	type : Description
+
+	Version:
+	--------
+	Specification : Author (v.1.0 - dd/mm/yyyy)
+	Code : Author (v.1.0 - dd/mm/yyyy)
+	"""
+    # Ask for ano file path
+    path = input("Please give the path to the .ano file : ")
+    # Tuple for map size
+    size = ()
+    # A unique dictionnary to rules them all
+    entities = {}
+    # Open .ano file
+    with open(path, "r+") as file:
+        # Read the entire file and store it into a list.
+        brut = file.readlines()
+        for i in brut:
+            # Ignore string line
+            if (i[0] == "m") or (i[0] == "w") or (i[0] == "f"):
+                continue
+            # Detect if line contains boardgame size
+            if len(i) <= 6:
+                si = i.split()
+                size = (int(si[0]), int(si[1]))
+                continue
+            j = i.split()
+            # Check if line contain werewolf info or not
+            if (j[3] == "alpha") or (j[3] == "omega") or (j[3] == "normal"):
+                x = int(j[1])
+                y = int(j[2])
+                values = [int(j[0]), (j[3]), 100]
+                entities.update({(x, y): values})
+            else:
+                x = int(j[0])
+                y = int(j[1])
+                # Add "0" as first list value element for food to make the "food team" identified with 0
+                values = [0, (j[2]), int((j[3]))]
+                entities.update({(x, y): values})
+    print("Map Size : ", size)
+    print("Entities :", entities)
+
+data_import()
+
+# create connection, if necessary
+def connection():
+    if P1_game_mode == 'remote':
+        connection = create_connection(group_2, group_1)
+    elif P2_game_mode == 'remote':
+        connection = create_connection(group_1, group_2)
+
+
 def play_game(map_path, group_1, type_1, group_2, type_2):
     """Play a game.
 
@@ -43,156 +229,45 @@ Mode_selection
 		Human VS I.A.
 		I.A. VS I.A.
 """
+game_turn = 0
 
-
-    # create connection, if necessary
-def connection():
-    if type_1 == 'remote':
-        connection = create_connection(group_2, group_1)
-    elif type_2 == 'remote':
-        connection = create_connection(group_1, group_2)
-
-    """
+"""
 =======================================================
                     U.I. ENGINE
 =======================================================
-
-	map creator
-		def_game_mode_selection_displayer
-	HUD manager
-		def_display_logs
-		def_update_players_totallife
-		def_turn_updater
-	map_updater
-		def_remove_death_entities
-    """
-
-
-while ...:
-
+"""
+def boardgame_manager()
+    ...
 
     """
 ==========================================================
-                    INPUT ORDERS CYCLE
+                    GAME CYCLE
 ========================================================
-    """
-	#Input : Orders Team1 & Team2
+"""
+# Input : Orders P1 & P2
+# Get orders of player 1 and notify them to player 2, if necessary
+def get_orders():
+    if P1_game_mode == 'remote':
+        orders = get_remote_orders(connection)
+    else:
+        orders = get_AI_orders(..., 1)
+        if P2_game_mode == 'remote':
+            notify_remote_orders(connection, orders)
 
-       # get orders of player 1 and notify them to player 2, if necessary
-    def get_orders():
-        if type_1 == 'remote':
+        # get orders of player 2 and notify them to player 1, if necessary
+        if P2_game_mode == 'remote':
             orders = get_remote_orders(connection)
         else:
-            orders = get_AI_orders(..., 1)
-            if type_2 == 'remote':
+            orders = get_AI_orders(..., 2)
+            if P1_game_mode == 'remote':
                 notify_remote_orders(connection, orders)
-
-            # get orders of player 2 and notify them to player 1, if necessary
-            if type_2 == 'remote':
-                orders = get_remote_orders(connection)
-            else:
-                orders = get_AI_orders(..., 2)
-                if type_1 == 'remote':
-                    notify_remote_orders(connection, orders)
-
-
-
-		#orders_engine
-
-			#def_orders_cleaner
-            def netcut(strg):
-                #Retirer les espaces
-                netorders=orders.strip()
-                print(netorders)
-                #Split dans une liste
-                cutorders=orders.split()
-                return cutorders
-
-            #clean_orders = netcut(orders)
-            #print(clean_orders)
-
-			#def_orders_manager
-            def checkorders(liste):
-                i=0
-                nbrordes=0
-                move_order=0
-                attack_order=0
-                feed_order=0
-                while i < len(liste):
-                    if ((len(liste[i])) < 12):
-                        print("The order num "+str(i+1)+" is invalid")
-                    else:
-                        nbrordes += 1
-                        # Reconvertir les elmts de la liste en string pour profiter des méthodes sur les string
-                        current_order=liste[i]
-                        if (current_order[6])=="@":
-                            move_order+=1
-                        elif (current_order[6]) == "<":
-                            feed_order += 1
-                        elif (current_order[6]) == "*":
-                            attack_order += 1
-                        else:
-                            print("Et un ordre de pacification.")
-                    i += 1
-                #print("Il y a "+str(nbrordes)+" orders encode(s)")
-                #print(" - "+str(move_order)+" de deplacement.")
-                #print(" - "+str(feed_order)+" de nourrissage.")
-                #print(" - "+str(attack_order)+" d'attaque.")
-
-    """
-==========================================================
-                    GAMERULES CYCLE
-========================================================
-    """
-
-    def pacifier():
-        ...
-
-#fct_bonuses
-    def bonus(loup(coords, E)):
-        check nbr-ami rayon 2
-        + 10 * nbr_ami
-        check alpha rayon 4
-
-#fct feeder
-    def feed(loup(coords, E), food(coords, E):
-
-        return loup(coords, E), food(coords, E)
-
-def fighter():
-    ...
-
-def being_human():
-    ...
-
-def move((r1,c1),(r2,c2)):
-    """
-    Move a werewolf
-
-        Parameters
-        ----------
-        start_coord : Origin coordinates (list)
-        dest_coord : Destination coordinates (list)
-
-        Returns
-        -------
-        Nothing
-
-        Raises
-        ------
-        IOError: if there is no werewolf at origin coordinates
-        IOError: if the destinations coordinates are further than 1
-        IOError: if the destinations coordinates are occupied by an entity
-    """
 
 
 """
-    =================================
-                    A.I. ENGINE
-    =================================
-
-    def_orders_generator():
-
+=================================
+        A.I. ENGINE
+=================================
+def_orders_generator():
 """
 
     # close connection, if necessary

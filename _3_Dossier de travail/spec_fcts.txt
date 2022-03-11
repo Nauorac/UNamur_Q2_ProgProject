@@ -2,7 +2,7 @@ def myfunction(...):
 	"""
 	Description of the function
 	---------------------------
-	
+
 
     Uses:
     -----
@@ -21,7 +21,5 @@ def myfunction(...):
 	Version:
 	--------
 	Specification : Author (v.1.0 - dd/mm/yyyy)
-	code : Author (v.1.0 - dd/mm/yyyy)
-	
+	Code : Author (v.1.0 - dd/mm/yyyy)
 	"""
-	
