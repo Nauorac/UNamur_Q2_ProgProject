@@ -1,15 +1,12 @@
 #-*- coding: utf-8 -*-
 """
 Ce fichier regroupe toutes les fonctions realtives aux actions du jeu ainsi que la gestion des ordres des 2 joueurs.
-
 Dictionnaires de tests basés sur le fichier "Short example.ano"
 """
 size = (6, 6)
-
 entities = {(2, 1): [1, "alpha", 57], (1, 1): [1, "omega", 100], (2, 2): [1, "normal", 100],
             (5, 5): [2, "alpha", 100], (6, 6): [2, "omega", 100], (6, 5): [2, "normal", 100],
             (2, 4): [0, "berries", 10], (6, 1): [0, "apples", 30], (5, 3): [0, "mice", 50], (1, 6): [0, "rabbits", 75], (4, 4): [0, "deers", 100]}
-
 """
 TEST ordres complets pour P1 et P2
 orders_P1 = "  10-10:@10-11   12-10:*12-11 19-20:*20-20  2-1:<2-4  12-72:<27-48 17-20:pacify"
@@ -18,31 +15,7 @@ orders_P2 = "7-10:<8-11 22-10:@12-11 19-20:*14-15 45-99:pacify"
 # Test ordre light pour P1
 orders_P1 = "1-1:<2-4 2-2:<6-1"
 orders_P2 = ""
-"""
-Index
-------
-- Generic Tools
-    - in_range
-    - hacher
-    - AT_RANGE
-    """
-    # IL FAUT TESTER SI LES ENTITES SONT A PORTEE l'UNE DE LAUTRE POUR FEED AND FIGHT
-    """
-    - order_manager
-- Game Functions
-    - pacify
-    - bonus
-    - feed
-    - fight
-    - move
--------------------------
--------------------------
-Glossary
---------
-ww = werewolf = loup-garou
-E = energy
-******************************
-"""
+
 game_turn = 0
 print("Game turn : "+str(game_turn)+"")
 """
@@ -172,7 +145,6 @@ def hacher(string): #Refaire la spec
                     GAMERULES CYCLE
 ========================================================
     """
-    
 def pacify(rayon, omega, pacified_werewolves):# VALIDE
     """
 	Description of the function
@@ -239,7 +211,6 @@ def bonus(ww_coords):
 	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
 	Code : Author (v.1.0 - dd/mm/yyyy)
 	"""
-
 
 def feed(list): # VALIDE
     """
@@ -380,7 +351,6 @@ def move(listmov): # VALIDE
             print("Can't move there, this space is not empty.")
     else:
         print("Can't move out of boardgame.")
-
 
 """
 ========================================
@@ -557,6 +527,5 @@ def orders_manager(orders_P1, orders_P2, game_turn):
 
     game_turn += 1
     return game_turn
-
 
 print("Game turn : "+str(orders_manager(orders_P1, orders_P2, game_turn))+"")
