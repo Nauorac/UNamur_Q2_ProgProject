@@ -22,7 +22,6 @@ A.I. - line 231
     - 
 GAME CYCLE - line 
     - GENERIC TOOLS - line 
-        - def get_orders()
         - def game_loop() - line 245
         - def hash() - line 
         - def entity_at() - line 
@@ -36,6 +35,7 @@ GAME CYCLE - line
         - def fight() - line 
         - def move() - line 
     - ORDER MANAGER - line 592
+        - def get_orders()
         - def orders_manager() - line 614
 U.I. - line 
     - def boardgame manager() - line 233
@@ -198,7 +198,6 @@ if P1_game_mode == 'remote':
 elif P2_game_mode == 'remote':
     connection = create_connection(group_1, group_2)
 
-
 # close connection, if necessary
 def close_connection():  # Spec 0 % and Code 100%
     """
@@ -223,43 +222,63 @@ def close_connection():  # Spec 0 % and Code 100%
     if P1_game_mode == 'remote' or P2_game_mode == 'remote':
         close_connection(connection)
 
-def play_game():
-    ...
-
 
 """
 ===================
     A.I. ENGINE
 ===================
 """
-def AI_orders_generator():
-    AI_orders = ""
-    #fct randomisée orders AI
+# DUMB A.I.
+
+def DAI_orders_generator(Px):
+    """
+	Description of the function
+	---------------------------
+
+
+    Uses:
+    -----
+    ...
+
+    Args:
+    -----
+
+    Arg : Description - type
+
+    Returns:
+    --------
+
+	type : Description
+
+	Version:
+	--------
+	Specification : Author (v.1.0 - dd/mm/yyyy)
+	Code : Author (v.1.0 - dd/mm/yyyy)
+	"""
     # for each ww from Playerx in entities
     # get position and add to str
-    orig = [6, 18]
-    #def random_orders(Px):
-    AI_orders = AI_orders + str(orig[0]) + "-" + str(orig[1]) + ":"
-    #rand an order and add to str
-    order_type = random.choice(["@","*","<","pacify"])
-    AI_orders = AI_orders + order_type
-    # for x
-    if order_type == "pacify":
-        print (AI_orders)
-    else:
-        dest = [0,0]
+    for key, values in entities.items():
+        if values[0] == Px:
+            AI_orders = ""
+            orig = key
+            AI_orders = AI_orders + str(orig[0]) + "-" + str(orig[1]) + ":"
+            #rand an order and add to str
+            order_type = random.choice(["@", "*", "<", "pacify"])
+            AI_orders = AI_orders + order_type
+            # for x
+            if order_type == "pacify":
+                print(AI_orders)
+            else:
+                dest = [0, 0]
+                stepx = random.choice([+1, -1, 0])
+                dest[0] = orig[0] + stepx
+                stepy = random.choice([+1, -1, 0])
+                dest[1] = orig[1] + stepy
+                AI_orders = AI_orders + str(dest[0]) + "-" + str(dest[1])
+                #print(AI_orders)
+                return AI_orders
 
-        stepx = random.choice([+1, -1, 0])
-        dest[0] = orig[0] + stepx
-
-        stepy = random.choice([+1, -1, 0])
-        dest[1] = orig[1] + stepy
-
-        AI_orders = AI_orders + str(dest[0]) + "-" + str(dest[1])
-        print (AI_orders)
-        #return AI_orders
-
-
+# SMART A.I.
 
 """
 ===================
@@ -269,12 +288,45 @@ def AI_orders_generator():
 GENERIC TOOLS
 *************
 """
-def game_loop():
+game_turn = 0
+
+def game_loop(game_turn):
+    """
+	Description of the function
+	---------------------------
+
+
+    Uses:
+    -----
+    ...
+
+    Args:
+    -----
+
+    Arg : Description - type
+
+    Returns:
+    --------
+
+	type : Description
+
+	Version:
+	--------
+	Specification : Author (v.1.0 - dd/mm/yyyy)
+	Code : Author (v.1.0 - dd/mm/yyyy)
+	"""
+    # Vérifier numéro de tour ==> Règles à vérifier
+    if game_turn == 200:
+        ...
+    # Vérifie l'E des Alphas
 
     # Demander les ordres et les envoyer au orders manager
-    # Vérifier numéro de tour ==> Règles à vérifier
-    # Vérifie l'E des Alphas 
-    ...
+    orders_manager(get_orders(orders_P1, orders_P2))
+    game_turn += 1
+    game_loop(game_turn)
+
+
+game_loop(game_turn)
 
 def hash(string):  # Refaire la spec
     """
@@ -393,9 +445,31 @@ def in_range(range, omega_coord):# VALIDE
     return ww_in_range
 
 def at_range():
-    ...
-    
+    """
+	Description of the function
+	---------------------------
 
+
+    Uses:
+    -----
+    ...
+	
+    Args:
+    -----
+
+    Arg : Description - type
+	
+    Returns:
+    --------
+
+	type : Description
+   
+	Version:
+	--------
+	Specification : Author (v.1.0 - dd/mm/yyyy)
+	Code : Author (v.1.0 - dd/mm/yyyy)
+	"""
+    ...
 def finish():
     ...
 
@@ -554,21 +628,19 @@ def fight(listat, pacified_werewolves):  # VALIDE
     #Check if attacker is in [pacified_werewolves]
     if listat[0] in pacified_werewolves:
         print("This werewolf "+str(listat[0])+" has been pacified this turn.")
-    # Faire un elif pour checker si E = 0 car human can't attack
+    #Check if E = 0 'cause human can't attack
+    elif entities[listat[0][2]] == 0:
+        print("A human (werewolf with energy = 0) can't attack")
     else:
         attacker = entities[listat[0]]
         defender = entities[listat[1]]
         attack_strength = (attacker[2]/10)
         defender[2] = defender[2] - attack_strength
         if defender[2] == 0:
-            if defender[1] == "alpha":
-                # Stocker les alpha à 0
-                # Vérifier en fin de boucle de jeu si il y a des alphas à 0 pour lancer FINISH
-                #     finish()
-            elif defender[1] == "omega":
+            if defender[1] == "omega":
                 defender[1] == "Human"
             else:
-                defender[1] = "human"
+                defender[1] = "human"""
         print(""+str(defender[1]+" loose "+str(attack_strength) +
               ", his energy is now : "+str(defender[2]))+"")
         entities.update({listat[1]: defender})
@@ -615,16 +687,15 @@ def move(listmov):  # VALIDE
     else:
         print("Can't move out of boardgame.")
 
-
 """
 *****************
 ORDERS MANAGEMENT
 *****************
 """
-def get_AI_orders():
-    ...
+orders_P1 = ""
+orders_P2 = ""
 
-def get_orders():
+def get_orders(orders_P1, orders_P2):
     """
 	Description of the function
 	---------------------------
@@ -658,7 +729,7 @@ def get_orders():
         # Notify remote player 2 with P1 orders
         notify_remote_orders(connection, orders_P1)
     else:
-        orders_P1 = get_AI_orders()
+        orders_P1 = DAI_orders_generator(1)
         # Notify remote player 2 with P1 orders
         notify_remote_orders(connection, orders_P1)
 
@@ -671,13 +742,12 @@ def get_orders():
         # Notify remote player 1 with P2 orders
         notify_remote_orders(connection, orders_P2)
     else:
-        orders_P2 = get_AI_orders()
+        orders_P2 = DAI_orders_generator(2)
         # Notify remote player 1 with P2 orders
         notify_remote_orders(connection, orders_P2)
+    return orders_P1, orders_P2
 
-
-
-def orders_manager(orders_P1, orders_P2, game_turn):
+def orders_manager(orders_P1, orders_P2):
     """
 	Description of the function
 	---------------------------
@@ -703,7 +773,7 @@ def orders_manager(orders_P1, orders_P2, game_turn):
     cleanP1 = orders_P1.split()
     # Convert Player 2 orders in a list
     cleanP2 = orders_P2.split()
-    # Initialize lists of differents orders for each players.
+    # Initialize lists of different orders for each players.
     pacify_P1 = []
     pacify_P2 = []
     feeds_orders_P1 = []
@@ -837,9 +907,6 @@ def orders_manager(orders_P1, orders_P2, game_turn):
         while len(move_orders_P2) > 0:
             move(move_orders_P2[0][1:3])
             move_orders_P2.pop(0)
-    game_turn += 1
-    return game_turn
-
 
 """
 ===================
