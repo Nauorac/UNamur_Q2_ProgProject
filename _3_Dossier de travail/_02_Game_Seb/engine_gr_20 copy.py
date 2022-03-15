@@ -1,77 +1,21 @@
 #-*- coding: utf-8 -*-
-import blessed, math, os, time, random
-from remote_play import *
-term = blessed.Terminal()
+import math, random
+
+
+size = (6, 6)
+entities = {(2, 1): [1, "alpha", 57], (1, 1): [1, "omega", 100], (2, 2): [1, "normal", 100],
+            (5, 5): [2, "alpha", 100], (6, 6): [2, "omega", 100], (6, 5): [2, "normal", 100],
+            (2, 4): [0, "berries", 10], (6, 1): [0, "apples", 30], (5, 3): [0, "mice", 50], (1, 6): [0, "rabbits", 75], (4, 4): [0, "deers", 100]}
 
 """
-EXPLANATIONS
-~~~~~~~~~~~~
-For a better comprehension of this file we've made an index.
-Each section and functions are referenced with the line number.
+TEST ordres complets pour P1 et P2
+orders_P1 = "  10-10:@10-11   12-10:*12-11 19-20:*20-20  2-1:<2-4  12-72:<27-48 17-20:pacify"
+orders_P2 = "7-10:<8-11 22-10:@12-11 19-20:*14-15 45-99:pacify"
+"""
+# Test ordre light pour P1
+orders_P1 = "1-1:<2-4 2-2:<6-1"
+orders_P2 = ""
 
-Index
-------
-GLOBAL AND INITIALIZATION FUNCTIONS - line 56
-    - def game_settings() - line 85 - # S 100%/ C 100%
-    - def data_import() - line 146 - # S 100%/ C 100%
-    - connection - line 198
-    - def close_connection() - line 205 - # S 0%/ C 100%
-A.I. - line 231
-    - def DAI_orders_generator() - line 226 - # S 100%/ C 100%
-    - def SAI_orders_generator() - # S 0%/ C 0%
-GAME CYCLE - line 280
-    - GENERIC TOOLS - line 283
-        - def game_loop() - line 286 - # S 100%/ C 33%
-        - def hash() - line 315 - # S 100%/ C 100%
-        - def entity_at() - line 358 - # S 100%/ C 100%
-        - def in_range() - line 389 - # S 100%/ C 100%
-        - def at_range() - line 424 - # S 0%/ C 0%
-        - def finish() - line  - # S 0%/ C 0%
-    - GAME FUNCTIONS - line 462
-        - def pacify() - line 466 - # S 100%/ C 100%
-        - def bonus() - line 511 - # S 0%/ C 0%
-        - def feed() - line 539 - # S 100%/ C 90%
-        - def fight() - line 601 - # S 100%/ C 90%
-        - def move() - line 642 - # S 100%/ C 100%
-    - ORDER MANAGER - line 686
-        - def get_orders() - line 692 - # S 100%/ C 100%
-        - def orders_manager() - line 744 - # S 100%/ C 100%
-U.I. - line 909
-    - def boardgame_manager() - line 910 - # S 0%/ C 0%
-
--------------------------
-Glossary
---------
-Px = Player x (int)
-group_x = Group number of player x (int)
-Px_game_mode = Local or remote game mode of player x (str)
-Px_type = Is player x is human or I.A. (str)
-ww = werewolf
-E = energy
-S = Specification
-C = Code
-******************************
-"""
-
-"""
-===========================================
-    GLOBAL AND INITIALIZATION FUNCTIONS
-===========================================
-"""
-# SELECTION OF ONE OF THE SIX DIFFERENT GAME MODE
-"""
-# Cases :
-# 1) P1 - Local - Human | P2 - Local - Human
-# 2) P1 - Local - Human | P2 - Local - IA
-# 3) P1 - Local - IA    | P2 - Local - IA
-# 4) P1 - Local - Human | P2 - Lan - Human
-# 5) P1 - Local - IA    | P2 - Lan - IA
-# 6) P1 - Local - IA    | P2 - Lan - Human
-# If we want arbitrate we could add 3 more game type
-# 7) P1 - Lan - Human   | P2 - Lan - Human
-# 8) P1 - Lan - IA      | P2 - Lan - IA
-# 9) P1- Lan - Human    | P2 - Lan - IA
-"""
 
 # Creation of all "global" variables required for the game
 P1_game_mode = ""
@@ -198,27 +142,6 @@ def data_import(size, entities): # Spec and Code 100%
 
 data_import(size, entities)
 
-# create connection, if necessary
-if P1_game_mode == 'remote':
-    connection = create_connection(group_2, group_1)
-elif P2_game_mode == 'remote':
-    connection = create_connection(group_1, group_2)
-
-# close connection, if necessary
-def end_connection():  # Spec 0 % and Code 100%
-    """
-	Description of the function
-	---------------------------
-    Close connection at game end
-
-	Version:
-	--------
-	Specification : Author (v.1.0 - dd/mm/yyyy)
-	Code : Author (v.1.0 - dd/mm/yyyy)
-	"""
-    if P1_game_mode == 'remote' or P2_game_mode == 'remote':
-        close_connection(connection)
-
 """
 ===================
     A.I. ENGINE
@@ -285,34 +208,7 @@ GENERIC TOOLS
 """
 game_turn = 0
 
-def game_loop(game_turn):# Spec 100 % and Code 33%
-    """
-	Description of the function
-	---------------------------
-    Main function of the game.
-    Get orders from players, increment game_turn.
-    And call him itself until a endgame condition rise
 
-    Args:
-    -----
-    game_turn : Number of the game turn - int
-
-	Version:
-	--------
-	Specification: Sébastien Baudoux(v.2.0 - 07/03/2022)
-    Code: Sébastien Baudoux(v.2.0 - 07/03/2022)
-	"""
-    # Vérifier numéro de tour ==> Règles à vérifier
-    if game_turn == 200:
-        ...
-    # Vérifie l'E des Alphas
-
-    # Demander les ordres et les envoyer au orders manager
-    orders_manager(get_orders(orders_P1, orders_P2))
-    game_turn += 1
-    game_loop(game_turn)
-
-game_loop(game_turn)
 
 def hash(string):  # Spec 100 % and Code 100%
     """
@@ -454,8 +350,6 @@ def at_range():
 	"""
     ...
 
-def finish():
-    ...
 
 """
 **************
@@ -463,7 +357,6 @@ GAME FUNCTIONS
 **************
 """
 # TESTER SI ENTITES A PORTEE POUR FEED AND FIGHT
-
 
 def pacify(rayon, omega, pacified_werewolves):  # Spec 100 % and Code 100%
     """
@@ -903,34 +796,3 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
         while len(move_orders_P2) > 0:
             move(move_orders_P2[0][1:3])
             move_orders_P2.pop(0)
-
-"""
-===================
-    U.I. ENGINE
-===================
-"""
-def boardgame_manager():  # Spec 0 % and Code 0%
-    """
-	Description of the function
-	---------------------------
-
-
-    Uses:
-    -----
-    ...
-	
-    Args:
-    -----
-
-    Arg : Description - type
-	
-    Returns:
-    --------
-
-	type : Description
-   
-	Version:
-	--------
-	Specification : Author (v.1.0 - dd/mm/yyyy)
-	Code : Author (v.1.0 - dd/mm/yyyy)
-	"""
