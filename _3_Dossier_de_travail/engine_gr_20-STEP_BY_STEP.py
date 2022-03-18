@@ -3,6 +3,9 @@ import blessed, math, os, time, random
 from remote_play import *
 
 
+pics = {"alpha": "α", "omega": "Ω", "normal": "🐺", "human": "👤",
+        "berries": "🍒", "apples": "🍎", "mice": "🐁", "rabbits": "🐇", "deers": "🦌"}
+
 """
 ===========================================
     GLOBAL AND INITIALIZATION FUNCTIONS
@@ -75,9 +78,9 @@ def game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type
 def data_import(size, entities): # Spec and Code 100%
     # Ask for ano file path
     #path = input("Please give the path to the .ano file : ")
-    path = "C:/Users/Seb/Documents/GitHub/UNamur_Q2_ProgProject/_3_Dossier_de_travail/example.ano"
-    # Tuple for map size
-    #size = ()
+    path = "C:/Users/Seb/Documents/GitHub/UNamur_Q2_ProgProject/_3_Dossier_de_travail/Short example.ano"
+    # List for map size
+    #size = []
     # A unique dictionnary to rules them all
     #entities = {}
     # Open .ano file
@@ -386,7 +389,6 @@ def get_orders(orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_typ
         orders_P1 = input(print("Player 1, could you please enter your orders for this turn : "))
     else:
         orders_P1 = DAI_orders_generator(1)
-    print("P1 orders : "+str(orders_P1)+"")
     # Notify player 2, if remote, with P1 orders
     if P2_game_mode == "remote":
         notify_remote_orders(connection, orders_P1)
@@ -398,11 +400,11 @@ def get_orders(orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_typ
         orders_P2 = input(print("Player 2, could you please enter your orders for this turn : "))
     else:
         orders_P2 = DAI_orders_generator(2)
-    print("P2 orders : "+str(orders_P2)+"")
     # Notify player 1, if remote, with P2 orders
     if P1_game_mode == "remote":
         notify_remote_orders(connection, orders_P2)
-
+    print("P1 orders : "+str(orders_P1)+"")
+    print("P2 orders : "+str(orders_P2)+"")
     return (orders_P1, orders_P2)
 
 def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
@@ -571,22 +573,27 @@ def updateboard(myboard):
             coords = (i, j)
             #print(coords)
             if (i == 0) and (j == 0):
-                myboard[i][j] = ""
+                myboard[i][j] = " \ "
                 ...
-            elif (i == 0) and (j < r):
-                myboard[i][j] = ""
+            elif (i == 0) and (j < c):
+                myboard[i][j] = " "+str(j)+""
                 ...
             elif (i < r) and (j == 0):
-                myboard[i][j] = ""
+                myboard[i][j] = " "+str(i)+" "
                 ...
             elif (i == r) and (j == c):
-                myboard[i][j] = ""
+                myboard[i][j] = " /  "
                 ...
             elif coords in entities:
-                myboard[i][j] = entities[coords][1]
+                picture_name = entities[coords][1]
+                if (entities[coords][1] == "α") or (entities[coords][1] == "Ω"):
+                    picture = (""+str(pics[picture_name][0])+" ")
+                else:
+                    picture = pics[picture_name][0]
+                myboard[i][j] = picture
             else:
-                #myboard[i][j] = " .... "
-                myboard[i][j] = ""+str(coords)+" "
+                myboard[i][j] = ".."
+                #myboard[i][j] = ""+str(coords)+""
 
     return myboard
 
@@ -607,7 +614,7 @@ def game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_ty
     if game_turn == 3:
         stop()
     # Vérifie l'E des Alphas
-
+    
     else:
         # Demander les ordres et les envoyer au orders manager
         print(" ---------------- ")

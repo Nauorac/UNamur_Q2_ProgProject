@@ -33,6 +33,9 @@ if E normal < 30
   feed
 elif move to ennemy near alpha and fight it
 
+
+******************************
+******************************
 Si offensif :
 *********
 (
@@ -46,3 +49,43 @@ Quasi idem sauf comportement normaux.
 )
 .
 
+***********
+Pas attaquer nourriture
+************
+Réflexion de groupe:
+
+- !! Il faut une phase de déploiement.
+Générer une liste des positions dynamiquement au début de la partie.
+  - Penser à faire 2 lignes de défenses.
+
+(- Penser à faire un loup solitaire)
+
+
+=> Après in_range => Compter le nbr d'ennemis et d'alliés
+==> Faire un in_range général puis un par quadrant
+
+Pour se nourrir il faire une boucle d'in_range jusqu'à trouver de la bouffe
+
+Faire un objectif et checker chaque tour si il existe tjs
+
+
+
+- Stratégie qui change à chaque tour en fct du % global d'E des 2 équipes.
+  - Offensif
+  
+  - Defensif
+  
+  - Mitigé
+  
+  
+Traquer l'alpha adverse
+
+Faire fct target 
+
+PHASE 1
+=======
+
+- Target+ Go vers Alpha ennemy
+- Rester en boule
+
+- Omega
