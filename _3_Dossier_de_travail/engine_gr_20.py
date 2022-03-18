@@ -74,12 +74,12 @@ C = Code
 """
 
 # Creation of all "global" variables required for the game
-P1_game_mode = ""
-P2_game_mode = ""
+P1_game_mode = "*"
+P2_game_mode = "*"
 group_1 = 0
 group_2 = 0
-P1_type = ""
-P2_type =""
+P1_type = "*"
+P2_type ="*"
 size = ()
 entities = {}
 game_turn = 0
@@ -103,18 +103,17 @@ def game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type
     # Selection player 1
     # ------------------
     #Local OR Remote
-    P1_game_mode = int(input('Select game mode for player 1 => 0 (Local) OR 1 (Remote) : '))
+    temp_P1_game_mode = int(input('Select game mode for player 1 => 0 (Local) OR 1 (Remote) : '))
     # If Remote ask for group number
-    if P1_game_mode == 1:
-        P1_game_mode = "remote"
+    if temp_P1_game_mode == 1:
+        P1_game_mode = P1_game_mode+"remote"
         group_1 = int(input("Please enter the group number for player 1 : "))
     else:
-        P1_game_mode = "local"
+        P1_game_mode = P1_game_mode+"local"
         group_1 = 20
     # Human or I.A.
-    P1_type = int(
-        input("Select game type for player 1 => 0 (Human) OR 1 (A.I.) : "))
-    if P1_type == 1:
+    temp_P1_type = int(input("Select game type for player 1 => 0 (Human) OR 1 (A.I.) : "))
+    if temp_P1_type == 1:
         P1_type = "A.I."
     else:
         P1_type = "Human"
@@ -122,18 +121,17 @@ def game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type
     # Selection player 2
     # ------------------
     #Local OR Remote
-    P2_game_mode = int(input("Select game mode for player 2 => 0 (Local) OR 1 (Remote) : "))
+    temp_P2_game_mode = int(input("Select game mode for player 2 => 0 (Local) OR 1 (Remote) : "))
     # If Remote ask for group number
-    if P2_game_mode == 1:
+    if temp_P2_game_mode == 1:
         P2_game_mode = "remote"
         group_2 = int(input("Please enter the group number for player 2 : "))
     else:
         P2_game_mode = "local"
         group_1 = 20
     # Human or I.A.
-    P2_type = int(
-        input("Select game type for player 2 => 0 (Human) OR 1 (A.I.) : "))
-    if P2_type == 1:
+    temp_P2_type = int(input("Select game type for player 2 => 0 (Human) OR 1 (A.I.) : "))
+    if temp_P2_type == 1:
         P2_type = "A.I."
     else:
         P2_type = "Human"
@@ -141,9 +139,9 @@ def game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type
     print(f"Player 1 from group : {group_1} on {P1_game_mode} and it's a {P1_type}.")
     # P2 from group number on local/remote and it's a human/IA
     print(f"Player 2 is from group : {group_2} on {P2_game_mode} and it's a {P2_type}.")
-    return ["P1", group_1, P1_game_mode, P1_type, "P2", group_2, P2_game_mode, P2_type]
+    return [P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type]
 
-print(game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type))
+P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type = game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type)
 
 def data_import(size, entities): # Spec and Code 100%
     """
@@ -185,16 +183,16 @@ def data_import(size, entities): # Spec and Code 100%
             if (j[3] == "alpha") or (j[3] == "omega") or (j[3] == "normal"):
                 x = int(j[1])
                 y = int(j[2])
-                values = [int(j[0]), (j[3]), 100]
+                values = [int(j[0]), (j[3]), 100, 0]
                 entities.update({(x, y): values})
             else:
                 x = int(j[0])
                 y = int(j[1])
                 # Add "0" as first list value element for food to make the "food team" identified with 0
-                values = [0, (j[2]), int((j[3]))]
+                values = [0, (j[2]), int((j[3])), 0]
                 entities.update({(x, y): values})
-    print("Map Size : ", size)
-    print("Entities :", entities)
+    #print("Map Size : ", size)
+    #print("Entities :", entities)
 
 data_import(size, entities)
 
@@ -260,7 +258,8 @@ def DAI_orders_generator(Px):  # Spec 100 % and Code 100%
             AI_orders = AI_orders + order_type
             # for x
             if order_type == "pacify":
-                print(AI_orders)
+                ...
+                #print(AI_orders)
             else:
                 dest = [0, 0]
                 stepx = random.choice([+1, -1, 0])
@@ -268,8 +267,8 @@ def DAI_orders_generator(Px):  # Spec 100 % and Code 100%
                 stepy = random.choice([+1, -1, 0])
                 dest[1] = orig[1] + stepy
                 AI_orders = AI_orders + str(dest[0]) + "-" + str(dest[1])
-                #print(AI_orders)
-                return AI_orders
+    #print(AI_orders)
+    return AI_orders
 
 # SMART A.I.
 def SAI_orders_generator(Px): #Spec 0 % and Code 0%
@@ -283,37 +282,6 @@ def SAI_orders_generator(Px): #Spec 0 % and Code 0%
 GENERIC TOOLS
 *************
 """
-game_turn = 0
-
-def game_loop(game_turn):# Spec 100 % and Code 33%
-    """
-	Description of the function
-	---------------------------
-    Main function of the game.
-    Get orders from players, increment game_turn.
-    And call him itself until a endgame condition rise
-
-    Args:
-    -----
-    game_turn : Number of the game turn - int
-
-	Version:
-	--------
-	Specification: Sébastien Baudoux(v.2.0 - 07/03/2022)
-    Code: Sébastien Baudoux(v.2.0 - 07/03/2022)
-	"""
-    # Vérifier numéro de tour ==> Règles à vérifier
-    if game_turn == 200:
-        ...
-    # Vérifie l'E des Alphas
-
-    # Demander les ordres et les envoyer au orders manager
-    orders_manager(get_orders(orders_P1, orders_P2))
-    game_turn += 1
-    game_loop(game_turn)
-
-game_loop(game_turn)
-
 def hash(string):  # Spec 100 % and Code 100%
     """
 	Description of the function
@@ -464,7 +432,6 @@ GAME FUNCTIONS
 """
 # TESTER SI ENTITES A PORTEE POUR FEED AND FIGHT
 
-
 def pacify(rayon, omega, pacified_werewolves):  # Spec 100 % and Code 100%
     """
 	Description of the function
@@ -537,7 +504,6 @@ def bonus(ww_coords):# Spec 0 % and Code 0%
 	Code : Author (v.1.0 - dd/mm/yyyy)
 	"""
  
-
 def feed(list):  # Spec 100 % and Code 90%
     """
 	Description of the function
@@ -691,7 +657,7 @@ ORDERS MANAGEMENT
 orders_P1 = ""
 orders_P2 = ""
 
-def get_orders(orders_P1, orders_P2):  # Spec 100 % and Code 100%
+def get_orders(orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type):  # Spec 100 % and Code 100%
     """
 	Description of the function
 	---------------------------
@@ -716,32 +682,33 @@ def get_orders(orders_P1, orders_P2):  # Spec 100 % and Code 100%
 	Specification : Author (v.1.0 - dd/mm/yyyy)
 	Code : Author (v.1.0 - dd/mm/yyyy)
 	"""
+    print("GET ORDERS")
     # Check if P1 is remote and if true ask for orders
     if P1_game_mode == "remote":
+        print("Player 1 is remote, ask for orders...")
         orders_P1 = get_remote_orders(connection)
-    # If not, check if it's human or not
+        print("P1 orders : "+str(orders_P1)+"")
+    # If not, check if it's human
     elif P1_type == "Human":
         orders_P1 = input(print("Could you please enter your orders for this turn : "))
-        # Notify remote player 2 with P1 orders
-        notify_remote_orders(connection, orders_P1)
     else:
         orders_P1 = DAI_orders_generator(1)
-        # Notify remote player 2 with P1 orders
+    # Notify player 2, if remote, with P1 orders
+    if P2_game_mode == "remote":
         notify_remote_orders(connection, orders_P1)
-
-
+    # ---
     # Check if P2 is remote and if true ask for orders
     if P2_game_mode == "remote":
         orders_P2 = get_remote_orders(connection)
     elif P2_type == "Human":
         orders_P2 = input(print("Could you please enter your orders for this turn : "))
-        # Notify remote player 1 with P2 orders
-        notify_remote_orders(connection, orders_P2)
     else:
         orders_P2 = DAI_orders_generator(2)
-        # Notify remote player 1 with P2 orders
+    # Notify player 1, if remote, with P2 orders
+    if P1_game_mode == "remote":
         notify_remote_orders(connection, orders_P2)
-    return orders_P1, orders_P2
+
+    return (orders_P1, orders_P2)
 
 def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
     """
@@ -903,6 +870,41 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
         while len(move_orders_P2) > 0:
             move(move_orders_P2[0][1:3])
             move_orders_P2.pop(0)
+
+def stop():
+    print("FIN")
+
+def game_loop(game_turn, P1_game_mode, P2_game_mode, P1_type, P2_type):  # Spec 100 % and Code 33%
+    """
+	Description of the function
+	---------------------------
+    Main function of the game.
+    Get orders from players, increment game_turn.
+    And call him itself until a endgame condition rise
+
+    Args:
+    -----
+    game_turn : Number of the game turn - int
+
+	Version:
+	--------
+	Specification: Sébastien Baudoux(v.2.0 - 07/03/2022)
+    Code: Sébastien Baudoux(v.2.0 - 07/03/2022)
+	"""
+    # Vérifier numéro de tour ==> Règles à vérifier
+    if game_turn == 3:
+        stop()
+    # Vérifie l'E des Alphas
+
+    else:
+        # Demander les ordres et les envoyer au orders manager
+        print("GAME TURN : "+str(game_turn)+"")
+        get_orders(orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
+        orders_manager(orders_P1, orders_P2)
+        game_turn += 1
+        game_loop(game_turn, P1_game_mode, P2_game_mode, P1_type, P2_type)
+
+game_loop(game_turn, P1_game_mode, P2_game_mode, P1_type, P2_type)
 
 """
 ===================

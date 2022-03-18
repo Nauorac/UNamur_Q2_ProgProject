@@ -1,64 +1,46 @@
 #-*- coding: utf-8 -*-
-import math, random
+import blessed, math, os, time, random
+from remote_play import *
 
-
-size = (6, 6)
-entities = {(2, 1): [1, "alpha", 57], (1, 1): [1, "omega", 100], (2, 2): [1, "normal", 100],
-            (5, 5): [2, "alpha", 100], (6, 6): [2, "omega", 100], (6, 5): [2, "normal", 100],
-            (2, 4): [0, "berries", 10], (6, 1): [0, "apples", 30], (5, 3): [0, "mice", 50], (1, 6): [0, "rabbits", 75], (4, 4): [0, "deers", 100]}
 
 """
-TEST ordres complets pour P1 et P2
-orders_P1 = "  10-10:@10-11   12-10:*12-11 19-20:*20-20  2-1:<2-4  12-72:<27-48 17-20:pacify"
-orders_P2 = "7-10:<8-11 22-10:@12-11 19-20:*14-15 45-99:pacify"
+===========================================
+    GLOBAL AND INITIALIZATION FUNCTIONS
+===========================================
 """
-# Test ordre light pour P1
-orders_P1 = "1-1:<2-4 2-2:<6-1"
-orders_P2 = ""
-
+# SELECTION OF ONE OF THE SIX DIFFERENT GAME MODE
 
 # Creation of all "global" variables required for the game
-P1_game_mode = ""
-P2_game_mode = ""
-group_1 = 0
-group_2 = 0
-P1_type = ""
-P2_type =""
-size = ()
+P1_game_mode = "local"
+P2_game_mode = "local"
+group_1 = 20
+group_2 = 1
+P1_type = "Human"
+P2_type ="A.I."
+orders_P1 = "-"
+orders_P2 = "-"
+size = []
 entities = {}
-game_turn = 0
+game_turn = 1
+
+#print(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type, orders_P1, orders_P2)
 
 def game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type):  # Spec and Code 100%
-    """
-	Description of the function
-	---------------------------
-    Function that ask with inputs to select all the game settings.
-
-    Returns:
-    --------
-	list : Return a list with all the settings defined by players
-    ["P1", group_1, P1_game_mode, P1_type, "P2", group_2, P2_game_mode, P2_type]
-
-	Version:
-	--------
-	Specification : Sébastien Baudoux (v.2.0 - 11/03/2022)
-	Code : Sébastien Baudoux (v.3.0 - 11/03/2022)
-	"""
+ 
     # Selection player 1
     # ------------------
     #Local OR Remote
-    P1_game_mode = int(input('Select game mode for player 1 => 0 (Local) OR 1 (Remote) : '))
+    temp_P1_game_mode = int(input('Select game mode for player 1 => 0 (Local) OR 1 (Remote) : '))
     # If Remote ask for group number
-    if P1_game_mode == 1:
+    if temp_P1_game_mode == 1:
         P1_game_mode = "remote"
         group_1 = int(input("Please enter the group number for player 1 : "))
     else:
         P1_game_mode = "local"
         group_1 = 20
     # Human or I.A.
-    P1_type = int(
-        input("Select game type for player 1 => 0 (Human) OR 1 (A.I.) : "))
-    if P1_type == 1:
+    temp_P1_type = int(input("Select game type for player 1 => 0 (Human) OR 1 (A.I.) : "))
+    if temp_P1_type == 1:
         P1_type = "A.I."
     else:
         P1_type = "Human"
@@ -66,18 +48,17 @@ def game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type
     # Selection player 2
     # ------------------
     #Local OR Remote
-    P2_game_mode = int(input("Select game mode for player 2 => 0 (Local) OR 1 (Remote) : "))
+    temp_P2_game_mode = int(input("Select game mode for player 2 => 0 (Local) OR 1 (Remote) : "))
     # If Remote ask for group number
-    if P2_game_mode == 1:
+    if temp_P2_game_mode == 1:
         P2_game_mode = "remote"
         group_2 = int(input("Please enter the group number for player 2 : "))
     else:
         P2_game_mode = "local"
         group_1 = 20
     # Human or I.A.
-    P2_type = int(
-        input("Select game type for player 2 => 0 (Human) OR 1 (A.I.) : "))
-    if P2_type == 1:
+    temp_P2_type = int(input("Select game type for player 2 => 0 (Human) OR 1 (A.I.) : "))
+    if temp_P2_type == 1:
         P2_type = "A.I."
     else:
         P2_type = "Human"
@@ -85,28 +66,16 @@ def game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type
     print(f"Player 1 from group : {group_1} on {P1_game_mode} and it's a {P1_type}.")
     # P2 from group number on local/remote and it's a human/IA
     print(f"Player 2 is from group : {group_2} on {P2_game_mode} and it's a {P2_type}.")
-    return ["P1", group_1, P1_game_mode, P1_type, "P2", group_2, P2_game_mode, P2_type]
+    return [P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type]
 
-print(game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type))
+#P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type = game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type)
+
+#print(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type)
 
 def data_import(size, entities): # Spec and Code 100%
-    """
-	Description
-	---------------------------
-    Update the size tuple and the entities dictionary with data in a ano file.
-
-    Args:
-    -----
-    size : Tuple with 2 elements, raw number and column number - tuple
-    entities : Dictionnary that contains all elements on the boardgame - dict
-
-	Version:
-	--------
-	Specification : Sébastien Baudoux (v.1.0 - 11/03/2022)
-	Code : Sébastien Baudoux (v.2.0 - 10/03/2022)
-	"""
     # Ask for ano file path
-    path = input("Please give the path to the .ano file : ")
+    #path = input("Please give the path to the .ano file : ")
+    path = "C:/Users/Seb/Documents/GitHub/UNamur_Q2_ProgProject/_3_Dossier_de_travail/example.ano"
     # Tuple for map size
     #size = ()
     # A unique dictionnary to rules them all
@@ -122,25 +91,37 @@ def data_import(size, entities): # Spec and Code 100%
             # Detect if line contains boardgame size
             if len(i) <= 6:
                 si = i.split()
-                size = (int(si[0]), int(si[1]))
+                size = [int(si[0]), int(si[1])]
                 continue
             j = i.split()
             # Check if line contain werewolf info or not
             if (j[3] == "alpha") or (j[3] == "omega") or (j[3] == "normal"):
                 x = int(j[1])
                 y = int(j[2])
-                values = [int(j[0]), (j[3]), 100]
+                values = [int(j[0]), (j[3]), 100, 0]
                 entities.update({(x, y): values})
             else:
                 x = int(j[0])
                 y = int(j[1])
                 # Add "0" as first list value element for food to make the "food team" identified with 0
-                values = [0, (j[2]), int((j[3]))]
+                values = [0, (j[2]), int((j[3])), 0]
                 entities.update({(x, y): values})
+    return size, entities
     print("Map Size : ", size)
     print("Entities :", entities)
 
-data_import(size, entities)
+size, entities = data_import(size, entities)
+
+# create connection, if necessary
+if P1_game_mode == 'remote':
+    connection = create_connection(group_2, group_1)
+elif P2_game_mode == 'remote':
+    connection = create_connection(group_1, group_2)
+
+# close connection, if necessary
+def end_connection():  # Spec 0 % and Code 100%
+    if P1_game_mode == 'remote' or P2_game_mode == 'remote':
+        close_connection(connection)
 
 """
 ===================
@@ -148,51 +129,32 @@ data_import(size, entities)
 ===================
 """
 # DUMB A.I.
+
+
 def DAI_orders_generator(Px):  # Spec 100 % and Code 100%
-    """
-	Description of the function
-	---------------------------
-    Generate a random order for each werewolf of the player in argument.
-
-    Uses:
-    -----
-    Generate orders for A.I.
-
-    Args:
-    -----
-    Px : Player number - int
-
-    Returns:
-    --------
-	str : A string that contains one order for each werewolf in the player team.
-
-	Version:
-	--------
-	Specification: Sébastien Baudoux(v.2.0 - 08/03/2022)
-    Code: Sébastien Baudoux(v.2.0 - 08/03/2022)
-	"""
     # for each ww from Playerx in entities
     # get position and add to str
+    AI_orders = ""
     for key, values in entities.items():
         if values[0] == Px:
-            AI_orders = ""
             orig = key
             AI_orders = AI_orders + str(orig[0]) + "-" + str(orig[1]) + ":"
             #rand an order and add to str
-            order_type = random.choice(["@", "*", "<", "pacify"])
+            order_type = random.choice(["@", "*", "<", "pacify "])
             AI_orders = AI_orders + order_type
             # for x
-            if order_type == "pacify":
-                print(AI_orders)
+            if order_type == "pacify ":
+                #print(AI_orders)
+                ...
             else:
                 dest = [0, 0]
                 stepx = random.choice([+1, -1, 0])
                 dest[0] = orig[0] + stepx
                 stepy = random.choice([+1, -1, 0])
                 dest[1] = orig[1] + stepy
-                AI_orders = AI_orders + str(dest[0]) + "-" + str(dest[1])
-                #print(AI_orders)
-                return AI_orders
+                AI_orders = AI_orders + str(dest[0]) + "-" + str(dest[1]) + " "
+    #print(AI_orders)
+    return AI_orders
 
 # SMART A.I.
 def SAI_orders_generator(Px): #Spec 0 % and Code 0%
@@ -206,32 +168,7 @@ def SAI_orders_generator(Px): #Spec 0 % and Code 0%
 GENERIC TOOLS
 *************
 """
-game_turn = 0
-
-
-
 def hash(string):  # Spec 100 % and Code 100%
-    """
-	Description of the function
-	---------------------------
-    Properly split/hash one order in a list
-
-    Args:
-    -----
-    string : one order - str
-
-    Returns:
-    --------
-	list of list : hach_order = [order_type, origine, destination]
-    order_type - str
-    origine : [x,y] - list
-    destination : [x,y] - list
-
-	Version:
-	--------
-	Specification: Sébastien Baudoux(v.1.0 - 24/02/2022)
-    Code: Sébastien Baudoux(v.2.0 - 24/02/2022)
-	"""
     ordre = string
     #print(ordre)
     #Split gauche droite
@@ -254,56 +191,12 @@ def hash(string):  # Spec 100 % and Code 100%
     return hach_order
 
 def entity_at(entity_coords): # Spec 100 % and Code 100%
-    """
-    Description of the function
-    ---------------------------
-    Check if there entity(ies) in entities dictionnary
-
-    Uses:
-    -----
-    1) To populate the map
-    2) To permit or not the feed
-    3) To permit or not the attack
-    4) To permit or not a move
-
-    Args:
-    -----
-    entity_coords: Coordinates [x, y] - list
-
-    Returns:
-    --------
-    [int, string, int]: list that contain team of entity, name of entity, energy - list
-
-   	Version:
-    --------
-    Specification: Sébastien Baudoux(v.2.0 - 15/03/2022)
-    Code: Sébastien Baudoux(v.2.0 - 09/03/2022)
-    """
     for key, values in entities.items():
         if key == entity_coords:
             return [values[0], values[1], values[2]]
     return False
 
 def in_range(range, omega_coord):  # Spec 100 % and Code 100%
-    """
-   	Description of the function
-    ---------------------------
-    Check and count number of entity in range
-
-    Args:
-    -----
-    ray : range around the entity - int
-    ww_coords : Coordinates - [x, y] - list
-
-    Returns:
-    --------
-    dict - entities in range
-
-   	Version:
-    --------
-    Specification: Sébastien Baudoux(v.1.0 - 21/02/2022)
-    Code: Sébastien Baudoux(v.1.0 - 21/02/2022)
-    """
     nbr_entity = 0
     ww_in_range = {}
     key = []
@@ -320,34 +213,6 @@ def in_range(range, omega_coord):  # Spec 100 % and Code 100%
     return ww_in_range
 
 def at_range():
-    """
-	Description of the function
-	---------------------------
-
-
-    Uses:
-    -----
-    ...
-	
-    Args:
-    -----
-
-    Arg : Description - type
-	
-    Returns:
-    --------
-
-	type : Description
-   
-    Raises
-    ------
-    IOError: 
-   
-	Version:
-	--------
-	Specification : Author (v.1.0 - dd/mm/yyyy)
-	Code : Author (v.1.0 - dd/mm/yyyy)
-	"""
     ...
 
 
@@ -358,52 +223,23 @@ GAME FUNCTIONS
 """
 # TESTER SI ENTITES A PORTEE POUR FEED AND FIGHT
 
+
 def pacify(rayon, omega, pacified_werewolves):  # Spec 100 % and Code 100%
-    """
-	Description of the function
-	---------------------------
-    Launch "Pacify" on all around, and in range werewolfs
-    Update Omega energy
-
-    Uses:
-    -----
-    Only used by Omegas
-    ** Reminder
-    * For each ww at range <= 6
-    * Cost : 40 E
-
-    Args:
-    -----
-    ww_coords : Coordinates - (x, y) - type (list)
-
-    Returns:
-    --------
-	list : list of pacified wolf for this turn.
-
-    Raises
-    ------
-    IOError: Order gived not by a omega
-    IOError: Omega not enough energy
-
-	Version:
-	--------
-	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
-	Code : Sébastien Baudoux (v.1.0 - 24/02/2022)
-	"""
     if entities[omega][1] == "omega":
         if entities[omega][2] < 40:
-            print("Omega don't have enough energy to pacify")
+            print(" Omega don't have enough energy to pacify")
         #For each ww at range <= 6
         else:
             for key in in_range(rayon, omega):
                 pacified_werewolves.append(key)
-            print("These werewolves has been pacified for this turn " +
+            print(" These werewolves has been pacified for this turn " +
                   str(pacified_werewolves)+"")
     else:
-        print("Not omega")
+        print(" Not omega")
     return pacified_werewolves
 
-def bonus(ww_coords):# Spec 0 % and Code 0%
+
+def bonus(ww_coords):  # Spec 0 % and Code 0%
     """
 	Description of the function
 	---------------------------
@@ -429,42 +265,27 @@ def bonus(ww_coords):# Spec 0 % and Code 0%
 	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
 	Code : Author (v.1.0 - dd/mm/yyyy)
 	"""
- 
+    #print(ww_coords)
+    #print(in_range(2, ww_coords))
+
 
 def feed(list):  # Spec 100 % and Code 90%
-    """
-	Description of the function
-	---------------------------
-    Update ww energy if food in range and update food energy
-
-    Args:
-    -----
-    list : list that contains ww_coords and entity_coords - type (list)
-
-    Raises
-    ------
-    IOError: if there is no food at destination coordinates
-    IOError: if energy werewolf is full
-
-    Returns:
-    --------
-	Nothing or just a log message.
-
-	Version:
-	--------
-	Specification : Sébastien Baudoux (v.2.0 - 03/03/2022)
-	code : Sébastien Baudoux (v.1.0 - 03/03/2022)
-	"""
-    #if entity_at[entities[list[0]]]:
-    is_ww = entities[list[0]]
-    #if entity_at[entities[list[1]]]:
-    is_food = entities[list[1]]
+    is_ww = []
+    is_food = []
+    if list[0] in entities:
+        is_ww = entities[list[0]]
+    #print(list[1])
+    if list[1] in entities:
+        is_food = entities[list[1]]
+    else:
+        print(" This entity doesn't exist on boardgame.")
     if is_food and is_food[0] == 0:
         if is_ww and is_ww[0] == 1:
             if is_ww[2] < 100:
                 food_E = is_food[2]
                 ww_E = is_ww[2]
                 # Check if it's a werewolf or a human and put a "mutate" flag for that
+                mutate = 0
                 if ww_E == 0:
                     mutate = 1
                 toteaten = 0
@@ -473,7 +294,7 @@ def feed(list):  # Spec 100 % and Code 90%
                     ww_E += 1
                     toteaten += 1
                 if food_E == 0:
-                    print("The "+is_food[1]+" have been completely eaten.")
+                    print(" The "+is_food[1]+" have been completely eaten.")
                     entities.pop(list[1])
                 else:
                     is_food[2] = food_E
@@ -486,178 +307,105 @@ def feed(list):  # Spec 100 % and Code 90%
                     else:
                         is_ww[1] = "normal"
                 entities.update({list[0]: is_ww})
-                print("The werewolf at "+str(list[0])+" has eat "+str(
+                print(" The werewolf at "+str(list[0])+" has eat "+str(
                     toteaten)+" energy from "+str(entities[list[1]][1])+" at "+str(list[1])+".")
             else:
-                print("Your werewolf energy is already at max.")
+                print(" Your werewolf energy is already at max.")
     else:
-        print("This is not food.")
+        print(" This is not food.")
 
-def fight(listat, pacified_werewolves):  #  Spec 100 % and Code 90%
-    """
-    Description of the function
-    ---------------------------
-    Make damage to ww2 from ww1
-    ** Reminder
-    * Strenght = E/10 (rounded nearest)
 
-    Args:
-    -----
-    list : list that contains attacker coordinates and defender coordinates - type (list)
-
-    Returns:
-    --------
-    Nothing or just a log message.
-
-    Version:
-    --------
-    Specification : Sébastien Baudoux (v.2.0 - 03/03/2022)
-    code : Sébastien Baudoux (v.1.0 - 03/03/2022)
-    """
+def fight(listat, pacified_werewolves):  # Spec 100 % and Code 90%
     #Check if attacker is in [pacified_werewolves]
     if listat[0] in pacified_werewolves:
-        print("This werewolf "+str(listat[0])+" has been pacified this turn.")
-    #Check if E = 0 'cause human can't attack
-    elif entities[listat[0][2]] == 0:
-        print("A human (werewolf with energy = 0) can't attack")
-    else:
-        attacker = entities[listat[0]]
-        defender = entities[listat[1]]
-        attack_strength = (attacker[2]/10)
-        defender[2] = defender[2] - attack_strength
-        if defender[2] == 0:
-            if defender[1] == "omega":
-                defender[1] == "Human"
+        print(" This werewolf "+str(listat[0])+" has been pacified this turn.")
+        #Check if E = 0 'cause human can't attack
+        if listat[0] in entities:
+            coord = listat[0]
+            E_ww = entities[coord][2]
+            if E_ww == 0:
+                print(" A human (werewolf with energy = 0) can't attack")
             else:
-                defender[1] = "human"""
-        print(""+str(defender[1]+" loose "+str(attack_strength) +
-              ", his energy is now : "+str(defender[2]))+"")
-        entities.update({listat[1]: defender})
+                attacker = entities[listat[0]]
+                if listat[1] in entities:
+                    defender = entities[listat[1]]
+                    attack_strength = (attacker[2]/10)
+                    defender[2] = defender[2] - attack_strength
+                    if defender[2] == 0:
+                        if defender[1] == "omega":
+                            defender[1] == "Human"
+                        else:
+                            defender[1] = "human"""
+                    print(" "+str(defender[1]+" loose "+str(attack_strength) +
+                                  ", his energy is now : "+str(defender[2]))+"")
+                    entities.update({listat[1]: defender})
+                else:
+                    print(" Nothing to attack there.")
+
 
 def move(listmov):  # Spec 100 % and Code 100%
-    """
-    Description of the function:
-    ----------------------------
-    Move a werewolf
-
-    Parameters
-    ----------
-    start_coord : Origin coordinates - (x, y) - type (list)
-    dest_coord : Destination coordinates - (x, y) - type (list)
-
-    Returns
-    -------
-    Nothing or just a log message.
-
-    Raises
-    ------
-    IOError: if there is no werewolf at origin coordinates
-    IOError: if the destinations coordinates are further than 1
-    IOError: if the destinations coordinates are occupied by an entity
-    IOError: if the destination is outside the boardgame
-
-    Version:
-	--------
-	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
-	Code : Sébastien Baudoux (v.1.0 - 03/03/2022)
-    """
+    #print(size)
     #Check if destination is not out of the boardgame.
     if listmov[1][0] <= size[0] and listmov[1][1] <= size[1]:
         #Check is the destination is empty
         if not (listmov[1] in entities):
             x = int(abs(listmov[1][0]-listmov[0][0]))
+            #print(x)
             y = int(abs(listmov[1][1]-listmov[0][1]))
-            if x == 1 and y == 1:
-                print("Move possible")
+            #print(y)
+            if x <= 1 and y <= 1:
+                print(" Move possible")
+                for key, values in entities.items():
+                    if key == listmov[0]:
+                        val = values
+                entities.update({listmov[1]: val})
+                entities.pop(listmov[0])
             else:
-                print("Move out of range")
+                print(" Move out of range")
         else:
-            print("Can't move there, this space is not empty.")
+            print(" Can't move there, this space is not empty.")
     else:
-        print("Can't move out of boardgame.")
+        print(" Can't move out of boardgame.")
 
 """
 *****************
 ORDERS MANAGEMENT
 *****************
 """
-orders_P1 = ""
-orders_P2 = ""
-
-def get_orders(orders_P1, orders_P2):  # Spec 100 % and Code 100%
-    """
-	Description of the function
-	---------------------------
-
-
-    Uses:
-    -----
-    ...
-
-    Args:
-    -----
-
-    Arg : Description - type
-
-    Returns:
-    --------
-
-	type : Description
-
-	Version:
-	--------
-	Specification : Author (v.1.0 - dd/mm/yyyy)
-	Code : Author (v.1.0 - dd/mm/yyyy)
-	"""
+def get_orders(orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type):  # Spec 100 % and Code 100%
+    print(" - GET ORDERS - ")
+    #Clean orders
+    orders_P1 = ""
+    orders_P2 = ""
     # Check if P1 is remote and if true ask for orders
     if P1_game_mode == "remote":
+        print("Player 1 is remote, ask for orders...")
         orders_P1 = get_remote_orders(connection)
-    # If not, check if it's human or not
+    # If not, check if it's human
     elif P1_type == "Human":
-        orders_P1 = input(print("Could you please enter your orders for this turn : "))
-        # Notify remote player 2 with P1 orders
-        notify_remote_orders(connection, orders_P1)
+        orders_P1 = input(print("Player 1, could you please enter your orders for this turn : "))
     else:
         orders_P1 = DAI_orders_generator(1)
-        # Notify remote player 2 with P1 orders
+    print("P1 orders : "+str(orders_P1)+"")
+    # Notify player 2, if remote, with P1 orders
+    if P2_game_mode == "remote":
         notify_remote_orders(connection, orders_P1)
-
-
+    # ----------------------------------------------------
     # Check if P2 is remote and if true ask for orders
     if P2_game_mode == "remote":
         orders_P2 = get_remote_orders(connection)
     elif P2_type == "Human":
-        orders_P2 = input(print("Could you please enter your orders for this turn : "))
-        # Notify remote player 1 with P2 orders
-        notify_remote_orders(connection, orders_P2)
+        orders_P2 = input(print("Player 2, could you please enter your orders for this turn : "))
     else:
         orders_P2 = DAI_orders_generator(2)
-        # Notify remote player 1 with P2 orders
+    print("P2 orders : "+str(orders_P2)+"")
+    # Notify player 1, if remote, with P2 orders
+    if P1_game_mode == "remote":
         notify_remote_orders(connection, orders_P2)
-    return orders_P1, orders_P2
+
+    return (orders_P1, orders_P2)
 
 def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
-    """
-	Description of the function
-	---------------------------
-    The order manager rules every game stages.
-    His job is to clean and sort players orders and dispatch them to related functions.
-    The order manager make a complete turn.
-
-    Args:
-    -----
-    orders_P1 : string that contains ordres from player 1 - type (string)
-    orders_P2 : string that contains ordres from player 2 - type (string)
-
-    Returns:
-    --------
-	Nothing or just a log message.
-
-	Version:
-	--------
-	Specification : Sébastien Baudoux (v.1.0 - 03/03/2022)
-	code : Sébastien Baudoux (v.1.0 - 03/03/2022)
-	"""
     # Convert Player 1 orders in a list
     cleanP1 = orders_P1.split()
     # Convert Player 2 orders in a list
@@ -757,7 +505,7 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
     if len(feeds_orders_P1) > 0:
         print("Player 1 feed phase.")
         while len(feeds_orders_P1) > 0:
-            print(feeds_orders_P1)
+            #print(feeds_orders_P1)
             feed(feeds_orders_P1[0][1:3])
             feeds_orders_P1.pop(0)
     # Check if Player 2 given feeds orders and run them.
@@ -796,3 +544,83 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
         while len(move_orders_P2) > 0:
             move(move_orders_P2[0][1:3])
             move_orders_P2.pop(0)
+
+def stop():
+    print("FIN")
+
+
+n = size[0]
+
+
+def make_board(n):
+    return [[' ..... ' for count in range(n)] for rows in range(n)]
+
+
+def print_board(board):
+    for row in board:
+        print('|'.join(row))
+    print('')
+
+
+def updateboard(myboard):
+    r = n
+    c = n
+    #print (r,c)
+    for i in range(r):
+        for j in range(c):
+            coords = (i, j)
+            #print(coords)
+            if (i == 0) and (j == 0):
+                myboard[i][j] = ""
+                ...
+            elif (i == 0) and (j < r):
+                myboard[i][j] = ""
+                ...
+            elif (i < r) and (j == 0):
+                myboard[i][j] = ""
+                ...
+            elif (i == r) and (j == c):
+                myboard[i][j] = ""
+                ...
+            elif coords in entities:
+                myboard[i][j] = entities[coords][1]
+            else:
+                #myboard[i][j] = " .... "
+                myboard[i][j] = ""+str(coords)+" "
+
+    return myboard
+
+
+def test():
+    myboard = make_board(n)
+    updateboard(myboard)
+    print_board(myboard)
+
+
+"""if __name__ == '__main__':
+    test()"""
+
+
+
+def game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type):  # Spec 100 % and Code 33%
+    # Vérifier numéro de tour ==> Règles à vérifier
+    if game_turn == 3:
+        stop()
+    # Vérifie l'E des Alphas
+
+    else:
+        # Demander les ordres et les envoyer au orders manager
+        print(" ---------------- ")
+        test()
+        print("GAME TURN : "+str(game_turn)+"")
+        orders_P1, orders_P2 = get_orders(orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
+        orders_manager(orders_P1, orders_P2)
+        #orders_manager(get_orders(orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type))
+        game_turn += 1
+        #print(entities)
+        game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
+
+
+game_loop(game_turn, orders_P1, orders_P2,
+          P1_game_mode, P2_game_mode, P1_type, P2_type)
+
