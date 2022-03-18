@@ -2,6 +2,7 @@
 import blessed, math, os, time, random
 from remote_play import *
 
+term = blessed.Terminal()
 
 pics = {"alpha": "α", "omega": "Ω", "normal": "🐺", "human": "👤",
         "berries": "🍒", "apples": "🍎", "mice": "🐁", "rabbits": "🐇", "deers": "🦌"}
@@ -18,7 +19,7 @@ P1_game_mode = "local"
 P2_game_mode = "local"
 group_1 = 20
 group_2 = 1
-P1_type = "Human"
+P1_type = "A.I."
 P2_type ="A.I."
 orders_P1 = "-"
 orders_P2 = "-"
@@ -349,7 +350,8 @@ def fight(listat, pacified_werewolves):  # Spec 100 % and Code 90%
 def move(listmov):  # Spec 100 % and Code 100%
     #print(size)
     #Check if destination is not out of the boardgame.
-    if listmov[1][0] <= size[0] and listmov[1][1] <= size[1]:
+    dest = listmov[1]
+    if (dest[0] < size[0]) and (dest[1] < size[1]) and (dest[0] > 0) and (dest[1] > 0):
         #Check is the destination is empty
         if not (listmov[1] in entities):
             x = int(abs(listmov[1][0]-listmov[0][0]))
@@ -405,6 +407,7 @@ def get_orders(orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_typ
         notify_remote_orders(connection, orders_P2)
     print("P1 orders : "+str(orders_P1)+"")
     print("P2 orders : "+str(orders_P2)+"")
+    print(" * * * * * * * * * * * * * ")
     return (orders_P1, orders_P2)
 
 def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
@@ -458,14 +461,14 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
     pacified_werewolves = []
     # Check if Player 1 given pacify order and run it.
     if len(pacify_P1) > 0:
-        print("Player 1 pacify phase.")
+        print("P1 - ☮ - pacify phase.")
         while len(pacify_P1) > 0:
             # Rajouter les arguments rayon et pacified_werewolfs
             pacify(3, pacify_P1[0], pacified_werewolves)
             pacify_P1.pop(0)
     # Check if Player 2 given pacify order and run it.
     if len(pacify_P2) > 0:
-        print("Player 2 pacify phase.")
+        print("P2 - ☮ - pacify phase.")
         while len(pacify_P2) > 0:
             # Rajouter les arguments rayon et pacified_werewolfs
             pacify(3, pacify_P2[0], pacified_werewolves)
@@ -521,13 +524,13 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
     # --------------------
     # Check if Player 1 given attacks orders and run them.
     if len(attacks_orders_P1) > 0:
-        print("Player 1 attack phase.")
+        print("P1 - ⚔ - attack phase.")
         while len(attacks_orders_P1) > 0:
             fight(attacks_orders_P1[0][1:3], pacified_werewolves)
             attacks_orders_P1.pop(0)
     # Check if Player 2 given attacks orders and run them.
     if len(attacks_orders_P2) > 0:
-        print("Player 2 attack phase.")
+        print("P2 - ⚔ - attack phase.")
         while len(attacks_orders_P2) > 0:
             fight(attacks_orders_P2[0][1:3], pacified_werewolves)
             attacks_orders_P2.pop(0)
@@ -536,13 +539,13 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
     # ------------------
     # Check if Player 1 given move orders and run them.
     if len(move_orders_P1) > 0:
-        print("Player 1 move phase.")
+        print("P1 - 🏃 - move phase.")
         while len(move_orders_P1) > 0:
             move(move_orders_P1[0][1:3])
             move_orders_P1.pop(0)
     # Check if Player 2 given move orders and run them.
     if len(move_orders_P2) > 0:
-        print("Player 2 move phase.")
+        print("P2 - 🏃 - move phase.")
         while len(move_orders_P2) > 0:
             move(move_orders_P2[0][1:3])
             move_orders_P2.pop(0)
@@ -555,6 +558,7 @@ n = size[0]
 
 
 def make_board(n):
+    n += 1
     return [[' ..... ' for count in range(n)] for rows in range(n)]
 
 
@@ -565,8 +569,8 @@ def print_board(board):
 
 
 def updateboard(myboard):
-    r = n
-    c = n
+    r = n+1
+    c = n+1
     #print (r,c)
     for i in range(r):
         for j in range(c):
@@ -586,8 +590,8 @@ def updateboard(myboard):
                 ...
             elif coords in entities:
                 picture_name = entities[coords][1]
-                if (entities[coords][1] == "α") or (entities[coords][1] == "Ω"):
-                    picture = (""+str(pics[picture_name][0])+" ")
+                if (entities[coords][1] == "alpha") or (entities[coords][1] == "omega"):
+                    picture = ""+str(pics[picture_name][0])+" "
                 else:
                     picture = pics[picture_name][0]
                 myboard[i][j] = picture
@@ -611,20 +615,22 @@ def test():
 
 def game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type):  # Spec 100 % and Code 33%
     # Vérifier numéro de tour ==> Règles à vérifier
-    if game_turn == 3:
+    if game_turn == 155:
         stop()
     # Vérifie l'E des Alphas
-    
+
     else:
+        print(term.home + term.clear + term.hide_cursor)
         # Demander les ordres et les envoyer au orders manager
-        print(" ---------------- ")
+        print(" ---  GAME TURN : "+str(game_turn)+"  --- ")
         test()
-        print("GAME TURN : "+str(game_turn)+"")
         orders_P1, orders_P2 = get_orders(orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
         orders_manager(orders_P1, orders_P2)
         #orders_manager(get_orders(orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type))
         game_turn += 1
         #print(entities)
+        print(" ... ")
+        input("Press Enter for next turn...")
         game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
 
 
