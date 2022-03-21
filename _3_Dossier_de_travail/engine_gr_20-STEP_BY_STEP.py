@@ -27,6 +27,9 @@ size = []
 entities = {}
 game_turn = 1
 
+alpha_1_life = 100
+alpha_2_life = 100
+
 #print(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type, orders_P1, orders_P2)
 
 def game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type):  # Spec and Code 100%
@@ -79,7 +82,7 @@ def game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type
 def data_import(size, entities): # Spec and Code 100%
     # Ask for ano file path
     #path = input("Please give the path to the .ano file : ")
-    path = "C:/Users/Seb/Documents/GitHub/UNamur_Q2_ProgProject/_3_Dossier_de_travail/Short example.ano"
+    path = "C:/Users/Seb/Documents/GitHub/UNamur_Q2_ProgProject/_3_Dossier_de_travail/example.ano"
     # List for map size
     #size = []
     # A unique dictionnary to rules them all
@@ -239,7 +242,8 @@ def pacify(rayon, omega, pacified_werewolves):  # Spec 100 % and Code 100%
             print(" These werewolves has been pacified for this turn " +
                   str(pacified_werewolves)+"")
     else:
-        print(" Not omega")
+        ...
+        #print(" Not omega")
     return pacified_werewolves
 
 
@@ -271,6 +275,11 @@ def bonus(ww_coords):  # Spec 0 % and Code 0%
 	"""
     #print(ww_coords)
     #print(in_range(2, ww_coords))
+    """
+    Faire un in_range de 2 et compter les loups normaux alliés 
+    Faire un in_range de 4 et check si alpha
+    
+    """
 
 
 def feed(list):  # Spec 100 % and Code 90%
@@ -282,7 +291,8 @@ def feed(list):  # Spec 100 % and Code 90%
     if list[1] in entities:
         is_food = entities[list[1]]
     else:
-        print(" This entity doesn't exist on boardgame.")
+        ...
+        #print(" This entity doesn't exist on boardgame.")
     if is_food and is_food[0] == 0:
         if is_ww and is_ww[0] == 1:
             if is_ww[2] < 100:
@@ -314,9 +324,11 @@ def feed(list):  # Spec 100 % and Code 90%
                 print(" The werewolf at "+str(list[0])+" has eat "+str(
                     toteaten)+" energy from "+str(entities[list[1]][1])+" at "+str(list[1])+".")
             else:
-                print(" Your werewolf energy is already at max.")
+                ...
+                #print(" Your werewolf energy is already at max.")
     else:
-        print(" This is not food.")
+        ...
+        #print(" This is not food.")
 
 
 def fight(listat, pacified_werewolves):  # Spec 100 % and Code 90%
@@ -333,18 +345,24 @@ def fight(listat, pacified_werewolves):  # Spec 100 % and Code 90%
                 attacker = entities[listat[0]]
                 if listat[1] in entities:
                     defender = entities[listat[1]]
-                    attack_strength = (attacker[2]/10)
-                    defender[2] = defender[2] - attack_strength
-                    if defender[2] == 0:
-                        if defender[1] == "omega":
-                            defender[1] == "Human"
-                        else:
-                            defender[1] = "human"""
-                    print(" "+str(defender[1]+" loose "+str(attack_strength) +
-                                  ", his energy is now : "+str(defender[2]))+"")
-                    entities.update({listat[1]: defender})
+                    if defender[0] == 0:
+                        ...
+                        #print("You can't attack food.")
+                    else:
+                        defender = entities[listat[1]]
+                        attack_strength = (attacker[2]/10)
+                        defender[2] = defender[2] - attack_strength
+                        if defender[2] == 0:
+                            if defender[1] == "omega":
+                                defender[1] == "Human"
+                            else:
+                                defender[1] = "human"""
+                        print(" "+str(defender[1]+" loose "+str(attack_strength) +
+                                    ", his energy is now : "+str(defender[2]))+"")
+                        entities.update({listat[1]: defender})
                 else:
-                    print(" Nothing to attack there.")
+                    ...
+                    #print(" Nothing to attack there.")
 
 
 def move(listmov):  # Spec 100 % and Code 100%
@@ -359,18 +377,21 @@ def move(listmov):  # Spec 100 % and Code 100%
             y = int(abs(listmov[1][1]-listmov[0][1]))
             #print(y)
             if x <= 1 and y <= 1:
-                print(" Move possible")
+                #print(" Move possible")
                 for key, values in entities.items():
                     if key == listmov[0]:
                         val = values
                 entities.update({listmov[1]: val})
                 entities.pop(listmov[0])
             else:
-                print(" Move out of range")
+                ...
+                #print(" Move out of range")
         else:
-            print(" Can't move there, this space is not empty.")
+            ...
+            #print(" Can't move there, this space is not empty.")
     else:
-        print(" Can't move out of boardgame.")
+        ...
+        #print(" Can't move out of boardgame.")
 
 """
 *****************
@@ -461,14 +482,14 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
     pacified_werewolves = []
     # Check if Player 1 given pacify order and run it.
     if len(pacify_P1) > 0:
-        print("P1 - ☮ - pacify phase.")
+        #print("P1 - ☮ - pacify phase.")
         while len(pacify_P1) > 0:
             # Rajouter les arguments rayon et pacified_werewolfs
             pacify(3, pacify_P1[0], pacified_werewolves)
             pacify_P1.pop(0)
     # Check if Player 2 given pacify order and run it.
     if len(pacify_P2) > 0:
-        print("P2 - ☮ - pacify phase.")
+        #print("P2 - ☮ - pacify phase.")
         while len(pacify_P2) > 0:
             # Rajouter les arguments rayon et pacified_werewolfs
             pacify(3, pacify_P2[0], pacified_werewolves)
@@ -485,7 +506,7 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
         if values[0] == 1:
             team1.update({key: values})
     if len(team1) > 0:
-        print("Player 1 bonus phase.")
+        #print("P1 - 💪 - bonus phase.")
         for keys in team1:
             # Send to bonus function each werewolf from team 1 dictionnary
             coords = [keys]
@@ -498,7 +519,7 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
             #ajouter au dictionnaire team2
             team2.update({key: values})
     if len(team2) > 0:
-        print("Player 2 bonus phase.")
+        #print("P2 - 💪 - bonus phase.")
         for keys in team2:
             # Send to bonus function each werewolf from team 21 dictionnary
             coords = [keys]
@@ -508,14 +529,14 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
     # ------------------
     # Check if Player 1 given feeds orders and run them.
     if len(feeds_orders_P1) > 0:
-        print("Player 1 feed phase.")
+        #print("P1 - 🍖 - feed phase.")
         while len(feeds_orders_P1) > 0:
             #print(feeds_orders_P1)
             feed(feeds_orders_P1[0][1:3])
             feeds_orders_P1.pop(0)
     # Check if Player 2 given feeds orders and run them.
     if len(feeds_orders_P2) > 0:
-        print("Player 2 feed phase.")
+        #print("P2 - 🍖 - feed phase.")
         while len(feeds_orders_P2) > 0:
             feed(feeds_orders_P2[0][1:3])
             feeds_orders_P2.pop(0)
@@ -524,13 +545,13 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
     # --------------------
     # Check if Player 1 given attacks orders and run them.
     if len(attacks_orders_P1) > 0:
-        print("P1 - ⚔ - attack phase.")
+        #print("P1 - ⚔ - attack phase.")
         while len(attacks_orders_P1) > 0:
             fight(attacks_orders_P1[0][1:3], pacified_werewolves)
             attacks_orders_P1.pop(0)
     # Check if Player 2 given attacks orders and run them.
     if len(attacks_orders_P2) > 0:
-        print("P2 - ⚔ - attack phase.")
+        #print("P2 - ⚔ - attack phase.")
         while len(attacks_orders_P2) > 0:
             fight(attacks_orders_P2[0][1:3], pacified_werewolves)
             attacks_orders_P2.pop(0)
@@ -539,13 +560,13 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
     # ------------------
     # Check if Player 1 given move orders and run them.
     if len(move_orders_P1) > 0:
-        print("P1 - 🏃 - move phase.")
+        #print("P1 - 🏃 - move phase.")
         while len(move_orders_P1) > 0:
             move(move_orders_P1[0][1:3])
             move_orders_P1.pop(0)
     # Check if Player 2 given move orders and run them.
     if len(move_orders_P2) > 0:
-        print("P2 - 🏃 - move phase.")
+        #print("P2 - 🏃 - move phase.")
         while len(move_orders_P2) > 0:
             move(move_orders_P2[0][1:3])
             move_orders_P2.pop(0)
@@ -580,16 +601,23 @@ def updateboard(myboard):
                 myboard[i][j] = " \ "
                 ...
             elif (i == 0) and (j < c):
-                myboard[i][j] = " "+str(j)+""
-                ...
+                if j < 10:
+                    myboard[i][j] = " "+str(j)+""
+                else:
+                    myboard[i][j] = ""+str(j)+""
             elif (i < r) and (j == 0):
-                myboard[i][j] = " "+str(i)+" "
+                if i < 10:
+                    myboard[i][j] = " "+str(i)+" "
+                else:
+                    myboard[i][j] = ""+str(i)+" "
                 ...
             elif (i == r) and (j == c):
                 myboard[i][j] = " /  "
                 ...
             elif coords in entities:
                 picture_name = entities[coords][1]
+                #if entities[coords][0] == 2:
+                #term.underline_bold_red_on_seagreen(
                 if (entities[coords][1] == "alpha") or (entities[coords][1] == "omega"):
                     picture = ""+str(pics[picture_name][0])+" "
                 else:
@@ -612,25 +640,69 @@ def test():
     test()"""
 
 
+def startlifePlayer(Px):
+    totlife = 0
+    for key in entities:
+        if entities[key][0] == Px:
+            totlife += entities[key][2]
+    return totlife
+
+beginlifeP1 = startlifePlayer(1)
+beginlifeP2 = startlifePlayer(2)
+
+def totlifePlayer(Px):
+    totlife = 0
+    for key in entities:
+        if entities[key][0] == Px:
+            totlife += entities[key][2]
+    return totlife
+
+
+    
+def check_alpha_life():
+
+    for key in entities:
+        if entities[key][1] == "alpha":
+            if entities[key][0] == 1:
+                alpha_1_life = entities[key][2]
+            if entities[key][0] == 2:
+                alpha_2_life = entities[key][2]
+    return alpha_1_life, alpha_2_life
 
 def game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type):  # Spec 100 % and Code 33%
-    # Vérifier numéro de tour ==> Règles à vérifier
-    if game_turn == 155:
-        stop()
     # Vérifie l'E des Alphas
+    #alpha_1_life, alpha_2_life = check_alpha_life()
+    if alpha_1_life == 0:
+        print("Player 2 win the Game.")
+    elif alpha_2_life == 0:
+        print("Player 1 win the Game.")
+    elif alpha_1_life == 0 and alpha_2_life == 0:
+        print("Both alpha life is 0 this turn - DRAW")
+    # Vérifier numéro de tour ==> Règles à vérifier
+    if game_turn == 15:
+        stop()
+
 
     else:
         print(term.home + term.clear + term.hide_cursor)
         # Demander les ordres et les envoyer au orders manager
-        print(" ---  GAME TURN : "+str(game_turn)+"  --- ")
+        print(" | - * - * -  GAME TURN : "+str(game_turn)+"  - * - * - | ")
+        l1 = (totlifePlayer(1)/beginlifeP1)*100
+        l2 = (totlifePlayer(2)/beginlifeP2)*100
+        txt = " - Life Team1 : {:.2f} %  | Life Team2 : {:.2f} % - "
+        print(txt.format(l1, l2))
+        #print(" - Life Team1 : "+str(totlifePlayer(1)) +"/"+str(beginlifeP1)+" | Life Team2 : "+str(totlifePlayer(2))+"/"+str(beginlifeP2) +"")
         test()
         orders_P1, orders_P2 = get_orders(orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
         orders_manager(orders_P1, orders_P2)
         #orders_manager(get_orders(orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type))
         game_turn += 1
         #print(entities)
-        print(" ... ")
-        input("Press Enter for next turn...")
+        #print(" ... ")
+        #input("Press Enter for next turn...")
+        if game_turn == 5:
+            print (alpha_1)
+            alpha_1_life = 0
         game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
 
 
