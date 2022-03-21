@@ -21,16 +21,16 @@ def settings():
       print(term.move_y(y_middle-3) + term.center(" * 🎮 * Default game settings * 🎮 *").rstrip())
       print(term.move_y(y_middle-2) + term.center("-------------------------------------").rstrip())
       print(term.move_y(y_middle+1) + term.center("       Player 1       ||          Player 2  ").rstrip())
-      print(term.move_y(y_middle+2) + term.center("Local (💻) - Human (👤)   ||  Remote (🖧) - A.I. (🤖)").rstrip())
+      print(term.move_y(y_middle+2) + term.center("Local (💻) - Human (👤)   ||  Remote (🖧 ) - A.I. (🤖)").rstrip())
       print(term.move_y(y_middle+4) + term.center("Would you like to change it ?").rstrip())
       print(term.move_y(y_middle+5) + term.center("Press y(es) or n(o)").rstrip())
      # with term.cbreak():
-      val = ""
+      """val = ""
       if val.lower() == "y":
             #print("got {0}.".format(val))
-            #print(f'bye!{term.normal}')
-            term.inkey()
+            #print(f'bye!{term.normal}')"""
+      term.inkey()
 
 
-#welcome_screen()
+welcome_screen()
 settings()

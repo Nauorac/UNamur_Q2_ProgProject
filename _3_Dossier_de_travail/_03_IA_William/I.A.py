@@ -10,7 +10,7 @@ test = {(9, 11): [1, "normal", 100],
         (6, 14): [1, "normal", 100],
         (8, 10): [1, "normal", 100],
         (7, 9): [2, "normal", 100],
-        (6, 8): [2, "normal", 100],
+        (6, 8): [2, "alpha", 100],
         (10, 9): [0, "rabbits", 100]
         }
 
@@ -38,6 +38,21 @@ def in_range(range, ww_coord):  # Spec 100 % and Code 100%
 
 
 """
+PHASE 1 - Deploiement - Mise en boule
+
+==> Si alpha à moins de 3 cases d'un mur
+==> Identifier le mur le plus proche (et placer l'alpha a 3 cases.)
+==> Mettre les autres loups autours en laissant l'espace vide à l'opposé du max d'ennemi
+==> Envoyer l'omega a plus de 6 cases.
+
+PHASE 2 - Progression
+    Meute
+==> Viser l'alpha ennemi
+==> Bouger en meute
+    Omega
+==> S'éloigner de la meute et vise à pacifier le max d'ennemi
+
+
 Savoir dans quelle direction aller.
 1) Analyse environnement
     - Boucler des in_range jusqu'a trouver un ennemi.
@@ -61,6 +76,28 @@ def find(i, coords):
         print(target)
         return target
 
+
+def find_ennemy_alpha(i, coords, *target):
+    #Trouver un ennemi
+    team = test[coords][0]
+    dict_entity = in_range(i, coords)
+    target = ()
+    while len(target) == 0:
+        # Si pas de cible et pas d'entités
+        if len(dict_entity) == 0:
+            i += 1
+            find(i, coords)
+        # Si entités et pas de de cible
+        for key in dict_entity:
+            # Si team différente et alpha
+            if (dict_entity[key][0] != team) and (dict_entity[key][1] == "alpha"):
+                t = (key[0], key[1])
+                target = target + t
+        i += 1
+        find(i, coords)
+        else:
+            print(target)
+            return target
 
 def direction(orig, dest):
     #determiner la direction à prendre et les coords pour y aller
@@ -108,3 +145,6 @@ print("Target : "+str(find(1, (9, 11)))+"")
 
 print("Test Pathfinding")
 print(direction((9, 11), (7, 9)))
+
+print("Ennemy alpha at : ")
+find_ennemy_alpha(1, (9, 11))

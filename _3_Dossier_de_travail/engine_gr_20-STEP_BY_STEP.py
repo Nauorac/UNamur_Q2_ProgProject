@@ -6,7 +6,8 @@ term = blessed.Terminal()
 
 pics = {"alpha": "α", "omega": "Ω", "normal": "🐺", "human": "👤",
         "berries": "🍒", "apples": "🍎", "mice": "🐁", "rabbits": "🐇", "deers": "🦌"}
-
+g_set_pics = {"Human": "👤", "A.I.": "🤖",
+                      "local": "💻", "remote": "🖧",}
 """
 ===========================================
     GLOBAL AND INITIALIZATION FUNCTIONS
@@ -679,17 +680,19 @@ def game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_ty
     elif alpha_1_life == 0 and alpha_2_life == 0:
         print("Both alpha life is 0 this turn - DRAW")
     # Vérifier numéro de tour ==> Règles à vérifier
-    if game_turn == 15:
+    if game_turn == 5:
         stop()
 
 
     else:
         print(term.home + term.clear + term.hide_cursor)
         # Demander les ordres et les envoyer au orders manager
-        print(" | - * - * -  GAME TURN : "+str(game_turn)+"  - * - * - | ")
+        print("   | - * - * - * -   GAME TURN : "+str(game_turn)+"  - * - * - * - | ")
+        print("   |   "+g_set_pics[P1_game_mode]+" - Player 1 - " + g_set_pics[P1_type] +
+              "  ||  "+g_set_pics[P2_game_mode]+" - Player 2 - " + g_set_pics[P2_type]+"   |")
         l1 = (totlifePlayer(1)/beginlifeP1)*100
         l2 = (totlifePlayer(2)/beginlifeP2)*100
-        txt = " - Life Team1 : {:.2f} %  | Life Team2 : {:.2f} % - "
+        txt = "   |    ❤    :  {:.2f} %   ||   ❤    :  {:.2f} %     | "
         print(txt.format(l1, l2))
         #print(" - Life Team1 : "+str(totlifePlayer(1)) +"/"+str(beginlifeP1)+" | Life Team2 : "+str(totlifePlayer(2))+"/"+str(beginlifeP2) +"")
         test()
@@ -702,7 +705,7 @@ def game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_ty
         #input("Press Enter for next turn...")
         if game_turn == 5:
             print (alpha_1)
-            alpha_1_life = 0
+            #alpha_1_life = 0
         game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
 
 
