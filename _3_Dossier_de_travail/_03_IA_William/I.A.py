@@ -93,11 +93,9 @@ def find_ennemy_alpha(i, coords, *target):
             if (dict_entity[key][0] != team) and (dict_entity[key][1] == "alpha"):
                 t = (key[0], key[1])
                 target = target + t
-        i += 1
-        find(i, coords)
-        else:
-            print(target)
-            return target
+    else:
+        print(target)
+        return target
 
 def direction(orig, dest):
     #determiner la direction à prendre et les coords pour y aller
@@ -140,7 +138,9 @@ def direction(orig, dest):
 
 #cible = ()
 #cible = cible + find(1, (9, 11))
-#cible = find(1, (9, 11))
+cible = find(1, (9, 11))
+print("eeee")
+print(cible)
 print("Target : "+str(find(1, (9, 11)))+"")
 
 print("Test Pathfinding")
