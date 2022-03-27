@@ -15,6 +15,7 @@ def welcome_screen():
             term.inkey()
 
 
+
 def settings():
     with term.fullscreen(), term.cbreak():
       y_middle = term.height // 2
@@ -23,14 +24,17 @@ def settings():
       print(term.move_y(y_middle+1) + term.center("       Player 1       ||          Player 2  ").rstrip())
       print(term.move_y(y_middle+2) + term.center("Local (💻) - Human (👤)   ||  Remote (🖧 ) - A.I. (🤖)").rstrip())
       print(term.move_y(y_middle+4) + term.center("Would you like to change it ?").rstrip())
-      print(term.move_y(y_middle+5) + term.center("Press y(es) or n(o)").rstrip())
-     # with term.cbreak():
-      """val = ""
-      if val.lower() == "y":
-            #print("got {0}.".format(val))
-            #print(f'bye!{term.normal}')"""
-      term.inkey()
+      print(term.move_y(y_middle+5) + term.center(("Press y(es) or n(o)")).rstrip())
+      val = term.inkey()
+      while val != "y" or val != "n":
+          settings()
+      if val == "y":
+            print("YES")
+            #game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type)
+      else:
+            print("NO")
+            #game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
 
 
-welcome_screen()
+#welcome_screen()
 settings()

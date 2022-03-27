@@ -4,6 +4,8 @@ from remote_play import *
 
 term = blessed.Terminal()
 
+#Next two dictionnaries are used to assign UTF-8 "pictures" with keywords
+
 pics = {"alpha": "α", "omega": "Ω", "normal": "🐺", "human": "👤",
         "berries": "🍒", "apples": "🍎", "mice": "🐁", "rabbits": "🐇", "deers": "🦌"}
 g_set_pics = {"Human": "👤", "A.I.": "🤖",
@@ -77,7 +79,6 @@ def game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type
     return [P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type]
 
 #P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type = game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type)
-
 #print(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type)
 
 def data_import(size, entities): # Spec and Code 100%
@@ -137,8 +138,6 @@ def end_connection():  # Spec 0 % and Code 100%
 ===================
 """
 # DUMB A.I.
-
-
 def DAI_orders_generator(Px):  # Spec 100 % and Code 100%
     # for each ww from Playerx in entities
     # get position and add to str
@@ -208,20 +207,19 @@ def in_range(range, omega_coord):  # Spec 100 % and Code 100%
     nbr_entity = 0
     ww_in_range = {}
     key = []
+    #print(omega_coord)
     for key, values in entities.items():
         #Test if entity is a werewolf
-        if values[0] == 1 or values[0] == 2:
-            x = abs(key[0]-omega_coord[0])
-            y = abs(key[1]-omega_coord[1])
+        if values[0] != 0:
+            #print(omega_coord[0])
+            x = abs((key[0])- (omega_coord[0]))
+            y = abs((key[1])- (omega_coord[1]))
             if x == 0 and y == 0:
                 ...  # current = omega
             elif (x <= range) and (y <= range):
                 nbr_entity += 1
                 ww_in_range.update({key: values})
     return ww_in_range
-
-def at_range():
-    ...
 
 
 """
@@ -230,7 +228,6 @@ GAME FUNCTIONS
 **************
 """
 # TESTER SI ENTITES A PORTEE POUR FEED AND FIGHT
-
 
 def pacify(rayon, omega, pacified_werewolves):  # Spec 100 % and Code 100%
     if entities[omega][1] == "omega":
@@ -246,7 +243,6 @@ def pacify(rayon, omega, pacified_werewolves):  # Spec 100 % and Code 100%
         ...
         #print(" Not omega")
     return pacified_werewolves
-
 
 def bonus(ww_coords):  # Spec 0 % and Code 0%
     """
@@ -274,14 +270,26 @@ def bonus(ww_coords):  # Spec 0 % and Code 0%
 	Specification : Sébastien Baudoux (v.1.0 - 24/02/2022)
 	Code : Author (v.1.0 - dd/mm/yyyy)
 	"""
-    #print(ww_coords)
-    #print(in_range(2, ww_coords))
-    """
-    Faire un in_range de 2 et compter les loups normaux alliés 
-    Faire un in_range de 4 et check si alpha
-    
-    """
-
+    bonus = 0
+    team = entities[ww_coords][0]
+    #Check allied werewolf at range 2
+    wwat2 = in_range(2,ww_coords)
+    if len(wwat2) != 0:
+        for key in wwat2:
+            # Si team ==
+            if (wwat2[key][0] == team):
+                bonus += 10
+    #Check allied alpha at range 4
+    alphaat4 = in_range(4,ww_coords)
+    if len(alphaat4) != 0:
+        for key in alphaat4:
+            # Si team == and alpha
+            if (alphaat4[key][0] == team) and (alphaat4[key][1] == "alpha"):
+                bonus += 30
+    #entities.update({list[1]: is_food})
+    ww_coords_values = entities[ww_coords]
+    ww_coords_values[3] = bonus
+    entities.update({ww_coords:ww_coords_values})
 
 def feed(list):  # Spec 100 % and Code 90%
     is_ww = []
@@ -325,12 +333,11 @@ def feed(list):  # Spec 100 % and Code 90%
                 print(" The werewolf at "+str(list[0])+" has eat "+str(
                     toteaten)+" energy from "+str(entities[list[1]][1])+" at "+str(list[1])+".")
             else:
-                ...
                 #print(" Your werewolf energy is already at max.")
+                ...
     else:
-        ...
         #print(" This is not food.")
-
+        ...
 
 def fight(listat, pacified_werewolves):  # Spec 100 % and Code 90%
     #Check if attacker is in [pacified_werewolves]
@@ -351,7 +358,8 @@ def fight(listat, pacified_werewolves):  # Spec 100 % and Code 90%
                         #print("You can't attack food.")
                     else:
                         defender = entities[listat[1]]
-                        attack_strength = (attacker[2]/10)
+                        #(Energy + bonus)/10
+                        attack_strength = ((attacker[2]+attacker[3])/10)
                         defender[2] = defender[2] - attack_strength
                         if defender[2] == 0:
                             if defender[1] == "omega":
@@ -362,9 +370,8 @@ def fight(listat, pacified_werewolves):  # Spec 100 % and Code 90%
                                     ", his energy is now : "+str(defender[2]))+"")
                         entities.update({listat[1]: defender})
                 else:
-                    ...
                     #print(" Nothing to attack there.")
-
+                    ...
 
 def move(listmov):  # Spec 100 % and Code 100%
     #print(size)
@@ -385,14 +392,14 @@ def move(listmov):  # Spec 100 % and Code 100%
                 entities.update({listmov[1]: val})
                 entities.pop(listmov[0])
             else:
-                ...
                 #print(" Move out of range")
+                ...
         else:
-            ...
             #print(" Can't move there, this space is not empty.")
+            ...
     else:
-        ...
         #print(" Can't move out of boardgame.")
+        ...
 
 """
 *****************
@@ -506,25 +513,23 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
     for key, values in entities.items():
         if values[0] == 1:
             team1.update({key: values})
-    if len(team1) > 0:
-        #print("P1 - 💪 - bonus phase.")
-        for keys in team1:
-            # Send to bonus function each werewolf from team 1 dictionnary
-            coords = [keys]
-            bonus(coords)
+    #print("P1 - 💪 - bonus phase.")
+    for keys in team1:
+        # Send to bonus function each werewolf from team 1 dictionnary
+        #coords = keys
+        bonus(keys)
     # --- bonuses(P2) ---
     #Make a team_P2 dictionnary that contains all alive werewolfs from player 2
     team2 = {}
     for key, values in entities.items():
-        if values[0] == 1:
+        if values[0] == 2:
             #ajouter au dictionnaire team2
             team2.update({key: values})
-    if len(team2) > 0:
-        #print("P2 - 💪 - bonus phase.")
-        for keys in team2:
-            # Send to bonus function each werewolf from team 21 dictionnary
-            coords = [keys]
-            bonus(coords)
+    #print("P2 - 💪 - bonus phase.")
+    for keys in team1:
+        # Send to bonus function each werewolf from team 2 dictionnary
+        #coords = keys
+        bonus(keys)
     # ------------------
     # --- FEED PHASE ---
     # ------------------
@@ -575,20 +580,16 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
 def stop():
     print("FIN")
 
-
 n = size[0]
-
 
 def make_board(n):
     n += 1
     return [[' ..... ' for count in range(n)] for rows in range(n)]
 
-
 def print_board(board):
     for row in board:
         print('|'.join(row))
     print('')
-
 
 def updateboard(myboard):
     r = n+1
@@ -630,16 +631,10 @@ def updateboard(myboard):
 
     return myboard
 
-
 def test():
     myboard = make_board(n)
     updateboard(myboard)
     print_board(myboard)
-
-
-"""if __name__ == '__main__':
-    test()"""
-
 
 def startlifePlayer(Px):
     totlife = 0
@@ -658,10 +653,7 @@ def totlifePlayer(Px):
             totlife += entities[key][2]
     return totlife
 
-
-    
 def check_alpha_life():
-
     for key in entities:
         if entities[key][1] == "alpha":
             if entities[key][0] == 1:
@@ -673,14 +665,14 @@ def check_alpha_life():
 def game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type):  # Spec 100 % and Code 33%
     # Vérifie l'E des Alphas
     #alpha_1_life, alpha_2_life = check_alpha_life()
-    if alpha_1_life == 0:
+    """if alpha_1_life == 0:
         print("Player 2 win the Game.")
     elif alpha_2_life == 0:
         print("Player 1 win the Game.")
     elif alpha_1_life == 0 and alpha_2_life == 0:
-        print("Both alpha life is 0 this turn - DRAW")
+        print("Both alpha life is 0 this turn - DRAW")"""
     # Vérifier numéro de tour ==> Règles à vérifier
-    if game_turn == 5:
+    if game_turn == 900:
         stop()
 
 
@@ -703,11 +695,10 @@ def game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_ty
         #print(entities)
         #print(" ... ")
         #input("Press Enter for next turn...")
-        if game_turn == 5:
+        """if game_turn == 5:
             print (alpha_1)
-            #alpha_1_life = 0
+            #alpha_1_life = 0"""
         game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
-
 
 game_loop(game_turn, orders_P1, orders_P2,
           P1_game_mode, P2_game_mode, P1_type, P2_type)

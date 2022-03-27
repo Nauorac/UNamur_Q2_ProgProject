@@ -1,0 +1,1 @@
+To run the game, just run the python file engine_gr_20.py
