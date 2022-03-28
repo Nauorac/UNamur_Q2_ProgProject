@@ -89,10 +89,8 @@ entities = {}
 game_turn = 1
 
 #Next two dictionnaries are used to assign UTF-8 "pictures" with keywords
-pics = {"alpha": "α", "omega": "Ω", "normal": "🐺", "human": "👤",
-        "berries": "🍒", "apples": "🍎", "mice": "🐁", "rabbits": "🐇", "deers": "🦌"}
-g_set_pics = {"Human": "👤", "A.I.": "🤖",
-              "local": "💻", "remote": "🖧", }
+pics = {"alpha": "α", "omega": "Ω", "normal": "🐺", "human": "👤", "berries": "🍒", "apples": "🍎", "mice": "🐁", "rabbits": "🐇", "deers": "🦌"}
+g_set_pics = {"Human": "👤", "A.I.": "🤖", "local": "💻", "remote": "🖧", }
 
 def game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type):  # Spec and Code 100%
     """
@@ -110,52 +108,53 @@ def game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type
 	Specification : Sébastien Baudoux (v.2.0 - 11/03/2022)
 	Code : Sébastien Baudoux (v.3.0 - 11/03/2022)
 	"""
+    with term.cbreak():
     # Selection player 1
     # ------------------
     #Local OR Remote
-    temp_P1_game_mode = int(
-        input('Select game mode for player 1 => 0 (Local) OR 1 (Remote) : '))
-    # If Remote ask for group number
-    if temp_P1_game_mode == 1:
-        P1_game_mode = "remote"
-        group_1 = int(input("Please enter the group number for player 1 : "))
-    else:
-        P1_game_mode = "local"
-        group_1 = 20
-    # Human or I.A.
-    temp_P1_type = int(
-        input("Select game type for player 1 => 0 (Human) OR 1 (A.I.) : "))
-    if temp_P1_type == 1:
-        P1_type = "A.I."
-    else:
-        P1_type = "Human"
-    # ------------------
-    # Selection player 2
-    # ------------------
-    #Local OR Remote
-    temp_P2_game_mode = int(
-        input("Select game mode for player 2 => 0 (Local) OR 1 (Remote) : "))
-    # If Remote ask for group number
-    if temp_P2_game_mode == 1:
-        P2_game_mode = "remote"
-        group_2 = int(input("Please enter the group number for player 2 : "))
-    else:
-        P2_game_mode = "local"
-        group_1 = 20
-    # Human or I.A.
-    temp_P2_type = int(
-        input("Select game type for player 2 => 0 (Human) OR 1 (A.I.) : "))
-    if temp_P2_type == 1:
-        P2_type = "A.I."
-    else:
-        P2_type = "Human"
-    # P1 from group number on local/remote and it's a human/IA
-    print(
-        f"Player 1 from group : {group_1} on {P1_game_mode} and it's a {P1_type}.")
-    # P2 from group number on local/remote and it's a human/IA
-    print(
-        f"Player 2 is from group : {group_2} on {P2_game_mode} and it's a {P2_type}.")
-    return [P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type]
+        print("Select game mode for player 1 => 0 (Local) OR 1 (Remote) : ")
+        temp_P1_game_mode  = term.inkey()
+        # If Remote ask for group number
+        if temp_P1_game_mode == 1:
+            P1_game_mode = "remote"
+            group_1 = int(input("Please enter the group number for player 1 : "))
+        else:
+            P1_game_mode = "local"
+            group_1 = 20
+        # Human or I.A.
+        print("Select game type for player 1 => 0 (Human) OR 1 (A.I.) : ")
+        temp_P1_type = term.inkey()
+        if temp_P1_type == 1:
+            P1_type = "A.I."
+        else:
+            P1_type = "Human"
+        # ------------------
+        # Selection player 2
+        # ------------------
+        #Local OR Remote
+        print("Select game mode for player 2 => 0 (Local) OR 1 (Remote) : ")
+        temp_P2_game_mode = term.inkey()
+        # If Remote ask for group number
+        if temp_P2_game_mode == 1:
+            P2_game_mode = "remote"
+            group_2 = int(input("Please enter the group number for player 2 : "))
+        else:
+            P2_game_mode = "local"
+            group_1 = 20
+        # Human or I.A.
+        print("Select game type for player 2 => 0 (Human) OR 1 (A.I.) : ")
+        temp_P2_type = term.inkey()
+        if temp_P2_type == 1:
+            P2_type = "A.I."
+        else:
+            P2_type = "Human"
+        # P1 from group number on local/remote and it's a human/IA
+        print(
+            f"Player 1 from group : {group_1} on {P1_game_mode} and it's a {P1_type}.")
+        # P2 from group number on local/remote and it's a human/IA
+        print(
+            f"Player 2 is from group : {group_2} on {P2_game_mode} and it's a {P2_type}.")
+        return [P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type]
 
 def data_import(size, entities): # Spec and Code 100%
     """
@@ -694,7 +693,22 @@ def move(listmov):  # Spec 100 % and Code 100%
 n = size[0]
 
 def end_screen():
-    ...
+    with term.fullscreen(), term.cbreak():
+        y_middle = term.height // 2
+        print(term.center(term.move_y(y_middle-8) +
+                          term.underline_bold_green((" Thanks to have tried our game."))))
+        print(term.center(term.move_y(y_middle-5) +
+                          term.underline_bold_green((" *-* ALPHA & OMEGA *-*"))))
+        print(term.move_y(y_middle-3) + term.center("by group 20").rstrip())
+        print(term.move_y(y_middle-2) +
+              term.center("--------------------").rstrip())
+        print(term.move_y(y_middle+1) + term.center('').rstrip())
+        print(term.move_y(y_middle+1) +
+              term.center('Press any key to exit !').rstrip())
+        print(term.move_y(y_middle+1) + term.center('').rstrip())
+        print(term.move_y(y_middle+10) + term.center(
+            "William Auspert - Sébastien Baudoux - Aleksander Besler - Trésor Tientcheu").rstrip())
+        term.inkey()
 
 def boardgame_manager(n):  # Spec 0 % and Code 100%
     """
@@ -752,12 +766,17 @@ def boardgame_manager(n):  # Spec 0 % and Code 100%
                 ...
             elif coords in entities:
                 picture_name = entities[coords][1]
-                #if entities[coords][0] == 2:
-                #term.underline_bold_red_on_seagreen(
                 if (entities[coords][1] == "alpha") or (entities[coords][1] == "omega"):
-                    picture = ""+str(pics[picture_name][0])+" "
+                    if entities[coords][0] == 2:
+                        picture = ""+term.white_on_salmon+str(pics[picture_name][0])+term.normal+" "
+                    else:
+                        picture = ""+str(pics[picture_name][0])+" "
                 else:
-                    picture = pics[picture_name][0]
+                    if entities[coords][0] == 2:
+                        picture = term.white_on_salmon + \
+                            pics[picture_name][0]+term.normal
+                    else:
+                        picture = pics[picture_name][0]
                 myboard[i][j] = picture
             else:
                 myboard[i][j] = ".."
@@ -776,8 +795,6 @@ def startlifePlayer(Px):
 
 beginlifeP1 = startlifePlayer(1)
 beginlifeP2 = startlifePlayer(2)
-
-
 
 """
 *****************
@@ -1006,7 +1023,7 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
             move_orders_P2.pop(0)
 
 def stop():
-    print("FIN")
+    end_screen()
 
 def totlifePlayer(Px):
     totlife = 0
@@ -1044,35 +1061,36 @@ def game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_ty
     if game_turn == 11:
         stop()
     else:
-        print(term.home + term.clear + term.hide_cursor)
-        print("   | - * - * - * -   GAME TURN : " +
-              str(game_turn)+"  - * - * - * - | ")
-        print("   |   "+g_set_pics[P1_game_mode]+" - Player 1 - " + g_set_pics[P1_type] +
-              "  ||  "+g_set_pics[P2_game_mode]+" - Player 2 - " + g_set_pics[P2_type]+"   |")
-        l1 = (totlifePlayer(1)/beginlifeP1)*100
-        l2 = (totlifePlayer(2)/beginlifeP2)*100
-        txt = "   |    ❤    :  {:.2f} %   ||   ❤    :  {:.2f} %     | "
-        print(txt.format(l1, l2))
-        boardgame_manager(n)
-        # Ask for orders and send them to the orders_manager
-        orders_P1, orders_P2 = get_orders(
-            orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
-        orders_manager(orders_P1, orders_P2)
-        game_turn += 1
-        input("Press Enter for next turn...")
-        """if game_turn == 5:
-            print (alpha_1)
-            #alpha_1_life = 0"""
-        game_loop(game_turn, orders_P1, orders_P2,
-                  P1_game_mode, P2_game_mode, P1_type, P2_type)
+        with term.cbreak():
+            print(term.home + term.clear + term.hide_cursor)
+            print("   | - * - * - * -   GAME TURN : " +
+                str(game_turn)+"  - * - * - * - | ")
+            print("   |   "+g_set_pics[P1_game_mode]+" - Player 1 - " + g_set_pics[P1_type] +
+                "  ||  "+g_set_pics[P2_game_mode]+" - Player 2 - " + g_set_pics[P2_type]+"   |")
+            l1 = (totlifePlayer(1)/beginlifeP1)*100
+            l2 = (totlifePlayer(2)/beginlifeP2)*100
+            txt = "   |    ❤    :  {:.2f} %   ||   ❤    :  {:.2f} %     | "
+            print(txt.format(l1, l2))
+            boardgame_manager(n)
+            # Ask for orders and send them to the orders_manager
+            orders_P1, orders_P2 = get_orders(
+                orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
+            orders_manager(orders_P1, orders_P2)
+            game_turn += 1
+            print("Press any key for next turn...")
+            term.inkey()
+            """if game_turn == 5:
+                print (alpha_1)
+                #alpha_1_life = 0"""
+            game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
 
 #game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
-
 
 def welcome_screen():
       with term.fullscreen(), term.cbreak():
             y_middle = term.height // 2
-            print(term.move_y(y_middle-5) + term.center(" *-* ALPHA & OMEGA *-*").rstrip())
+            print(term.center(term.move_y(y_middle-5) +
+                  term.underline_bold_green((" *-* ALPHA & OMEGA *-*"))))
             print(term.move_y(y_middle-3) + term.center("by group 20").rstrip())
             print(term.move_y(y_middle-2) + term.center("--------------------").rstrip())
             print(term.move_y(y_middle+1) + term.center('').rstrip())
@@ -1083,24 +1101,41 @@ def welcome_screen():
 
 def settings():
     with term.fullscreen(), term.cbreak():
-      y_middle = term.height // 2
-      print(term.move_y(y_middle-3) + term.center(" * 🎮 * Default game settings * 🎮 *").rstrip())
-      print(term.move_y(y_middle-2) + term.center("-------------------------------------").rstrip())
-      print(term.move_y(y_middle+1) + term.center("       Player 1       ||          Player 2  ").rstrip())
-      print(term.move_y(y_middle+2) + term.center(" "+P1_game_mode+" - "+g_set_pics[P1_game_mode]+" - "+P1_type+" "+g_set_pics[P1_type]+"   ||  "+P2_game_mode+" -"+g_set_pics[P2_game_mode]+" - "+P2_type+" "+g_set_pics[P2_type]+"").rstrip())
-      print(term.move_y(y_middle+4) + term.center("Would you like to change it ?").rstrip())
-      print(term.move_y(y_middle+5) + term.center("Press y(es) or n(o)").rstrip())
-      val = term.inkey()
-      while val != "y" or val != "n"
+        y_middle = term.height // 2
+        print(term.move_y(y_middle-3) +
+            term.center(" * 🎮 * Default game settings * 🎮 *").rstrip())
+        print(term.move_y(y_middle-2) +
+            term.center("-------------------------------------").rstrip())
+        print(term.move_y(y_middle+1) +
+            term.center("       Player 1       ||          Player 2  ").rstrip())
+        print(term.move_y(y_middle+2) +
+              term.center(" "+P1_game_mode+" - " +g_set_pics[P1_game_mode]+" - "+P1_type+" "+g_set_pics[P1_type]+"   ||  "+P2_game_mode+" - "+g_set_pics[P2_game_mode]+" - "+P2_type+" "+g_set_pics[P2_type]+"").rstrip())
+        print(term.move_y(y_middle+4) +
+            term.center("Would you like to change it ?").rstrip())
         print(term.move_y(y_middle+5) +
-                term.center("Please press y or n").rstrip())
-        val = term.inkey()
-      if val == "y":
-          game_settings(P1_game_mode, P2_game_mode,
-                        group_1, group_2, P1_type, P2_type)
-      else:
-          game_loop(game_turn, orders_P1, orders_P2,
-                    P1_game_mode, P2_game_mode, P1_type, P2_type)
+            term.center(("Press y(es) or n(o)")).rstrip())
+        with term.cbreak():
+            val = ''
+            blink = 0
+            while val.lower() != 'y' or val.lower() != 'n':
+                val = term.inkey(timeout=5)
+                print(blink)
+                while not val:
+                    val = term.inkey(timeout=0.5)
+                    if blink ==1:
+                        print(term.center (term.move_y(y_middle+7) + term.underline_bold_green(("Please press 'y' or 'n' "))))
+                        blink -= 1
+                    else:
+                        print(term.move_y(y_middle+6) + term.clear_eos)
+                        blink += 1
+                if val.lower() == 'y':
+                    print(f"{term.home}{term.clear}")
+                    game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type)
+                    settings()
+                elif val.lower() == 'n':
+                    game_loop(game_turn, orders_P1, orders_P2,
+                            P1_game_mode, P2_game_mode, P1_type, P2_type)
+
 
 # First screen
 welcome_screen()

@@ -1,17 +1,10 @@
+import blessed
+term = blessed.Terminal()
 
+#y_middle = term.height // 2
+#print(term.center (term.move_y(y_middle+7) + term.underline_bold_green(("Please press 'y' or 'n' "))))
+with term.cbreak():
+    print("Select game mode for player 1 => 0 (Local) OR 1 (Remote) : ")
+    val = term.underline + term.inkey()
 
-g_set_pics = {"Human": "👤", "A.I.": "🤖",
-                      "local": "💻", "remote": "🖧", }
-
-
-P1_game_mode = "local"
-P2_game_mode = "remote"
-group_1 = 20
-group_2 = 1
-P1_type = "Human"
-P2_type = "A.I."
-
-
-print(" | - * - * -  GAME TURN : 1  - * - * - | ")
-print(" | - "+g_set_pics[P1_game_mode]+" - Player 1 - " + g_set_pics[P1_type] +
-      " || "+g_set_pics[P2_game_mode]+" - Player 2 - " + g_set_pics[P2_type]+" - |")
+print (val)
