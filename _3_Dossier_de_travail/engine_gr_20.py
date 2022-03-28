@@ -76,6 +76,7 @@ ORDER MANAGER - line 812
 """
 
 # Creation of all "global" variables required for the game
+path = "C:/Users/Seb/Documents/GitHub/UNamur_Q2_ProgProject/_3_Dossier_de_travail/example.ano"
 P1_game_mode = "local"
 P2_game_mode = "local"
 group_1 = 20
@@ -92,7 +93,7 @@ game_turn = 1
 pics = {"alpha": "α", "omega": "Ω", "normal": "🐺", "human": "👤", "berries": "🍒", "apples": "🍎", "mice": "🐁", "rabbits": "🐇", "deers": "🦌"}
 g_set_pics = {"Human": "👤", "A.I.": "🤖", "local": "💻", "remote": "🖧", }
 
-def game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type):  # Spec and Code 100%
+def game_settings(path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type):  # Spec and Code 100%
     """
 	Description of the function
 	---------------------------
@@ -154,9 +155,9 @@ def game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type
         # P2 from group number on local/remote and it's a human/IA
         print(
             f"Player 2 is from group : {group_2} on {P2_game_mode} and it's a {P2_type}.")
-        return [P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type]
+        return [path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type]
 
-def data_import(size, entities): # Spec and Code 100%
+def data_import(path,size, entities): # Spec and Code 100%
     """
 	Description
 	---------------------------
@@ -174,11 +175,6 @@ def data_import(size, entities): # Spec and Code 100%
 	"""
     # Ask for ano file path
     #path = input("Please give the path to the .ano file : ")
-    path = "C:/Users/Seb/Documents/GitHub/UNamur_Q2_ProgProject/_3_Dossier_de_travail/example.ano"
-    # List for map size
-    #size = []
-    # A unique dictionnary to rules them all
-    #entities = {}
     # Open .ano file
     with open(path, "r+") as file:
         # Read the entire file and store it into a list.
@@ -205,9 +201,9 @@ def data_import(size, entities): # Spec and Code 100%
                 # Add "0" as first list value element for food to make the "food team" identified with 0
                 values = [0, (j[2]), int((j[3])), 0]
                 entities.update({(x, y): values})
-    return size, entities
+    return path, size, entities
 
-size, entities = data_import(size, entities)
+path, size, entities = data_import(path, size, entities)
 
 # create connection, if necessary
 if P1_game_mode == 'remote':
@@ -1022,7 +1018,20 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
             move(move_orders_P2[0][1:3])
             move_orders_P2.pop(0)
 
-def stop():
+def end_game(winner, fin):
+    if winner == -1:
+        check_alphas_life(fin)
+    with term.fullscreen(), term.cbreak():
+        y_middle = term.height // 2
+        print(term.center(term.move_y(y_middle-5) + term.underline_bold_green((" GAME FINISHED"))))
+        if winner == 1 or winner == 2:
+            print(term.move_y(y_middle-3) + term.center("PLAYER   "+str(winner)+"  win the game").rstrip())
+        else:
+            print(term.move_y(y_middle-3) + term.center("Both alphas lives is 0 this turn.").rstrip())
+            print(term.move_y(y_middle-2) + term.center("  IT'S  A  DRAW").rstrip())
+        print(term.move_y(y_middle+1) + term.center('').rstrip())
+        print(term.move_y(y_middle+1) + term.center('Press any key to exit !').rstrip())
+        term.inkey()
     end_screen()
 
 def totlifePlayer(Px):
@@ -1031,6 +1040,34 @@ def totlifePlayer(Px):
         if entities[key][0] == Px:
             totlife += entities[key][2]
     return totlife
+
+def check_alphas_life(fin):
+    alpha_1_life = 100
+    alpha_2_life = 100
+    for key in entities:
+            if (entities[key][0] == 1) and (entities[key][0] == "alpha"):
+                alpha_1_life = entities[key][2]
+            if (entities[key][0] == 2) and (entities[key][0] == "alpha"):
+                alpha_2_life = entities[key][2]
+    if fin == 1:
+        if alpha_1_life > alpha_2_life:
+            winner = 1
+            return end_game(winner, fin)
+        elif alpha_1_life < alpha_2_life:
+            winner = 2
+            return end_game(winner, fin)
+        elif alpha_1_life == alpha_2_life:
+            winner = 0
+            return end_game(winner, fin)
+    elif alpha_1_life == 0:
+        winner = 2
+        return end_game(winner, fin)
+    elif alpha_2_life == 0:
+        winner = 1
+        return end_game(winner, fin)
+    elif alpha_1_life == 0 and alpha_2_life == 0:
+        winner = 0
+        return end_game(winner, fin)
 
 def game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type):  # Spec 100 % and Code 33%
     """
@@ -1050,16 +1087,13 @@ def game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_ty
     Code: Sébastien Baudoux(v.2.0 - 07/03/2022)
 	"""
     # Vérifie l'E des Alphas
-    #alpha_1_life, alpha_2_life = check_alpha_life()
-    """if alpha_1_life == 0:
-        print("Player 2 win the Game.")
-    elif alpha_2_life == 0:
-        print("Player 1 win the Game.")
-    elif alpha_1_life == 0 and alpha_2_life == 0:
-        print("Both alpha life is 0 this turn - DRAW")"""
-    # Vérifier numéro de tour ==> Règles à vérifier
+    winner = -1
+    fin = 0
+    check_alphas_life(fin)
+    # Vérifier numéro de tour
     if game_turn == 11:
-        stop()
+        fin = 1
+        end_game(winner, fin)
     else:
         with term.cbreak():
             print(term.home + term.clear + term.hide_cursor)
@@ -1079,12 +1113,7 @@ def game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_ty
             game_turn += 1
             print("Press any key for next turn...")
             term.inkey()
-            """if game_turn == 5:
-                print (alpha_1)
-                #alpha_1_life = 0"""
             game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
-
-#game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
 
 def welcome_screen():
       with term.fullscreen(), term.cbreak():
@@ -1102,40 +1131,41 @@ def welcome_screen():
 def settings():
     with term.fullscreen(), term.cbreak():
         y_middle = term.height // 2
-        print(term.move_y(y_middle-3) +
+        print(term.move_y(y_middle-4) +
             term.center(" * 🎮 * Default game settings * 🎮 *").rstrip())
-        print(term.move_y(y_middle-2) +
+        print(term.move_y(y_middle-3) +
             term.center("-------------------------------------").rstrip())
-        print(term.move_y(y_middle+1) +
+        print(term.move_y(y_middle) +
             term.center("       Player 1       ||          Player 2  ").rstrip())
         print(term.move_y(y_middle+2) +
               term.center(" "+P1_game_mode+" - " +g_set_pics[P1_game_mode]+" - "+P1_type+" "+g_set_pics[P1_type]+"   ||  "+P2_game_mode+" - "+g_set_pics[P2_game_mode]+" - "+P2_type+" "+g_set_pics[P2_type]+"").rstrip())
-        print(term.move_y(y_middle+4) +
-            term.center("Would you like to change it ?").rstrip())
+        print(term.move_y(y_middle+3) +
+              term.center("Default map path : "+str(path)+"").rstrip())
         print(term.move_y(y_middle+5) +
+            term.center("Would you like to change it ?").rstrip())
+        print(term.move_y(y_middle+6) +
             term.center(("Press y(es) or n(o)")).rstrip())
         with term.cbreak():
             val = ''
             blink = 0
+            val = term.inkey(timeout=5)
             while val.lower() != 'y' or val.lower() != 'n':
-                val = term.inkey(timeout=5)
-                print(blink)
-                while not val:
-                    val = term.inkey(timeout=0.5)
-                    if blink ==1:
-                        print(term.center (term.move_y(y_middle+7) + term.underline_bold_green(("Please press 'y' or 'n' "))))
-                        blink -= 1
-                    else:
-                        print(term.move_y(y_middle+6) + term.clear_eos)
-                        blink += 1
+                val = term.inkey(timeout=0.5)
+                if blink ==1:
+                    print(term.center (term.move_y(y_middle+8) + term.underline_bold_green(("Please press 'y' or 'n' "))))
+                    #val = term.inkey(timeout=0.5)
+                    blink -= 1
+                else:
+                    print(term.move_y(y_middle+6) + term.clear_eos)
+                    #val = term.inkey(timeout=0.5)
+                    blink += 1
                 if val.lower() == 'y':
                     print(f"{term.home}{term.clear}")
                     game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type)
                     settings()
                 elif val.lower() == 'n':
-                    game_loop(game_turn, orders_P1, orders_P2,
+                    return game_loop(game_turn, orders_P1, orders_P2,
                             P1_game_mode, P2_game_mode, P1_type, P2_type)
-
 
 # First screen
 welcome_screen()
