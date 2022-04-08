@@ -4,6 +4,9 @@ from remote_play import *
 term = blessed.Terminal()
 
 """
+GitHub repo link : https://github.com/Nauorac/UNamur_Q2_ProgProject.git
+Teams : https://teams.microsoft.com/l/team/19%3a1PyM1mIAE8RltmCrW7LWFpIDlxBP_HpmO6jHthKtZPk1%40thread.tacv2/conversations?groupId=d3822f0a-0364-465c-922d-7c88fcd06299&tenantId=5f31c5b4-f2e8-4772-8dd6-f268037b1eca
+
 EXPLANATIONS
 ~~~~~~~~~~~~
 For a better comprehension of this file we've made a glossary and an index.
@@ -23,14 +26,18 @@ C = Code
 Index
 ------
 GLOBALS AND INITIALIZATION FUNCTIONS - line 58
+## This section contains all the functions that are used to initialize the game.
     - def game_settings() - line 95 - # S 100%/ C 100%
     - def data_import() - line 158 - # S 100%/ C 100%
     - connection - line 198
     - def close_connection() - line 218 - # S 0%/ C 100%
+    - def startlifePlayer() - line 796 - # S 0%/ C 0%
 A.I. - line 234
+## This section contains A.I. functions.(for the dumb A.I.)
     - def DAI_orders_generator() - line 238 - # S 100%/ C 100%
     - def SAI_orders_generator() - line 286 - # S 0%/ C 0%
 GAME CYCLE - line 291
+## This section contains the game cycle functions (that implement game rules) ans also usefull functions.
     - GENERIC TOOLS - line 294
         - def hash() - line 297 - # S 100%/ C 100%
         - def entity_at() - line 340 - # S 100%/ C 100%
@@ -42,17 +49,27 @@ GAME CYCLE - line 291
         - def fight() - line 601 - # S 100%/ C 90%
         - def move() - line 642 - # S 100%/ C 100%
 U.I. - line 686
+## This section contains the U.I. functions.
     - def welcome_screen() - line 691 - # S 0%/ C 0%
     - def settings() - line 703 - # S 0%/ C 0%
     - def boardgame_manager() - line 722 - # S 0%/ C 0%
-    - def startlifePlayer() - line 796 - # S 0%/ C 0%
-ORDER MANAGER - line 812
+GAME MANAGER - line 812
+## This section contains the functions to manage a game.
         - def get_orders() - line 820 - # S 100%/ C 100%
         - def orders_manager() - line 879 - # S 100%/ C 100%
-        - def stop() - line 1038 - # S 0%/ C 0%
         - def totlifePlayer() - line 1041 - # S 0%/ C 0%
+        - def stop() - line 1038 - # S 0%/ C 0%
         - def game_loop() - line 1048 - # S 100%/ C 33%
 ******************************
+Last things to do before submission
+- Bugs & Fix
+    -- Ask for filepath
+    -- end game check
+    -- For human player : orders helper input
+    -- Possibility to make a verbose mode, display or not alls the messages, add a param to each function
+        by default set to 0 = non-verbose mode, possibility to change on the game settings screen to 1
+    -- Possibility to make a record mode(store all the data in a file), add a param to each function
+        by default set to 0 = non-storage mode, possibility to change on the game settings screen to 1 to store each action on a file
 """
 
 """
@@ -77,6 +94,7 @@ ORDER MANAGER - line 812
 
 # Creation of all "global" variables required for the game
 path = "C:/Users/Seb/Documents/GitHub/UNamur_Q2_ProgProject/_3_Dossier_de_travail/example.ano"
+#https://github.com/Nauorac/UNamur_Q2_ProgProject/blob/526bafbbaa287bad23a7efa7956b62999b42a00b/_0_Ennonce/example.ano
 P1_game_mode = "local"
 P2_game_mode = "local"
 group_1 = 20
@@ -88,6 +106,7 @@ orders_P2 = "-"
 size = []
 entities = {}
 game_turn = 1
+turn_without_damage = 0
 
 #Next two dictionnaries are used to assign UTF-8 "pictures" with keywords
 pics = {"alpha": "α", "omega": "Ω", "normal": "🐺", "human": "👤", "berries": "🍒", "apples": "🍎", "mice": "🐁", "rabbits": "🐇", "deers": "🦌"}
@@ -150,12 +169,25 @@ def game_settings(path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P
         else:
             P2_type = "Human"
         # P1 from group number on local/remote and it's a human/IA
-        print(
-            f"Player 1 from group : {group_1} on {P1_game_mode} and it's a {P1_type}.")
+        print(f"Player 1 from group : {group_1} on {P1_game_mode} and it's a {P1_type}.")
         # P2 from group number on local/remote and it's a human/IA
-        print(
-            f"Player 2 is from group : {group_2} on {P2_game_mode} and it's a {P2_type}.")
+        print(f"Player 2 is from group : {group_2} on {P2_game_mode} and it's a {P2_type}.")
         return [path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type]
+
+def change_path(path):  # Spec and Code 100%
+    """
+    Description of the function
+    ---------------------------
+    Function that ask with inputs to select the file path.
+
+    Returns:
+    --------
+    string : Return the path of the file
+    """
+    with term.cbreak():
+        print("Please enter the path of the file : ")
+        path = term.inkey()
+        return path
 
 def data_import(path,size, entities): # Spec and Code 100%
     """
@@ -165,6 +197,7 @@ def data_import(path,size, entities): # Spec and Code 100%
 
     Args:
     -----
+    path : filepath of the .ano file  - str
     size : Tuple with 2 elements, raw number and column number - tuple
     entities : Dictionnary that contains all elements on the boardgame - dict
 
@@ -173,8 +206,6 @@ def data_import(path,size, entities): # Spec and Code 100%
 	Specification : Sébastien Baudoux (v.1.0 - 11/03/2022)
 	Code : Sébastien Baudoux (v.2.0 - 10/03/2022)
 	"""
-    # Ask for ano file path
-    #path = input("Please give the path to the .ano file : ")
     # Open .ano file
     with open(path, "r+") as file:
         # Read the entire file and store it into a list.
@@ -455,7 +486,7 @@ def pacify(rayon, omega, pacified_werewolves):  # Spec 100 % and Code 100%
         #print(" Not omega")
     return pacified_werewolves
 
-def bonus(ww_coords):# Spec 0 % and Code 0%
+def bonus(ww_coords):# Spec 0 % and Code 1000%
     """
 	Description of the function
 	---------------------------
@@ -530,7 +561,6 @@ def feed(list):  # Spec 100 % and Code 90%
     is_food = []
     if list[0] in entities:
         is_ww = entities[list[0]]
-    #print(list[1])
     if list[1] in entities:
         is_food = entities[list[1]]
     else:
@@ -764,13 +794,12 @@ def boardgame_manager(n):  # Spec 0 % and Code 100%
                 picture_name = entities[coords][1]
                 if (entities[coords][1] == "alpha") or (entities[coords][1] == "omega"):
                     if entities[coords][0] == 2:
-                        picture = ""+term.white_on_salmon+str(pics[picture_name][0])+term.normal+" "
+                        picture = " "+term.white_on_salmon+str(pics[picture_name][0])+term.normal+""
                     else:
                         picture = ""+str(pics[picture_name][0])+" "
                 else:
                     if entities[coords][0] == 2:
-                        picture = term.white_on_salmon + \
-                            pics[picture_name][0]+term.normal
+                        picture = term.white_on_salmon +pics[picture_name][0]+term.normal
                     else:
                         picture = pics[picture_name][0]
                 myboard[i][j] = picture
@@ -793,9 +822,9 @@ beginlifeP1 = startlifePlayer(1)
 beginlifeP2 = startlifePlayer(2)
 
 """
-*****************
-ORDERS MANAGEMENT
-*****************
+*************
+GAME MANAGER
+*************
 """
 orders_P1 = ""
 orders_P2 = ""
@@ -1018,9 +1047,7 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
             move(move_orders_P2[0][1:3])
             move_orders_P2.pop(0)
 
-def end_game(winner, fin):
-    if winner == -1:
-        check_alphas_life(fin)
+def end_game(winner):
     with term.fullscreen(), term.cbreak():
         y_middle = term.height // 2
         print(term.center(term.move_y(y_middle-5) + term.underline_bold_green((" GAME FINISHED"))))
@@ -1042,6 +1069,7 @@ def totlifePlayer(Px):
     return totlife
 
 def check_alphas_life(fin):
+    # Get alpha1 and alpha2 life
     alpha_1_life = 100
     alpha_2_life = 100
     for key in entities:
@@ -1049,27 +1077,29 @@ def check_alphas_life(fin):
                 alpha_1_life = entities[key][2]
             if (entities[key][0] == 2) and (entities[key][0] == "alpha"):
                 alpha_2_life = entities[key][2]
+    # Check max life between alphas and declare winner (end game cases 2 or 3)
     if fin == 1:
         if alpha_1_life > alpha_2_life:
             winner = 1
-            return end_game(winner, fin)
+            return end_game(winner)
         elif alpha_1_life < alpha_2_life:
             winner = 2
-            return end_game(winner, fin)
+            return end_game(winner)
         elif alpha_1_life == alpha_2_life:
             winner = 0
-            return end_game(winner, fin)
-    elif alpha_1_life == 0:
+            return end_game(winner)
+    # Check if one of the alphas is dead and declare winner (end game cases 1)
+    if alpha_1_life == 0:
         winner = 2
-        return end_game(winner, fin)
+        return end_game(winner)
     elif alpha_2_life == 0:
         winner = 1
-        return end_game(winner, fin)
+        return end_game(winner)
     elif alpha_1_life == 0 and alpha_2_life == 0:
         winner = 0
-        return end_game(winner, fin)
+        return end_game(winner)
 
-def game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type):  # Spec 100 % and Code 33%
+def game_loop(game_turn, turn_without_damage, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type):  # Spec 100 % and Code 33%
     """
 	Description of the function
 	---------------------------
@@ -1086,15 +1116,20 @@ def game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_ty
 	Specification: Sébastien Baudoux(v.2.0 - 07/03/2022)
     Code: Sébastien Baudoux(v.2.0 - 07/03/2022)
 	"""
-    # Vérifie l'E des Alphas
-    winner = -1
+    # End game cases
+    # 1 - Check alphas life
     fin = 0
     check_alphas_life(fin)
-    # Vérifier numéro de tour
+    # 2- Check number of turns with no damage done
+    if turn_without_damage == 200:
+        fin = 1
+        return check_alphas_life(fin)
+    # (3) Check game turn - ONLY FOR TESTING PURPOSE
     if game_turn == 11:
         fin = 1
-        end_game(winner, fin)
+        return check_alphas_life(fin)
     else:
+        # Main game loop
         with term.cbreak():
             print(term.home + term.clear + term.hide_cursor)
             print("   | - * - * - * -   GAME TURN : " +
@@ -1113,42 +1148,50 @@ def game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_ty
             game_turn += 1
             print("Press any key for next turn...")
             term.inkey()
-            game_loop(game_turn, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
+            game_loop(game_turn, turn_without_damage, orders_P1,
+                      orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
 
 def welcome_screen():
-      with term.fullscreen(), term.cbreak():
-            y_middle = term.height // 2
-            print(term.center(term.move_y(y_middle-5) +
-                  term.underline_bold_green((" *-* ALPHA & OMEGA *-*"))))
-            print(term.move_y(y_middle-3) + term.center("by group 20").rstrip())
-            print(term.move_y(y_middle-2) + term.center("--------------------").rstrip())
-            print(term.move_y(y_middle+1) + term.center('').rstrip())
-            print(term.move_y(y_middle+1) + term.center ('Press any key to start !').rstrip())
-            print(term.move_y(y_middle+1) + term.center('').rstrip())
-            print(term.move_y(y_middle+10) + term.center("William Auspert - Sébastien Baudoux - Aleksander Besler - Trésor Tientcheu").rstrip())
-            term.inkey()
+    """
+    Description of the function
+    ---------------------------
+    Just a welcome screen to display the game name and the team members name.
+    
+    Specification: Sébastien Baudoux(v.1.0 - 25/03/2022)
+    Code: Sébastien Baudoux(v.1.0 - 25/03/2022)
+    """
+    with term.fullscreen(), term.cbreak():
+        y_middle = term.height // 2
+        print(term.center(term.move_y(y_middle-5) + term.underline_bold_green((" *-* ALPHA & OMEGA *-*"))))
+        print(term.move_y(y_middle-2) + term.center("--------------------").rstrip())
+        print(term.move_y(y_middle+1) + term.center('').rstrip())
+        print(term.move_y(y_middle+1) + term.center ('Press any key to start !').rstrip())
+        print(term.move_y(y_middle+1) + term.center('').rstrip())
+        print(term.move_y(y_middle+8) + term.center("by group 20").rstrip())
+        print(term.center(term.move_y(y_middle+10)+ term.coral1("William Auspert - Sébastien Baudoux - Aleksander Besler - Trésor Tientcheu").rstrip()))
+        term.inkey()
 
-def settings():
+def settings(path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type):
+    # Display settings menu
     with term.fullscreen(), term.cbreak():
         y_middle = term.height // 2
         print(term.move_y(y_middle-4) +
             term.center(" * 🎮 * Default game settings * 🎮 *").rstrip())
-        print(term.move_y(y_middle-3) +
-            term.center("-------------------------------------").rstrip())
+        #print(term.move_y(y_middle-3) +term.center("-------------------------------------").rstrip())
         print(term.move_y(y_middle) +
             term.center("       Player 1       ||          Player 2  ").rstrip())
         print(term.move_y(y_middle+2) +
               term.center(" "+P1_game_mode+" - " +g_set_pics[P1_game_mode]+" - "+P1_type+" "+g_set_pics[P1_type]+"   ||  "+P2_game_mode+" - "+g_set_pics[P2_game_mode]+" - "+P2_type+" "+g_set_pics[P2_type]+"").rstrip())
         print(term.move_y(y_middle+3) +
               term.center("Default map path : "+str(path)+"").rstrip())
-        print(term.move_y(y_middle+5) +
-            term.center("Would you like to change it ?").rstrip())
         print(term.move_y(y_middle+6) +
+            term.center("Would you like to change it ?").rstrip())
+        print(term.move_y(y_middle+7) +
             term.center(("Press y(es) or n(o)")).rstrip())
         with term.cbreak():
             val = ''
             blink = 0
-            val = term.inkey(timeout=5)
+            val = term.inkey(timeout=3)
             while val.lower() != 'y' or val.lower() != 'n':
                 val = term.inkey(timeout=0.5)
                 if blink ==1:
@@ -1156,18 +1199,19 @@ def settings():
                     #val = term.inkey(timeout=0.5)
                     blink -= 1
                 else:
-                    print(term.move_y(y_middle+6) + term.clear_eos)
+                    print(term.move_y(y_middle+7) + term.clear_eos)
                     #val = term.inkey(timeout=0.5)
                     blink += 1
                 if val.lower() == 'y':
                     print(f"{term.home}{term.clear}")
-                    game_settings(P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type)
-                    settings()
+                    path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type = game_settings(path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type)
+                    settings(path, P1_game_mode, P2_game_mode,
+                             group_1, group_2, P1_type, P2_type)
                 elif val.lower() == 'n':
-                    return game_loop(game_turn, orders_P1, orders_P2,
+                    return game_loop(game_turn, turn_without_damage, orders_P1, orders_P2,
                             P1_game_mode, P2_game_mode, P1_type, P2_type)
 
 # First screen
 welcome_screen()
 # Display game settings
-settings()
+settings(path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type)
