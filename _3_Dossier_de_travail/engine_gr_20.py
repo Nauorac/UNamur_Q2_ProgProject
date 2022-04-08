@@ -28,6 +28,7 @@ Index
 GLOBALS AND INITIALIZATION FUNCTIONS - line 58
 ## This section contains all the functions that are used to initialize the game.
     - def game_settings() - line 95 - # S 100%/ C 100%
+    - def change_path() - line 100 - # S 50%/ C 50%
     - def data_import() - line 158 - # S 100%/ C 100%
     - connection - line 198
     - def close_connection() - line 218 - # S 0%/ C 100%
@@ -256,6 +257,16 @@ def end_connection():  # Spec 0 % and Code 100%
 	"""
     if P1_game_mode == 'remote' or P2_game_mode == 'remote':
         close_connection(connection)
+
+def startlifePlayer(Px):
+    totlife = 0
+    for key in entities:
+        if entities[key][0] == Px:
+            totlife += entities[key][2]
+    return totlife
+
+beginlifeP1 = startlifePlayer(1)
+beginlifeP2 = startlifePlayer(2)
 
 """
 ===================
@@ -603,7 +614,8 @@ def feed(list):  # Spec 100 % and Code 90%
         #print(" This is not food.")
         ...
 
-def fight(listat, pacified_werewolves):  #  Spec 100 % and Code 90%
+
+def fight(listat, pacified_werewolves, turn_without_damage):  # Spec 100 % and Code 90%
     """
     Description of the function
     ---------------------------
@@ -624,6 +636,8 @@ def fight(listat, pacified_werewolves):  #  Spec 100 % and Code 90%
     Specification : Sébastien Baudoux (v.2.0 - 03/03/2022)
     code : Sébastien Baudoux (v.1.0 - 03/03/2022)
     """
+    # In case of no damages done
+    turn_without_damage += 1
     #Check if attacker is in [pacified_werewolves]
     if listat[0] in pacified_werewolves:
         print(" This werewolf "+str(listat[0])+" has been pacified this turn.")
@@ -653,9 +667,11 @@ def fight(listat, pacified_werewolves):  #  Spec 100 % and Code 90%
                         print(" "+str(defender[1]+" loose "+str(attack_strength) +
                                     ", his energy is now : "+str(defender[2]))+"")
                         entities.update({listat[1]: defender})
+                        turn_without_damage = 0
                 else:
-                    #print(" Nothing to attack there.")
                     ...
+                    #print(" Nothing to attack there.")
+    return turn_without_damage
 
 def move(listmov):  # Spec 100 % and Code 100%
     """
@@ -718,7 +734,39 @@ def move(listmov):  # Spec 100 % and Code 100%
 """
 n = size[0]
 
-def end_screen():
+def welcome_screen():  # Spec 100 % and Code 100%
+    """
+    Description of the function
+    ---------------------------
+    Just a welcome screen to display the game name and the team members name.
+    
+    Specification: Sébastien Baudoux(v.1.0 - 25/03/2022)
+    Code: Sébastien Baudoux(v.1.0 - 25/03/2022)
+    """
+    with term.fullscreen(), term.cbreak():
+        y_middle = term.height // 2
+        print(term.center(term.move_y(y_middle-5) +
+              term.underline_bold_green((" *-* ALPHA & OMEGA *-*"))))
+        print(term.move_y(y_middle-2) +
+              term.center("--------------------").rstrip())
+        print(term.move_y(y_middle+1) + term.center('').rstrip())
+        print(term.move_y(y_middle+1) +
+              term.center('Press any key to start !').rstrip())
+        print(term.move_y(y_middle+1) + term.center('').rstrip())
+        print(term.move_y(y_middle+8) + term.center("by group 20").rstrip())
+        print(term.center(term.move_y(y_middle+10) + term.coral1(
+            "William Auspert - Sébastien Baudoux - Aleksander Besler - Trésor Tientcheu").rstrip()))
+        term.inkey()
+
+def end_screen():  # Spec 100 % and Code 100%
+    """
+    Description of the function
+    ---------------------------
+    Just a end screen to display the game name and the team members name.
+
+    Specification: Sébastien Baudoux(v.1.0 - 08/04/2022)
+    Code: Sébastien Baudoux(v.1.0 - 25/03/2022)
+    """
     with term.fullscreen(), term.cbreak():
         y_middle = term.height // 2
         print(term.center(term.move_y(y_middle-8) +
@@ -811,16 +859,6 @@ def boardgame_manager(n):  # Spec 0 % and Code 100%
         print('|'.join(row))
     print('')
 
-def startlifePlayer(Px):
-    totlife = 0
-    for key in entities:
-        if entities[key][0] == Px:
-            totlife += entities[key][2]
-    return totlife
-
-beginlifeP1 = startlifePlayer(1)
-beginlifeP2 = startlifePlayer(2)
-
 """
 *************
 GAME MANAGER
@@ -888,7 +926,8 @@ def get_orders(orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_typ
     print(" * * * * * * * * * * * * * ")
     return (orders_P1, orders_P2)
 
-def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
+
+def orders_manager(orders_P1, orders_P2, turn_without_damage):  # Spec 100 % and Code 100%
     """
 	Description of the function
 	---------------------------
@@ -1019,18 +1058,22 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
     # --------------------
     # --- ATTACK PHASE ---
     # --------------------
+    #turn_without_damage
     # Check if Player 1 given attacks orders and run them.
     if len(attacks_orders_P1) > 0:
         #print("P1 - ⚔ - attack phase.")
         while len(attacks_orders_P1) > 0:
-            fight(attacks_orders_P1[0][1:3], pacified_werewolves)
+            fight(attacks_orders_P1[0][1:3], pacified_werewolves, turn_without_damage)
             attacks_orders_P1.pop(0)
     # Check if Player 2 given attacks orders and run them.
-    if len(attacks_orders_P2) > 0:
+    elif len(attacks_orders_P2) > 0:
         #print("P2 - ⚔ - attack phase.")
         while len(attacks_orders_P2) > 0:
-            fight(attacks_orders_P2[0][1:3], pacified_werewolves)
+            fight(attacks_orders_P2[0][1:3],
+                  pacified_werewolves, turn_without_damage)
             attacks_orders_P2.pop(0)
+    else:
+        turn_without_damage += 1
     # ------------------
     # --- MOVE PHASE ---
     # ------------------
@@ -1046,6 +1089,7 @@ def orders_manager(orders_P1, orders_P2):  # Spec 100 % and Code 100%
         while len(move_orders_P2) > 0:
             move(move_orders_P2[0][1:3])
             move_orders_P2.pop(0)
+    return turn_without_damage
 
 def end_game(winner):
     with term.fullscreen(), term.cbreak():
@@ -1071,12 +1115,14 @@ def totlifePlayer(Px):
 def check_alphas_life(fin):
     # Get alpha1 and alpha2 life
     alpha_1_life = 100
-    alpha_2_life = 100
+    alpha_2_life = 90
     for key in entities:
-            if (entities[key][0] == 1) and (entities[key][0] == "alpha"):
-                alpha_1_life = entities[key][2]
-            if (entities[key][0] == 2) and (entities[key][0] == "alpha"):
-                alpha_2_life = entities[key][2]
+        if (entities[key][0] == 1) and (entities[key][1] == "alpha"):
+            alpha_1_life = entities[key][2]
+            print("alpha_1_life = " + str(alpha_1_life))
+        if (entities[key][0] == 2) and (entities[key][1] == "alpha"):
+            alpha_2_life = entities[key][2]
+            print("alpha_2_life = " + str(alpha_2_life))
     # Check max life between alphas and declare winner (end game cases 2 or 3)
     if fin == 1:
         if alpha_1_life > alpha_2_life:
@@ -1089,15 +1135,16 @@ def check_alphas_life(fin):
             winner = 0
             return end_game(winner)
     # Check if one of the alphas is dead and declare winner (end game cases 1)
-    if alpha_1_life == 0:
-        winner = 2
-        return end_game(winner)
-    elif alpha_2_life == 0:
-        winner = 1
-        return end_game(winner)
-    elif alpha_1_life == 0 and alpha_2_life == 0:
-        winner = 0
-        return end_game(winner)
+    else:
+        if alpha_1_life == 0:
+            winner = 2
+            return end_game(winner)
+        elif alpha_2_life == 0:
+            winner = 1
+            return end_game(winner)
+        elif alpha_1_life == 0 and alpha_2_life == 0:
+            winner = 0
+            return end_game(winner)
 
 def game_loop(game_turn, turn_without_damage, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type):  # Spec 100 % and Code 33%
     """
@@ -1140,36 +1187,17 @@ def game_loop(game_turn, turn_without_damage, orders_P1, orders_P2, P1_game_mode
             l2 = (totlifePlayer(2)/beginlifeP2)*100
             txt = "   |    ❤    :  {:.2f} %   ||   ❤    :  {:.2f} %     | "
             print(txt.format(l1, l2))
+            # Print turn_without_damage
             boardgame_manager(n)
             # Ask for orders and send them to the orders_manager
             orders_P1, orders_P2 = get_orders(
                 orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
-            orders_manager(orders_P1, orders_P2)
+            orders_manager(orders_P1, orders_P2, turn_without_damage)
             game_turn += 1
             print("Press any key for next turn...")
             term.inkey()
             game_loop(game_turn, turn_without_damage, orders_P1,
                       orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
-
-def welcome_screen():
-    """
-    Description of the function
-    ---------------------------
-    Just a welcome screen to display the game name and the team members name.
-    
-    Specification: Sébastien Baudoux(v.1.0 - 25/03/2022)
-    Code: Sébastien Baudoux(v.1.0 - 25/03/2022)
-    """
-    with term.fullscreen(), term.cbreak():
-        y_middle = term.height // 2
-        print(term.center(term.move_y(y_middle-5) + term.underline_bold_green((" *-* ALPHA & OMEGA *-*"))))
-        print(term.move_y(y_middle-2) + term.center("--------------------").rstrip())
-        print(term.move_y(y_middle+1) + term.center('').rstrip())
-        print(term.move_y(y_middle+1) + term.center ('Press any key to start !').rstrip())
-        print(term.move_y(y_middle+1) + term.center('').rstrip())
-        print(term.move_y(y_middle+8) + term.center("by group 20").rstrip())
-        print(term.center(term.move_y(y_middle+10)+ term.coral1("William Auspert - Sébastien Baudoux - Aleksander Besler - Trésor Tientcheu").rstrip()))
-        term.inkey()
 
 def settings(path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type):
     # Display settings menu
