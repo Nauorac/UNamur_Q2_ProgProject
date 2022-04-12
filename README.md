@@ -37,3 +37,7 @@ précédent et nommé AI_gr_xx.py 3
   - 06/05 : maps / 12/05 : Tournoi
 
 ---
+
+
+:wolf: :robot: :apple: :mouse2: :rabbit2: :deer: 
+
