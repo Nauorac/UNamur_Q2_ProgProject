@@ -39,5 +39,5 @@ précédent et nommé AI_gr_xx.py 3
 ---
 
 
-:wolf: :robot: :apple: :mouse2: :rabbit2: :deer: 
+:wolf: :robot: :apple: :mouse2: :rabbit2: :deer: :computer: :satellite: :bust_in_silhouette: :cherries: α  Ω  
 
