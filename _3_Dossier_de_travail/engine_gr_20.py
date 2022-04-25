@@ -1172,7 +1172,7 @@ def game_loop(game_turn, turn_without_damage, orders_P1, orders_P2, P1_game_mode
         fin = 1
         return check_alphas_life(fin)
     # (3) Check game turn - ONLY FOR TESTING PURPOSE
-    if game_turn == 11:
+    if game_turn == 31:
         fin = 1
         return check_alphas_life(fin)
     else:
@@ -1188,6 +1188,8 @@ def game_loop(game_turn, turn_without_damage, orders_P1, orders_P2, P1_game_mode
             txt = "   |    ❤    :  {:.2f} %   ||   ❤    :  {:.2f} %     | "
             print(txt.format(l1, l2))
             # Print turn_without_damage
+            print("   | - * - TURN WITHOUT DAMAGE : " +str(turn_without_damage)+"  - * - | ")
+            print(" ----------------------------------  ")
             boardgame_manager(n)
             # Ask for orders and send them to the orders_manager
             orders_P1, orders_P2 = get_orders(
@@ -1233,11 +1235,9 @@ def settings(path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_typ
                 if val.lower() == 'y':
                     print(f"{term.home}{term.clear}")
                     path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type = game_settings(path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type)
-                    settings(path, P1_game_mode, P2_game_mode,
-                             group_1, group_2, P1_type, P2_type)
+                    settings(path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type)
                 elif val.lower() == 'n':
-                    return game_loop(game_turn, turn_without_damage, orders_P1, orders_P2,
-                            P1_game_mode, P2_game_mode, P1_type, P2_type)
+                    return game_loop(game_turn, turn_without_damage, orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_type)
 
 # First screen
 welcome_screen()
