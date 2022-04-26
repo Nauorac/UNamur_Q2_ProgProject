@@ -26,12 +26,15 @@ Ajout des 2 documents de consignes
 
 Durant cette phase, vous implémenterez votre IA. Si vos algorithmes s’avèrent trop complexes, inadaptés ou inefficaces (comme indiqué par les assistants ou si
 vous vous heurtez à de grosses difficultés), vous pouvez les modifier après accord de l’assistant. 
-À la fin de cette phase, vous rendrez un rapport expliquant
-les difficultés rencontrées pour l’implémentation et vos choix pour les résoudre (max. 1 page). 
-Le code de votre IA sera rendu dans un module séparé du module
-précédent et nommé AI_gr_xx.py 3
 
-. En plus, vous rendrez une vidéo nommée test_AI_gr_xx.mp42 d’une partie complète de votre IA contre elle-même.
+À la fin de cette phase, vous rendrez un rapport expliquant les difficultés rencontrées pour l’implémentation et vos choix pour les résoudre (max. 1 page). 
+
+
+Le code de votre IA sera rendu dans un module séparé du module précédent et nommé AI_gr_xx.py 3
+
+
+En plus, vous rendrez une vidéo nommée test_AI_gr_xx.mp42 d’une partie complète de votre IA contre elle-même.
+
 
 — 02/05 : dépôt du rapport, du module et de la vidéo (WebCampus)
 
