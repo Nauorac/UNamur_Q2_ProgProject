@@ -9,7 +9,7 @@ Teams : https://teams.microsoft.com/l/team/19%3a1PyM1mIAE8RltmCrW7LWFpIDlxBP_Hpm
 
 EXPLANATIONS
 ~~~~~~~~~~~~
-For a better comprehension of this file we've made a glossary and an index.
+For a better comprehension of this file, we've made a glossary and an index.
 Each section and functions are referenced with the line number.
 
 Glossary
@@ -96,6 +96,7 @@ Last things to do before submission
 # Creation of all "global" variables required for the game
 path = "C:/Users/Seb/Documents/GitHub/UNamur_Q2_ProgProject/_3_Dossier_de_travail/example.ano"
 #https://github.com/Nauorac/UNamur_Q2_ProgProject/blob/526bafbbaa287bad23a7efa7956b62999b42a00b/_0_Ennonce/example.ano
+
 P1_game_mode = "local"
 P2_game_mode = "local"
 group_1 = 20
@@ -205,34 +206,31 @@ def data_import(path,size, entities): # Spec and Code 100%
 	Version:
 	--------
 	Specification : Sébastien Baudoux (v.1.0 - 11/03/2022)
-	Code : Sébastien Baudoux (v.2.0 - 10/03/2022)
+	Code : Trésor Tchientcheu (v.3.0 - 25/04/2022)
 	"""
-    # Open .ano file
-    with open(path, "r+") as file:
-        # Read the entire file and store it into a list.
-        brut = file.readlines()
-        for i in brut:
-            # Ignore string line
-            if (i[0] == "m") or (i[0] == "w") or (i[0] == "f"):
-                continue
-            # Detect if line contains boardgame size
-            if len(i) <= 6:
-                si = i.split()
-                size = [int(si[0]), int(si[1])]
-                continue
-            j = i.split()
-            # Check if line contain werewolf info or not
-            if (j[3] == "alpha") or (j[3] == "omega") or (j[3] == "normal"):
-                x = int(j[1])
-                y = int(j[2])
-                values = [int(j[0]), (j[3]), 100, 0]
-                entities.update({(x, y): values})
-            else:
-                x = int(j[0])
-                y = int(j[1])
-                # Add "0" as first list value element for food to make the "food team" identified with 0
-                values = [0, (j[2]), int((j[3])), 0]
-                entities.update({(x, y): values})
+    file = open(path, "r")
+    liste = file.readlines()
+    for i in range(len(liste)):
+        # Detect if line contains boardgame size
+        if ("map" in liste[i]):
+            j = i+1
+            si = liste[j].split(" ")
+            size = [int(si[0]), int(si[1])]
+            j = i+1
+        elif ("werewolves" in liste[i]):
+            j = i+1
+            while liste[j] != "foods:\n":
+                a = liste[j].split(" ")
+                b = a[3].split("\n")
+                entities[int(a[1]), int(a[2])] = [int(a[0]), (b[0]), 100, 0]
+                j = j+1
+        elif ("foods" in liste[i]):
+            j = i+1
+            while j < len(liste):
+                a = liste[j].split(" ")
+                b = a[2].split("\n")
+                entities[int(a[0]), int(a[1])] = [0, (b[0]), int(a[3])]
+                j = j+1
     return path, size, entities
 
 path, size, entities = data_import(path, size, entities)
@@ -274,7 +272,7 @@ beginlifeP2 = startlifePlayer(2)
 ===================
 """
 # DUMB A.I.
-def DAI_orders_generator(Px):  # Spec 100 % and Code 100%
+def DAI_orders_generator(Px): # Spec 100 % and Code 100%
     """
 	Description of the function
 	---------------------------
@@ -321,9 +319,148 @@ def DAI_orders_generator(Px):  # Spec 100 % and Code 100%
     #print(AI_orders)
     return AI_orders
 
-# SMART A.I.
-def SAI_orders_generator(Px): #Spec 0 % and Code 0%
+def distance(position_x1, position_y1, position_x2, position_y2):
+    if abs(position_x2 - position_x1) > abs(position_y2-position_y1):
+        return abs(position_x2-position_x1)
+    else:
+        return abs(position_y2-position_y1)
+
+def smart_alpha():
     ...
+
+def smart_omega():
+    ...
+def smart_wolves():
+    ...
+
+# SMART A.I.
+def SAI_orders_generator(Px): # Spec 0 % and Code 0%
+    # Recuperer l'ensemble des ennemis et des amis qui son autours de mon alpha
+    pos_alpha=[]
+    pos_alpha_ennemi=[]
+    ami_alpha=[]
+    ennemi_alpha=[]
+    ami_omega=[]
+    ennemi_omega=[]
+    pos_omega=[]
+    ordre_alpha=""
+    ordre_omega=""
+    # Recupere la position de mon alpha et alpha ennemi
+    for cle in entities:
+        # Check if it's alpha of team in argument
+        if entities[cle][0]== Px and entities[cle][1]== "alpha":
+            pos_alpha.append(cle[0])
+            pos_alpha.append(cle[1])
+        # Check if it's an opposite alpha of the entities in argument
+        elif(entities[cle][0] != Px and entities[cle][0] != 0 and entities[cle][1] == "alpha"):
+            pos_alpha_ennemi.append(cle[0])
+            pos_alpha_ennemi.append(cle[1])
+        # Check if it's omega of the team in argument
+        elif entities[cle][0] == Px and entities[cle][1] == "omega":
+            pos_omega.append(cle[0])
+            pos_omega.append(cle[1])
+
+    # ------------
+    # Ordres Alpha
+    # ------------
+    #recuperer les alentours de mon alpha => dictionnaire des loups amis est ennemis
+    dic_loup=in_range(1,pos_alpha) #dictionnaire des loups amis et ennemis
+    for cle in dic_loup:
+        if dic_loup[cle][0] == Px:
+            ami_alpha.append([cle[0],cle[1]])
+        else:
+            ennemi_alpha.append([cle[0],cle[1]])
+    if (entities[(pos_alpha[0],pos_alpha[1])][2]<100):
+        for cle in entities:
+            if(entities[(cle[0], cle[1])][0] == 0 and distance(pos_alpha[0], pos_alpha[1], cle[0], cle[1]) == 1):
+    # Verifier si mon alpha est sur une ressource et il a un manque d'energie
+                ordre_alpha= str(pos_alpha[0]) +"-" + str(pos_alpha[1])+":<" + str(cle[0]) + "-" + str(cle[1])
+    else:
+    # Traiter le cas ou le loup est n'est pas a cote une ressource et qu'il a assez d'energie
+        x=""
+        y=""
+        if (ennemi_alpha==[]):
+    # Verifier si on a pas de loups ennemis a cote de nous
+            if pos_alpha_ennemi[0] > pos_alpha[0]:
+                x= pos_alpha[0]+1
+            elif pos_alpha_ennemi[0] < pos_alpha[0]:
+                x= pos_alpha[0]-1
+            else:
+                x= pos_alpha[0]
+            if pos_alpha_ennemi[1] > pos_alpha[1]:
+                y= pos_alpha[0]+1
+            elif pos_alpha_ennemi[1] < pos_alpha[1]:
+                y= pos_alpha[0]-1
+            else :
+                y= pos_alpha[1]
+            ordre_alpha= str(pos_alpha[0])+"-"+ str(pos_alpha[1]) +":@"+ str(x)+ "-" + str(y)
+        else: # Le cas ou on des les loups ennemis qui nous entourent
+            for i in ennemi_alpha:
+                if entities[(i[0], i[1])][1] == "alpha":
+                    ordre_alpha= str(pos_alpha[0]) +"-" + str(pos_alpha[1])+":*"+str(i[0])+"-"+ str(i[1])
+            z= random.choice(ennemi_alpha)
+            ordre_alpha= str(pos_alpha[0]) +"-" + str(pos_alpha[1])+ ":*" +str(z[0])+"-"+ str(z[1])
+
+
+
+    # ------------
+    # Ordres Omega
+    # ------------
+    # Le cas ou notre loup omega n'a pas assez d'energie pour pacifier
+    if (entities[(pos_omega[0],pos_omega[1])][2]<40):
+        dic_loup = in_range(1, pos_omega)
+        for cle in dic_loup:
+            if dic_loup[cle][0] == Px:
+                ami_omega.append([cle[0],cle[1]])
+            else:
+                ennemi_omega.append([cle[0],cle[1]])
+    # Le cas ou notre loup omega a des ennemis qui l'entourent
+        if ennemi_omega!=[]:
+            if pos_alpha_ennemi in ennemi_omega:
+                ordre_omega= str(pos_omega[0]) +"-" + str(pos_omega[1])+":*"+str(pos_alpha_ennemi[0])+"-"+ str(pos_alpha_ennemi[1])
+            else:
+                position=random.choice(ennemi_omega)
+                ordre_omega= str(pos_omega[0]) +"-" + str(pos_omega[1])+":*"+str(position[0])+"-"+ str(position[1])
+        else:
+    # Le cas ou il n'a pas de loups ennemis a cote de notre loup omega
+            proche=[]
+            dis=100
+            for cle in entities:
+                if entities[cle][0] == 0:
+                    dist=distance(pos_omega[0],pos_omega[1],cle[0],cle[1])
+                    if distance<dis:
+                        proche=cle
+            ordre_omega= str(pos_alpha[0]) +"-" + str(pos_alpha[1])+":*"+str(proche[0])+"-"+ str(proche[1])
+    else:
+        ennemis_rayon=in_range(6,pos_omega)
+        if len(ennemis_rayon)>3:
+            ordre_omega=str(pos_omega[0]) +"-" + str(pos_omega[1])+ ":pacify"
+        else:
+            if ennemi_omega!=[]:
+                if [ennemi_alpha[0],ennemi_alpha[1]] in ennemi_omega:
+                    ordre_omega= str(pos_alpha[0]) +"-" + str(pos_alpha[1])+":*"+str(ennemi_alpha[0])+"-"+ str(ennemi_omega[1])
+                else:
+                    position=random.choice(ennemi_omega)
+                    ordre_omega= str(pos_alpha[0]) +"-" + str(pos_alpha[1])+":*"+str(position[0])+"-"+ str(position[1])
+            else:
+                if pos_alpha_ennemi[0]> pos_omega[0]:
+                    x= pos_omega[0]+1
+                elif pos_alpha_ennemi[0]< pos_omega[0]:
+                    x= pos_omega[0]-1
+                else:
+                    x= pos_omega[0]
+
+                if pos_alpha_ennemi[1]> pos_omega[1]:
+                    y= pos_omega[0]+1
+                elif pos_alpha_ennemi[1]< pos_omega[1]:
+                    y= pos_omega[0]-1
+                else :
+                    y= pos_omega[1]
+                ordre_omega = str(pos_omega[0]) +"-" + str(pos_omega[1])+ ":@" + str(x)+"-"+ str(y)
+    # --------------
+    # Ordres normaux
+    # --------------
+    return ""+ordre_alpha+" "+ordre_omega+""
 
 """
 ===================
@@ -449,8 +586,6 @@ def in_range(range, omega_coord):  # Spec 100 % and Code 100%
     GAME FUNCTIONS
     **************
 """
-# TESTER SI ENTITES A PORTEE POUR FEED AND FIGHT
-
 def pacify(rayon, omega, pacified_werewolves):  # Spec 100 % and Code 100%
     """
 	Description of the function
@@ -613,7 +748,6 @@ def feed(list):  # Spec 100 % and Code 90%
     else:
         #print(" This is not food.")
         ...
-
 
 def fight(listat, pacified_werewolves, turn_without_damage):  # Spec 100 % and Code 90%
     """

@@ -28,13 +28,10 @@ for l in blah:
 """
 
 # std imports
-
 # local
-
 
 def roundxy(x, y):
     return int(floor(x)), int(floor(y))
-
 
 term = Terminal()
 
