@@ -1,9 +1,5 @@
 #-*- coding: utf-8 -*-
-import blessed
-import math
-import os
-import time
-import random
+import blessed, math, os, time, random
 from remote_play import *
 term = blessed.Terminal()
 
@@ -135,16 +131,15 @@ def game_settings(path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P
 	Code : Sébastien Baudoux (v.3.0 - 11/03/2022)
 	"""
     with term.cbreak():
-        # Selection player 1
-        # ------------------
-        #Local OR Remote
+    # Selection player 1
+    # ------------------
+    #Local OR Remote
         print("Select game mode for player 1 => 0 (Local) OR 1 (Remote) : ")
-        temp_P1_game_mode = term.inkey()
+        temp_P1_game_mode  = term.inkey()
         # If Remote ask for group number
         if temp_P1_game_mode == 1:
             P1_game_mode = "remote"
-            group_1 = int(
-                input("Please enter the group number for player 1 : "))
+            group_1 = int(input("Please enter the group number for player 1 : "))
         else:
             P1_game_mode = "local"
             group_1 = 20
@@ -164,8 +159,7 @@ def game_settings(path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P
         # If Remote ask for group number
         if temp_P2_game_mode == 1:
             P2_game_mode = "remote"
-            group_2 = int(
-                input("Please enter the group number for player 2 : "))
+            group_2 = int(input("Please enter the group number for player 2 : "))
         else:
             P2_game_mode = "local"
             group_1 = 20
@@ -177,11 +171,9 @@ def game_settings(path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P
         else:
             P2_type = "Human"
         # P1 from group number on local/remote and it's a human/IA
-        print(
-            f"Player 1 from group : {group_1} on {P1_game_mode} and it's a {P1_type}.")
+        print(f"Player 1 from group : {group_1} on {P1_game_mode} and it's a {P1_type}.")
         # P2 from group number on local/remote and it's a human/IA
-        print(
-            f"Player 2 is from group : {group_2} on {P2_game_mode} and it's a {P2_type}.")
+        print(f"Player 2 is from group : {group_2} on {P2_game_mode} and it's a {P2_type}.")
         return [path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type]
 
 def change_path(path):  # Spec and Code 100%
@@ -199,7 +191,7 @@ def change_path(path):  # Spec and Code 100%
         path = term.inkey()
         return path
 
-def data_import(path, size, entities):  # Spec and Code 100%
+def data_import(path,size, entities): # Spec and Code 100%
     """
 	Description
 	---------------------------
@@ -250,7 +242,6 @@ elif P2_game_mode == 'remote':
     connection = create_connection(group_1, group_2)
 
 # close connection, if necessary
-
 def end_connection():  # Spec 0 % and Code 100%
     """
 	Description of the function
@@ -334,123 +325,142 @@ def distance(position_x1, position_y1, position_x2, position_y2):
     else:
         return abs(position_y2-position_y1)
 
-def target_Ealpha(Px):
-    Ealpha_pos=[]
-    for cle in entities:
-        # Check if it's an opposite alpha of the entities in argument
-        if(entities[cle][0] != Px and entities[cle][0] != 0 and entities[cle][1] == "alpha"):
-            Ealpha_pos.append(cle[0])
-            Ealpha_pos.append(cle[1])
-    return Ealpha_pos
-
-going_to = {"N": [-1, 0], "NE": [-1, +1], "E": [0, +1], "SE": [+1, +1], "S": [+1, 0], "SW": [+1, -1], "W": [-1, 0], "NW": [-1, -1]}
-alt_dir = {"N": ("NW", "NE"), "S": ("SW", "SE"), "E": ("NE", "SE"), "W": (
-    "NW", "SW"), "NE": ("N", "E"), "SE": ("S", "E"), "NW": ("N", "W"), "SW": ("S", "W")}
-
-def direction(ww_pos, Ealpha_pos):
-    if Ealpha_pos[0] > ww_pos[0]:
-        x = 1 #To te South
-    elif Ealpha_pos[0] < ww_pos[0]:
-        x = -1 #To the North
-    elif Ealpha_pos[0] == ww_pos[0]:
-        x = 0 #No horizontal move
-    if Ealpha_pos[1] > ww_pos[1]:
-        y = 1 #To the East
-    elif Ealpha_pos[1] < ww_pos[1]:
-        y = -1 #To the West
-    elif Ealpha_pos[1] == ww_pos[1]:
-        y   = 0 #No vertical move
-    #Directions
-    if x == -1 and y == 0:
-        direct = "N"
-    elif x == -1 and y == 1:
-        direct = "NE"
-    elif x == 0 and y == 1:
-        direct = "E"
-    elif x == 1 and y == 1:
-        direct = "SE"
-    elif x == 1 and y == 0:
-        direct = "S"
-    elif x == 1 and y == -1:
-        direct = "SW"
-    elif x == 0 and y == -1:
-        direct = "W"
-    elif x == -1 and y == -1:
-        direct = "NW"
-    #return direct
-    ww_pos[0] += x
-    ww_pos[1] += y
-    return ww_pos
-
 def smart_alpha():
     ...
 
 def smart_omega():
     ...
-
 def smart_wolves():
     ...
+
 # SMART A.I.
-
-def get_team(Px):
-    team = {}
+def SAI_orders_generator(Px): # Spec 0 % and Code 0%
+    # Recuperer l'ensemble des ennemis et des amis qui son autours de mon alpha
+    pos_alpha=[]
+    pos_alpha_ennemi=[]
+    ami_alpha=[]
+    ennemi_alpha=[]
+    ami_omega=[]
+    ennemi_omega=[]
+    pos_omega=[]
+    ordre_alpha=""
+    ordre_omega=""
+    # Recupere la position de mon alpha et alpha ennemi
     for cle in entities:
-        if entities[cle][0] == Px:
-            team[cle] = entities[cle]
-            # Création du flag d'action
-            team[cle][0] = 0
-    return team
+        # Check if it's alpha of team in argument
+        if entities[cle][0]== Px and entities[cle][1]== "alpha":
+            pos_alpha.append(cle[0])
+            pos_alpha.append(cle[1])
+        # Check if it's an opposite alpha of the entities in argument
+        elif(entities[cle][0] != Px and entities[cle][0] != 0 and entities[cle][1] == "alpha"):
+            pos_alpha_ennemi.append(cle[0])
+            pos_alpha_ennemi.append(cle[1])
+        # Check if it's omega of the team in argument
+        elif entities[cle][0] == Px and entities[cle][1] == "omega":
+            pos_omega.append(cle[0])
+            pos_omega.append(cle[1])
 
-def empty_places(ww_pos):
-    x = ww_pos[0]
-    y = ww_pos[1]
-    empty_spaces = []
-    if (x+1, y) not in entities:
-        empty_spaces.append((x+1, y))
-    if (x, y+1) not in entities:
-        empty_spaces.append((x, y+1))
-    if (x+1, y+1) not in entities:
-        empty_spaces.append((x+1, y+1))
-    if (x-1, y+1) not in entities:
-        empty_spaces.append((x-1, y+1))
-    if (x-1, y-1) not in entities:
-        empty_spaces.append((x-1, y-1))
-    if (x+1, y-1) not in entities:
-        empty_spaces.append((x+1, y-1))
-    if (x-1, y) not in entities:
-        empty_spaces.append((x-1, y))
-    if (x, y-1) not in entities:
-        empty_spaces.append((x, y-1))
-    return empty_spaces
-
-def move_wolves(Px):
-    moves_orders = ""
-    if Px == 1:
-        ennemy = 2
+    # ------------
+    # Ordres Alpha
+    # ------------
+    #recuperer les alentours de mon alpha => dictionnaire des loups amis est ennemis
+    dic_loup=in_range(1,pos_alpha) #dictionnaire des loups amis et ennemis
+    for cle in dic_loup:
+        if dic_loup[cle][0] == Px:
+            ami_alpha.append([cle[0],cle[1]])
+        else:
+            ennemi_alpha.append([cle[0],cle[1]])
+    if (entities[(pos_alpha[0],pos_alpha[1])][2]<100):
+        for cle in entities:
+            if(entities[(cle[0], cle[1])][0] == 0 and distance(pos_alpha[0], pos_alpha[1], cle[0], cle[1]) == 1):
+    # Verifier si mon alpha est sur une ressource et il a un manque d'energie
+                ordre_alpha= str(pos_alpha[0]) +"-" + str(pos_alpha[1])+":<" + str(cle[0]) + "-" + str(cle[1])
     else:
-        ennemy = 1
-    #Flag representing if the werewolf has moved (1=yes, 0=no)
-    nbr_flags = 0
-    while nbr_flags != 7:
-        #Get team of the player
-        current_team = get_team(Px)
-        for key in current_team:
-            #Check if current wolf flag is set to 1
-            if current_team[key][0] == 0:
-                #If Not, check if empty space around
-                current_empty_spaces = empty_places(key)
-                if current_empty_spaces != []:
-                    #If empty space around, move to ennemy alpha
-                    Ealpha_pos = target_Ealpha(ennemy)
-                    dir = direction(key, Ealpha_pos)
-                    #Check if the move is possible
-                    if dir in current_empty_spaces: #Cool, move, add the move to string
-                        move_orders = ""+str(key[0])+"-"+str(key[1])+":@"+str(dir[0])+"-"+str(dir[1])+" "
-                        current_team[key][0] = 1
-                        nbr_flags += 1
-                    else:
-                        # If not check if another empty space is available in the "same" direction
-                        
+    # Traiter le cas ou le loup est n'est pas a cote une ressource et qu'il a assez d'energie
+        x=""
+        y=""
+        if (ennemi_alpha==[]):
+    # Verifier si on a pas de loups ennemis a cote de nous
+            if pos_alpha_ennemi[0] > pos_alpha[0]:
+                x= pos_alpha[0]+1
+            elif pos_alpha_ennemi[0] < pos_alpha[0]:
+                x= pos_alpha[0]-1
+            else:
+                x= pos_alpha[0]
+            if pos_alpha_ennemi[1] > pos_alpha[1]:
+                y= pos_alpha[0]+1
+            elif pos_alpha_ennemi[1] < pos_alpha[1]:
+                y= pos_alpha[0]-1
+            else :
+                y= pos_alpha[1]
+            ordre_alpha= str(pos_alpha[0])+"-"+ str(pos_alpha[1]) +":@"+ str(x)+ "-" + str(y)
+        else: # Le cas ou on des les loups ennemis qui nous entourent
+            for i in ennemi_alpha:
+                if entities[(i[0], i[1])][1] == "alpha":
+                    ordre_alpha= str(pos_alpha[0]) +"-" + str(pos_alpha[1])+":*"+str(i[0])+"-"+ str(i[1])
+            z= random.choice(ennemi_alpha)
+            ordre_alpha= str(pos_alpha[0]) +"-" + str(pos_alpha[1])+ ":*" +str(z[0])+"-"+ str(z[1])
+
+
+
+    # ------------
+    # Ordres Omega
+    # ------------
+    # Le cas ou notre loup omega n'a pas assez d'energie pour pacifier
+    if (entities[(pos_omega[0],pos_omega[1])][2]<40):
+        dic_loup = in_range(1, pos_omega)
+        for cle in dic_loup:
+            if dic_loup[cle][0] == Px:
+                ami_omega.append([cle[0],cle[1]])
+            else:
+                ennemi_omega.append([cle[0],cle[1]])
+    # Le cas ou notre loup omega a des ennemis qui l'entourent
+        if ennemi_omega!=[]:
+            if pos_alpha_ennemi in ennemi_omega:
+                ordre_omega= str(pos_omega[0]) +"-" + str(pos_omega[1])+":*"+str(pos_alpha_ennemi[0])+"-"+ str(pos_alpha_ennemi[1])
+            else:
+                position=random.choice(ennemi_omega)
+                ordre_omega= str(pos_omega[0]) +"-" + str(pos_omega[1])+":*"+str(position[0])+"-"+ str(position[1])
+        else:
+    # Le cas ou il n'a pas de loups ennemis a cote de notre loup omega
+            proche=[]
+            dis=100
+            for cle in entities:
+                if entities[cle][0] == 0:
+                    dist=distance(pos_omega[0],pos_omega[1],cle[0],cle[1])
+                    if distance<dis:
+                        proche=cle
+            ordre_omega= str(pos_alpha[0]) +"-" + str(pos_alpha[1])+":*"+str(proche[0])+"-"+ str(proche[1])
+    else:
+        ennemis_rayon=in_range(6,pos_omega)
+        if len(ennemis_rayon)>3:
+            ordre_omega=str(pos_omega[0]) +"-" + str(pos_omega[1])+ ":pacify"
+        else:
+            if ennemi_omega!=[]:
+                if [ennemi_alpha[0],ennemi_alpha[1]] in ennemi_omega:
+                    ordre_omega= str(pos_alpha[0]) +"-" + str(pos_alpha[1])+":*"+str(ennemi_alpha[0])+"-"+ str(ennemi_omega[1])
+                else:
+                    position=random.choice(ennemi_omega)
+                    ordre_omega= str(pos_alpha[0]) +"-" + str(pos_alpha[1])+":*"+str(position[0])+"-"+ str(position[1])
+            else:
+                if pos_alpha_ennemi[0]> pos_omega[0]:
+                    x= pos_omega[0]+1
+                elif pos_alpha_ennemi[0]< pos_omega[0]:
+                    x= pos_omega[0]-1
+                else:
+                    x= pos_omega[0]
+
+                if pos_alpha_ennemi[1]> pos_omega[1]:
+                    y= pos_omega[0]+1
+                elif pos_alpha_ennemi[1]< pos_omega[1]:
+                    y= pos_omega[0]-1
+                else :
+                    y= pos_omega[1]
+                ordre_omega = str(pos_omega[0]) +"-" + str(pos_omega[1])+ ":@" + str(x)+"-"+ str(y)
+    # --------------
+    # Ordres normaux
+    # --------------
+    return ""+ordre_alpha+" "+ordre_omega+""
 
 """
 ===================
@@ -460,7 +470,6 @@ def move_wolves(Px):
     GENERIC TOOLS
     *************
 """
-
 def hash(string):  # Spec 100 % and Code 100%
     """
 	Description of the function
@@ -571,7 +580,6 @@ def in_range(range, omega_coord):  # Spec 100 % and Code 100%
                 nbr_entity += 1
                 ww_in_range.update({key: values})
     return ww_in_range
-
 
 """
     **************
@@ -1051,6 +1059,7 @@ def get_orders(orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_typ
     print("P2 orders : "+str(orders_P2)+"")
     print(" * * * * * * * * * * * * * ")
     return (orders_P1, orders_P2)
+
 
 def orders_manager(orders_P1, orders_P2, turn_without_damage):  # Spec 100 % and Code 100%
     """
