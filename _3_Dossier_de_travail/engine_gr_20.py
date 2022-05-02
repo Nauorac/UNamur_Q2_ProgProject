@@ -333,13 +333,13 @@ going_to = {"N": [-1, 0], "NE": [-1, +1], "E": [0, +1], "SE": [+1, +1], "S": [+1
 
 alt_dir = {"N": ["NW", "NE"], "S": ["SW", "SE"], "E": ["NE", "SE"], "W": ["NW", "SW"], "NE": ["N", "E"], "SE": ["S", "E"], "NW": ["N", "W"], "SW": ["S", "W"]}
 
-def distance(position_x1, position_y1, position_x2, position_y2): # 
+def distance(position_x1, position_y1, position_x2, position_y2): # Trésor
     if abs(position_x2 - position_x1) > abs(position_y2-position_y1):
         return abs(position_x2-position_x1)
     else:
         return abs(position_y2-position_y1)
 
-def target_Ealpha(Px): # 
+def target_Ealpha(Px): # Seb
     Ealpha_pos=[]
     for cle in entities:
         # Check if it's an opposite alpha of the entities in argument
@@ -348,7 +348,7 @@ def target_Ealpha(Px): #
             Ealpha_pos.append(cle[1])
     return Ealpha_pos
 
-def target_direction(ww_coords, target): # 
+def target_direction(ww_coords, target): # Seb
 	"""_summary_
 
 	Args:
@@ -386,7 +386,7 @@ def target_direction(ww_coords, target): #
 
 temp_target_dir = target_direction(ww_coords, target)
 
-def test_move(ww_coords, temp_target_dir): # 
+def test_move(ww_coords, temp_target_dir): # Seb
 	xtemp = ww_coords[0] + going_to[temp_target_dir][0]
 	ytemp = ww_coords[1] + going_to[temp_target_dir][1]
 	while (xtemp, ytemp) not in current_empty_spaces:
@@ -404,7 +404,7 @@ def test_move(ww_coords, temp_target_dir): #
 
 test_move(ww_coords, temp_target_dir)
 
-def lowest_health(danger_spaces): # 
+def lowest_health(danger_spaces): # Alesk
     """
 	Description of the function
 	---------------------------
@@ -436,7 +436,7 @@ def lowest_health(danger_spaces): #
             lowhealthwolf = danger_spaces[i]
     return lowhealthwolf
 
-def get_number_of_elements(list): # 
+def get_number_of_elements(list): # Alesk
     """
 	Description of the function
 	---------------------------
@@ -460,7 +460,7 @@ def get_number_of_elements(list): #
         count += 1
     return count
 
-def get_team(Px): # 
+def get_team(Px): # Alesk
     team = {}
     for cle in entities:
         if entities[cle][0] == Px:
@@ -469,7 +469,7 @@ def get_team(Px): #
             team[cle][0] = 0
     return team
 
-def empty_places(ww_pos): # 
+def empty_places(ww_pos): # Alesk
     x = ww_pos[0]
     y = ww_pos[1]
     empty_spaces = []
@@ -491,7 +491,7 @@ def empty_places(ww_pos): #
         empty_spaces.append((x, y-1))
     return empty_spaces
 
-def ww_danger(ww_pos): # 
+def ww_danger(ww_pos): # Alesk
     """
 	Description of the function
 	---------------------------
@@ -552,7 +552,7 @@ def ww_danger(ww_pos): #
                 danger_spaces.append((x+1, y-1))
     return danger_spaces
 
-def move_wolves(Px): #
+def move_wolves(Px): # Alesk
     moves_orders = ""
     if Px == 1:
         ennemy = 2
@@ -602,7 +602,8 @@ def move_wolves(Px): #
         empty_spaces.append((x, y-1))
     return empty_spaces
 
-def normal_wolves_orders(Px): #
+"""
+def normal_wolves_orders(Px): # Seb
     wolves_orders = ""
     if Px == 1:
         ennemy = 2
@@ -648,7 +649,7 @@ def normal_wolves_orders(Px): #
                         current_team[key][0] = 1
                         nbr_flags += 1
                     else: # If not, check if another empty space is available in the "same" direction
-
+"""
 # --------------------------------------------------
 # PART 2
 def smart_alpha(Px, key):
