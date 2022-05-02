@@ -1,7 +1,16 @@
 {
     "cSpell.words": [
+        "Alesk",
         "equipe",
         "garou",
         "Strenght"
+    ],
+    "cSpell.ignoreWords": [
+        "Fonction",
+        "Playerx",
+        "dirf",
+        "ennemies",
+        "xtemp",
+        "ytemp"
     ]
 }

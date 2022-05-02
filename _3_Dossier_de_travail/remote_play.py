@@ -130,42 +130,31 @@ def create_connection(your_group, other_group=0, other_IP='127.0.0.1', verbose=F
     The returned connection can be used directly with other functions in this module.
 
     """
-
     # init verbose display
     if verbose:
         print('\n[--- starts connection -----------------------------------------------------\n')
-
     # check whether there is a referee
     if other_group == 0:
         if verbose:
             print('** group %d connecting to referee on %s **\n' % (your_group, other_IP))
-
         # create one socket (client only)
         socket_out = create_client_socket(other_IP, 42000+your_group, verbose)
-
         connection = {'in':socket_out, 'out':socket_out}
-
         if verbose:
             print('** group %d successfully connected to referee on %s **\n' % (your_group, other_IP))
     else:
         if verbose:
             print('** group %d connecting to group %d on %s **\n' % (your_group, other_group, other_IP))
-
         # create two sockets (server and client)
         socket_in = create_server_socket(42000+your_group, verbose)
         socket_out = create_client_socket(other_IP, 42000+other_group, verbose)
-
         socket_in = wait_for_connection(socket_in, verbose)
-
         connection = {'in':socket_in, 'out':socket_out}
-
         if verbose:
             print('** group %d successfully connected to group %d on %s **\n' % (your_group, other_group, other_IP))
-
     # end verbose display
     if verbose:
         print('----------------------------------------------------- connection started ---]\n')
-
     return connection
 
 def bind_referee(group_1, group_2, verbose=False):
@@ -291,6 +280,5 @@ def get_remote_orders(connection):
     if orders == 'null':
         orders = ''
     return orders
-
 
 #create_server_socket(142, True)

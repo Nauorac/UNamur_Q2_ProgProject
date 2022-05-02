@@ -1,5 +1,4 @@
 #-*- coding: utf-8 -*-
-from ast import FloorDiv
 import blessed
 import math
 import os
@@ -251,6 +250,7 @@ elif P2_game_mode == 'remote':
     connection = create_connection(group_1, group_2)
 
 # close connection, if necessary
+
 def end_connection():  # Spec 0 % and Code 100%
     """
 	Description of the function
@@ -281,8 +281,7 @@ beginlifeP2 = startlifePlayer(2)
 ===================
 """
 # DUMB A.I.
-
-def DAI_orders_generator(Px):  # Spec 100 % and Code 100%
+def DAI_orders_generator(Px): # Spec 100 % and Code 100%
     """
 	Description of the function
 	---------------------------
@@ -310,104 +309,24 @@ def DAI_orders_generator(Px):  # Spec 100 % and Code 100%
     AI_orders = ""
     for key, values in entities.items():
         if values[0] == Px:
-            orig = key
-            AI_orders = AI_orders + str(orig[0]) + "-" + str(orig[1]) + ":"
-            #rand an order and add to str
-            order_type = random.choice(["@", "*", "<", "pacify "])
-            AI_orders = AI_orders + order_type
-            # for x
-            if order_type == "pacify ":
-                #print(AI_orders)
-                ...
-            else:
-                dest = [0, 0]
-                stepx = random.choice([+1, -1, 0])
-                dest[0] = orig[0] + stepx
-                stepy = random.choice([+1, -1, 0])
-                dest[1] = orig[1] + stepy
-                AI_orders = AI_orders + str(dest[0]) + "-" + str(dest[1]) + " "
-    #print(AI_orders)
+            if entities[key][1] == "alpha" :
+                smart_alpha(Px, key)
+            if entities[key][1] == "omega" :
+                AI_orders = smart_omega(Px, key, AI_orders)
+            if entities[key][1] == "normal" :
+                AI_orders = smart_wolves(Px, key, AI_orders)
+            if entities[key][1] == "human" :
+                smart_human(Px, key)
     return AI_orders
 
-# -------------------------------------------------------
-# SMART A.I.
-# PART 1
-# Multiple usefull functions
-# PART 2
-# Final actions functions for each type of werewolf/human
-# -------------------------------------------------------
-# PART 1
+def distance(position_x1, position_y1, position_x2, position_y2):
+    if abs(position_x2 - position_x1) > abs(position_y2-position_y1):
+        return abs(position_x2-position_x1)
+    else:
+        return abs(position_y2-position_y1)
 
-# Next 2 dictionnaires are used to store cardinal directions and their coordinates modificators
-going_to = {"N": [-1, 0], "NE": [-1, +1], "E": [0, +1], "SE": [+1, +1], "S": [+1, 0], "SW": [+1, -1], "W": [0, -1], "NW": [-1, -1]}
-
-alt_dir = {"N": ["NW", "NE"], "S": ["SW", "SE"], "E": ["NE", "SE"], "W": ["NW", "SW"], "NE": ["N", "E"], "SE": ["S", "E"], "NW": ["N", "W"], "SW": ["S", "W"]}
-
-def get_team(Px):  # Alesk - OK
-    team = {}
-    for cle in entities:
-        if entities[cle][0] == Px:
-            team[cle] = entities[cle]
-    return team
-
-def looking_for_food(ww_pos): # Seb - OK
-    # Use in_range function to find food
-    food_pos = ()
-    i = 1
-    while food_pos == () and i < 21:
-        entities_in_range = in_range(i, ww_pos)
-        for entity in entities_in_range:
-            if entities[entity][0] == 0:
-                food_pos = entity
-            else:
-                i += 1
-    return food_pos
-
-def empty_places(ww_pos):  # Alesk - OK
-    empty_cases = []
-    for key in going_to:
-        x = ww_pos[0] + going_to[key][0]
-        y = ww_pos[1] + going_to[key][1]
-        if (x, y) not in entities:
-            empty_cases.append((x, y))
-    return empty_cases
-
-def ennemies_in_range(ww_pos): # Alesk/Seb
-    entities_at_range = in_range(1, ww_pos)
-    ennemies_in_range = []
-    for entity in entities_at_range:
-        if entities[entity][0]!= entities[ww_pos][0] and entities[entity][0]!= 0:
-            ennemies_in_range.append(entity)
-    return ennemies_in_range
-
-def lowest_health(ww_pos):  # Alesk/Seb
-    """
-    Description of the function
-    ---------------------------
-    Ckecks wich wolf has the lowest health from the dangerous spaces list
-    This function is used to check if the wolf is in the same line as the player
-    and if he is, it will move to the next line
-
-    Args:
-    -----
-    danger_spaces : list of units that are from the opposing team - list
-
-    Returns:
-    --------
-    lowhealthwolf : Coordinates of the lowest health wolf found - str
-    """
-    ennemies = ennemies_in_range(1, ww_pos)
-    lowenemy = entities[ennemies[0]]
-    lowhealth = lowenemy[2]
-    lowhealthwolf = ennemies[0]
-    for i in range(len(ennemies)):
-        if lowhealth > entities[ennemies[i]][2]:
-            lowhealth = entities[ennemies[i]][2]
-            lowhealthwolf = ennemies[i]
-    return lowhealthwolf
-
-def target_Ealpha(Px):  # Trésor - OK - Return position (x, y)
-    Ealpha_pos = []
+def target_Ealpha(Px):
+    Ealpha_pos=[]
     for cle in entities:
         # Check if it's an opposite alpha of the entities in argument
         if(entities[cle][0] != Px and entities[cle][0] != 0 and entities[cle][1] == "alpha"):
@@ -415,51 +334,585 @@ def target_Ealpha(Px):  # Trésor - OK - Return position (x, y)
             Ealpha_pos.append(cle[1])
     return Ealpha_pos
 
-# -------------------------------------------------------
+going_to = {"N": [-1, 0], "NE": [-1, +1], "E": [0, +1], "SE": [+1, +1], "S": [+1, 0], "SW": [+1, -1], "W": [-1, 0], "NW": [-1, -1]}
+alt_dir = {"N": ("NW", "NE"), "S": ("SW", "SE"), "E": ("NE", "SE"), "W": (
+    "NW", "SW"), "NE": ("N", "E"), "SE": ("S", "E"), "NW": ("N", "W"), "SW": ("S", "W")}
 
-def target_direction(ww_coords, target_coords): # Seb - OK - Return direction (string)
-	# xf = Horizontal distance between ww and target
-    # yf = Vertical distance between ww and target
-    xf = target_coords[0] - ww_coords[0]
-    yf = target_coords[1] - ww_coords[1]
-    if xf > 0:
-        if yf > 0:
-            dirf = "SE"
-        elif yf < 0:
-            dirf = "SW"
-        else:
-            dirf = "S"
-    elif xf < 0:
-        if yf > 0:
-            dirf = "NE"
-        elif yf < 0:
-            dirf = "NW"
-        else:
-            dirf = "N"
+def direction(ww_pos, Ealpha_pos):
+    if Ealpha_pos[0] > ww_pos[0]:
+        x = 1 #To te South
+    elif Ealpha_pos[0] < ww_pos[0]:
+        x = -1 #To the North
+    elif Ealpha_pos[0] == ww_pos[0]:
+        x = 0 #No horizontal move
+    if Ealpha_pos[1] > ww_pos[1]:
+        y = 1 #To the East
+    elif Ealpha_pos[1] < ww_pos[1]:
+        y = -1 #To the West
+    elif Ealpha_pos[1] == ww_pos[1]:
+        y   = 0 #No vertical move
+    #Directions
+    if x == -1 and y == 0:
+        direct = "N"
+    elif x == -1 and y == 1:
+        direct = "NE"
+    elif x == 0 and y == 1:
+        direct = "E"
+    elif x == 1 and y == 1:
+        direct = "SE"
+    elif x == 1 and y == 0:
+        direct = "S"
+    elif x == 1 and y == -1:
+        direct = "SW"
+    elif x == 0 and y == -1:
+        direct = "W"
+    elif x == -1 and y == -1:
+        direct = "NW"
+    #return direct
+    ww_pos[0] += x
+    ww_pos[1] += y
+    return ww_pos
+
+def smart_alpha(Px, key):
+    ...
+
+def smart_omega(Px, key, AI_orders):
+    """
+	Description of the function
+	---------------------------
+    The AI of the Omega werewolf
+
+    Args:
+    -----
+    Px : The werewolfs team - int
+    key : The werewolfs position - tuple
+    AI_orders : A string of orders - str
+    
+    Returns:
+    --------
+	AI_orders : A string of orders - str
+
+	Version:
+	--------
+	Specification: Aleksander Besler(v.1.0 - 02/05/2022)
+    Code: Aleksander Besler(v.1.0 - 02/05/2022)
+	"""
+    #enemy_wolf, allied_wolf = omega_strat_decider(key)
+    #enemy_wolf_count = get_number_of_elements(enemy_wolf)
+    #allied_wolf_count = get_number_of_elements(allied_wolf)
+    enemy_wolf_count = 0 
+    allied_wolf_count = 1
+    if entities[key][2] > 41:
+        if enemy_wolf_count > allied_wolf_count :
+            x1, y1 = key
+            AI_orders = AI_orders + str(x1) + "-" + str(y1) + ":"
+            order_type = "pacify "
+            AI_orders = AI_orders + order_type
+            return AI_orders
+        if enemy_wolf_count < 1 :
+            direction = ""
+            direction = where_to_go(key, Px)
+            test = where_movement_is_available(key, direction)
+            if test != []:
+                x2, y2 = test
+                x1, y1 = key
+                AI_orders = AI_orders + str(x1) + "-" + str(y1) + ":"
+                order_type = "@"
+                AI_orders = AI_orders + order_type
+                AI_orders = AI_orders + str(x2) + "-" + str(y2) + " " 
+                return AI_orders 
+            else : 
+                print("movement not available")
+    return AI_orders
+                         
+    
+
+def smart_wolves(Px, key, AI_orders):
+    danger_spaces=ww_danger(key)
+    # checks for any danger around the werewolf
+    if danger_spaces == []:
+        if entities[key][2] > 25:
+            direction = where_to_go(key, Px)
+            test = where_movement_is_available(key, direction)
+            if test != []:
+                x2, y2 = test
+                x1, y1 = key
+                AI_orders = AI_orders + str(x1) + "-" + str(y1) + ":"
+                order_type = "@"
+                AI_orders = AI_orders + order_type
+                AI_orders = AI_orders + str(x2) + "-" + str(y2) + " " 
+                return AI_orders 
+            else : 
+                print("movement not available") 
     else:
-        if yf > 0:
-            dirf = "E"
-        elif yf < 0:
-            dirf = "W"
-    return dirf
+        lowhealthwolf = lowest_health(danger_spaces)
+        if entities[key][2] > 25:
+            x1, y1 = key
+            x2, y2 = lowhealthwolf
+            AI_orders = AI_orders + str(x1) + "-" + str(y1) + ":"
+            order_type = "*"
+            AI_orders = AI_orders + order_type
+            AI_orders = AI_orders + str(x2) + "-" + str(y2) + " " 
+            return AI_orders
+    
+def smart_human(Px, key):
+    ...
+# SMART A.I.
 
-def moveAI(ww_coords, target_coords): # Seb - OK
-    temp_target_dir = target_direction(ww_coords, target_coords)
-    xtemp = ww_coords[0] + going_to[temp_target_dir][0]
-    ytemp = ww_coords[1] + going_to[temp_target_dir][1]
-    current_empty_spaces = empty_places(ww_coords)
-    while (xtemp, ytemp) not in current_empty_spaces:
-        new_direction = random.choice(alt_dir[temp_target_dir])
-        #print("New direction = "+new_direction)
-        xtemp = ww_coords[0] + going_to[new_direction][0]
-        ytemp = ww_coords[1] + going_to[new_direction][1]
-        #print("New target case = ("+str(xtemp)+","+str(ytemp)+")")
-	#Return final possible coordinates for move
-    return (xtemp, ytemp)
+def lowest_health(danger_spaces):
+    """
+	Description of the function
+	---------------------------
+    Ckecks wich wolf has the lowest health from the dangerous spaces list
 
-"""
-def normal_wolves_orders(Px): # Seb
-    wolves_orders = ""
+    Args:
+    -----
+    danger_spaces : list of units that are from the opposing team - list
+
+    Returns:
+    --------
+	lowhealthwolf : Coordinates of the lowest health wolf found - str
+
+	Version:
+	--------
+	Specification: Aleksander Besler(v.1.0 - 30/04/2022)
+    Code: Aleksander Besler(v.1.0 - 30/04/2022)
+	"""
+    count= get_number_of_elements(danger_spaces)
+    # Counts number of entities in a list
+    danger1 = entities[danger_spaces[0]]
+    lowhealth= danger1[2]
+    lowhealthwolf= danger_spaces[0]
+    # Puts the first wolf as the lowest health one to have a base to compare on
+    for i in range(count):
+        if lowhealth > danger1[2]:
+            # Compares each wolfs health and takes the one with the lowest health
+            lowhealth = danger1[2]
+            lowhealthwolf = danger_spaces[i]
+    return lowhealthwolf
+
+def get_number_of_elements(list):
+    """
+	Description of the function
+	---------------------------
+    Counts number of entities in a list
+
+    Args:
+    -----
+    list : the list wich we want to get the number of elements - list
+
+    Returns:
+    --------
+	count : number of elements in list - int
+
+	Version:
+	--------
+	Specification: Aleksander Besler(v.1.0 - 30/04/2022)
+    Code: Aleksander Besler(v.1.0 - 30/04/2022)
+	"""
+    count = 0
+    for element in list:
+        count += 1
+    return count    
+
+def where_to_go(ww_pos, Px):
+    """
+	Description of the function
+	---------------------------
+    Analyses where the werewolf can go
+
+    Args:
+    -----
+    ww_pos : position of the wolf - coord 
+    Px : wich team the wolf is on - int
+    
+    Returns:
+    --------
+	direction : Direction in wich the wolf can go 
+
+	Version:
+	--------
+	Specification: Aleksander Besler(v.1.0 - 02/05/2022)
+    Code: Aleksander Besler(v.1.0 - 02/05/2022)
+	"""
+    if Px == 1:
+        ennemy = 1
+    else:
+        ennemy = 2
+    x2, y2 = target_Ealpha(ennemy)
+    x1, y1 = ww_pos
+    direction = ""
+    if x1 < x2 and y1 == y2 :
+        direction = "E"
+    if x1 > x2 and y1 == y2 :
+        direction = "W"
+    if x1 == x2 and y1 < y2 :
+        direction = "N"
+    if x1 == x2 and y1 > y2 :
+        direction = "S"
+    if x1 < x2 and y1 < y2 :
+        direction = "SE"
+    if x1 > x2 and y1 < y2 :
+        direction = "SW"
+    if x1 < x2 and y1 > y2 :
+        direction = "NE"
+    if x1 > x2 and y1 > y2 :
+        direction = "NW"
+    return direction
+
+def where_movement_is_available(ww_pos, direction):
+    """
+	Description of the function
+	---------------------------
+    Analyses where the werewolf can go
+
+    Args:
+    -----
+    ww_pos : position of the wolf - coord 
+    direction : direction in wich the wolf has to go - str
+    
+    Returns:
+    --------
+	confirmed_direction : Confirmed Direction in wich the wolf can go 
+
+	Version:
+	--------
+	Specification: Aleksander Besler(v.1.0 - 02/05/2022)
+    Code: Aleksander Besler(v.1.0 - 02/05/2022)
+	"""
+    confirmed_direction = []
+    x, y = ww_pos
+    E = x+1, y
+    N = x, y+1
+    NE = x+1, y+1
+    SE = x-1, y+1
+    SW = x-1, y-1
+    NW = x+1, y-1
+    W = x-1, y
+    S = x, y-1
+    #print(NE, E, N, W, S, SE, SW, NW, direction)
+    if direction == "N" :
+        if (x, y+1) not in entities and y+1 != 21:
+            confirmed_direction = N
+        elif (x+1, y+1) not in entities and y+1 != 21 and x+1 != 21 and confirmed_direction == [] :
+            confirmed_direction = NE
+        elif (x+1, y-1) not in entities and y+1 != 21 and x-1 != 0 and confirmed_direction == []:
+            confirmed_direction = NW
+        elif (x-1, y) not in entities and x-1 != 0 and confirmed_direction == []:
+            confirmed_direction = W
+        elif (x+1, y) not in entities and x+1 != 21 and confirmed_direction == []:
+            confirmed_direction = E
+        elif (x-1, y+1) not in entities and y-1 != 0 and x+1 != 21 and confirmed_direction == [] :
+            confirmed_direction = SE
+        elif (x, y-1) not in entities and y-1 != 0 and confirmed_direction == [] :
+            confirmed_direction = S
+        elif (x-1, y-1) not in entities and y-1 != 0 and x-1 != 0 and confirmed_direction == [] :
+            confirmed_direction = SW
+    if direction == "NE" :
+        if (x+1, y+1) not in entities and y+1 != 21 and x+1 != 21 and confirmed_direction == [] :
+            confirmed_direction = NE
+        elif (x+1, y) not in entities and x+1 != 21 and confirmed_direction == []:
+            confirmed_direction = E
+        elif (x, y+1) not in entities and y+1 != 21:
+            confirmed_direction = N
+        elif (x+1, y-1) not in entities and y+1 != 21 and x-1 != 0 and confirmed_direction == []:
+            confirmed_direction = NW
+        elif (x-1, y) not in entities and x-1 != 0 and confirmed_direction == []:
+            confirmed_direction = W
+        elif (x-1, y+1) not in entities and y-1 != 0 and x+1 != 21 and confirmed_direction == [] :
+            confirmed_direction = SE
+        elif (x, y-1) not in entities and y-1 != 0 and confirmed_direction == [] :
+            confirmed_direction = S
+        elif (x-1, y-1) not in entities and y-1 != 0 and x-1 != 0 and confirmed_direction == [] :
+            confirmed_direction = SW
+    if direction == "E" :
+        if (x+1, y) not in entities and x+1 != 21 and confirmed_direction == []:
+            confirmed_direction = E
+        elif (x+1, y+1) not in entities and y+1 != 21 and x+1 != 21 and confirmed_direction == [] :
+            confirmed_direction = NE
+        elif (x-1, y+1) not in entities and y-1 != 0 and x+1 != 21 and confirmed_direction == [] :
+            confirmed_direction = SE
+        elif (x, y+1) not in entities and y+1 != 21:
+            confirmed_direction = N
+        elif (x, y-1) not in entities and y-1 != 0 and confirmed_direction == [] :
+            confirmed_direction = S
+        elif (x+1, y-1) not in entities and y+1 != 21 and x-1 != 0 and confirmed_direction == []:
+            confirmed_direction = NW
+        elif (x-1, y) not in entities and x-1 != 0 and confirmed_direction == []:
+            confirmed_direction = W
+        elif (x-1, y-1) not in entities and y-1 != 0 and x-1 != 0 and confirmed_direction == [] :
+            confirmed_direction = SW
+    if direction == "SE" :
+        if (x-1, y+1) not in entities and y-1 != 0 and x+1 != 21 and confirmed_direction == [] :
+            confirmed_direction = SE
+        if (x+1, y) not in entities and x+1 != 21 and confirmed_direction == []:
+            confirmed_direction = E
+        if (x, y-1) not in entities and y-1 != 0 and confirmed_direction == []:
+            confirmed_direction = S
+        if (x+1, y+1) not in entities and y+1 != 21 and x+1 != 21 and confirmed_direction == []:
+            confirmed_direction = NE
+        if (x, y+1) not in entities and y+1 != 21:
+            confirmed_direction = N
+        if (x+1, y-1) not in entities and y+1 != 21 and x-1 != 0 and confirmed_direction == []:
+            confirmed_direction = NW
+        if (x-1, y) not in entities and x-1 != 0 and confirmed_direction == []:
+            confirmed_direction = W
+        if (x-1, y-1) not in entities and y-1 != 0 and x-1 != 0 and confirmed_direction == []:
+            confirmed_direction = SW
+        print(confirmed_direction)
+    if direction == "S" :
+        if (x, y-1) not in entities and y-1 != 0 and confirmed_direction == [] :
+            confirmed_direction = S
+        elif (x-1, y-1) not in entities and y-1 != 0 and x-1 != 0 and confirmed_direction == [] :
+            confirmed_direction = SW
+        elif (x-1, y+1) not in entities and y-1 != 0 and x+1 != 21 and confirmed_direction == [] :
+            confirmed_direction = SE
+        elif (x+1, y+1) not in entities and y+1 != 21 and x+1 != 21 and confirmed_direction == [] :
+            confirmed_direction = NE
+        elif (x+1, y) not in entities and x+1 != 21 and confirmed_direction == []:
+            confirmed_direction = E
+        elif (x+1, y-1) not in entities and y+1 != 21 and x-1 != 0 and confirmed_direction == []:
+            confirmed_direction = NW
+        elif (x-1, y) not in entities and x-1 != 0 and confirmed_direction == []:
+            confirmed_direction = W
+        elif (x, y+1) not in entities and y+1 != 21:
+            confirmed_direction = N
+    if direction == "SW" :
+        if (x-1, y-1) not in entities and y-1 != 0 and x-1 != 0 and confirmed_direction == [] :
+            confirmed_direction = SW
+        elif (x, y-1) not in entities and y-1 != 0 and confirmed_direction == [] :
+            confirmed_direction = S
+        elif (x-1, y) not in entities and x-1 != 0 and confirmed_direction == []:
+            confirmed_direction = W
+        elif (x+1, y-1) not in entities and y+1 != 21 and x-1 != 0 and confirmed_direction == []:
+            confirmed_direction = NW
+        elif (x, y+1) not in entities and y+1 != 21:
+            confirmed_direction = N
+        elif (x-1, y+1) not in entities and y-1 != 0 and x+1 != 21 and confirmed_direction == [] :
+            confirmed_direction = SE
+        elif (x+1, y+1) not in entities and y+1 != 21 and x+1 != 21 and confirmed_direction == [] :
+            confirmed_direction = NE
+        elif (x+1, y) not in entities and x+1 != 21 and confirmed_direction == []:
+            confirmed_direction = E
+    if direction == "W" :
+        if (x-1, y) not in entities and x-1 != 0 and confirmed_direction == []:
+            confirmed_direction = W
+        elif (x-1, y-1) not in entities and y-1 != 0 and x-1 != 0 and confirmed_direction == [] :
+            confirmed_direction = SW
+        elif (x+1, y-1) not in entities and y+1 != 21 and x-1 != 0 and confirmed_direction == []:
+            confirmed_direction = NW
+        elif (x, y+1) not in entities and y+1 != 21:
+            confirmed_direction = N
+        elif (x, y-1) not in entities and y-1 != 0 and confirmed_direction == [] :
+            confirmed_direction = S
+        elif (x-1, y+1) not in entities and y-1 != 0 and x+1 != 21 and confirmed_direction == [] :
+            confirmed_direction = SE
+        elif (x+1, y+1) not in entities and y+1 != 21 and x+1 != 21 and confirmed_direction == [] :
+            confirmed_direction = NE
+        elif (x+1, y) not in entities and x+1 != 21 and confirmed_direction == []:
+            confirmed_direction = E
+    if direction == "NW" :
+        if (x+1, y-1) not in entities and y+1 != 21 and x-1 != 0 and confirmed_direction == []:
+            confirmed_direction = NW
+        elif (x-1, y) not in entities and x-1 != 0 and confirmed_direction == []:
+            confirmed_direction = W
+        elif (x-1, y-1) not in entities and y-1 != 0 and x-1 != 0 and confirmed_direction == [] :
+            confirmed_direction = SW
+        elif (x, y+1) not in entities and y+1 != 21:
+            confirmed_direction = N
+        elif (x, y-1) not in entities and y-1 != 0 and confirmed_direction == [] :
+            confirmed_direction = S
+        elif (x+1, y) not in entities and x+1 != 21 and confirmed_direction == []:
+            confirmed_direction = E
+        elif (x+1, y+1) not in entities and y+1 != 21 and x+1 != 21 and confirmed_direction == [] :
+            confirmed_direction = NE
+        elif (x-1, y+1) not in entities and y-1 != 0 and x+1 != 21 and confirmed_direction == [] :
+            confirmed_direction = SE
+    return confirmed_direction
+
+    
+def get_team(Px):
+    team = {}
+    for cle in entities:
+        if entities[cle][0] == Px:
+            team[cle] = entities[cle]
+            # Création du flag d'action
+            team[cle][0] = 0
+    return team
+
+def empty_places(ww_pos):
+    x = ww_pos[0]
+    y = ww_pos[1]
+    empty_spaces = []
+    if (x+1, y) not in entities:
+        empty_spaces.append((x+1, y))
+    if (x, y+1) not in entities:
+        empty_spaces.append((x, y+1))
+    if (x+1, y+1) not in entities:
+        empty_spaces.append((x+1, y+1))
+    if (x-1, y+1) not in entities:
+        empty_spaces.append((x-1, y+1))
+    if (x-1, y-1) not in entities:
+        empty_spaces.append((x-1, y-1))
+    if (x+1, y-1) not in entities:
+        empty_spaces.append((x+1, y-1))
+    if (x-1, y) not in entities:
+        empty_spaces.append((x-1, y))
+    if (x, y-1) not in entities:
+        empty_spaces.append((x, y-1))
+    return empty_spaces
+
+def ww_danger(ww_pos):
+    """
+	Description of the function
+	---------------------------
+    Ckecks if there is any danger around the wolf
+
+    Args:
+    -----
+    ww_pos : position of teh wolf - str
+
+    Returns:
+    --------
+	danger_spaces : list of units that are from the opposing team - list
+
+	Version:
+	--------
+	Specification: Aleksander Besler(v.1.0 - 30/04/2022)
+    Code: Aleksander Besler(v.1.0 - 29/04/2022)
+	"""
+    x = ww_pos[0]
+    y = ww_pos[1]
+    team = entities[ww_pos][0]
+    if team == 1:
+        team = 2
+    else :
+        team = 1
+    # Indicates wich team has to be attacked
+    danger_spaces = []
+    if x - 1 > 0 and x + 1 < 21:
+        # Checks if the target is in boarder
+        if (x+1, y) in entities :
+            # Checks if the target exists
+            if entities[x+1, y][0] == team :
+                # Verifies if the target is of the opposing team
+                danger_spaces.append((x+1, y))
+                # Puts the target in the danger list
+        if (x-1, y) in entities :
+            if entities[x-1, y][0] == team :
+                danger_spaces.append((x-1, y))
+    if y - 1 > 0 and y + 1 < 21:
+        if (x, y-1) in entities :
+            if entities[x, y-1][0] == team :
+                danger_spaces.append((x, y-1))
+        if (x, y+1) in entities :
+            if entities[x, y+1][0] == team :
+                danger_spaces.append((x, y+1))
+    if y - 1 > 0 and y + 1 < 21 and x - 1 > 0 and x + 1 < 21:
+        if (x+1, y+1) in entities :
+            if entities[x+1, y+1][0] == team :
+                danger_spaces.append((x+1, y+1))
+        if (x-1, y+1) in entities :
+            if entities[x-1, y+1][0] == team :
+                danger_spaces.append((x-1, y+1))
+        if (x-1, y-1) in entities :
+            if entities[x-1, y-1][0] == team :
+                danger_spaces.append((x-1, y-1))
+        if (x+1, y-1) == team :
+            if entities[x+1, y-1][0] in entities :
+                danger_spaces.append((x+1, y-1))
+    return danger_spaces
+
+def omega_strat_decider(ww_pos):
+    """
+	Description of the function
+	---------------------------
+    Ckecks what is around the omega to better know what strategy to implement 
+
+    Args:
+    -----
+    ww_pos : position of teh wolf - str
+
+    Returns:
+    --------
+	Enemy_wolf : A list of ennemy wolf around the omega - list 
+    allied_wolf : A list of allied wolf around the omega - list
+
+	Version:
+	--------
+	Specification: Aleksander Besler(v.1.0 - 30/04/2022)
+    Code: Aleksander Besler(v.1.0 - 29/04/2022)
+	"""
+    x = ww_pos[0]
+    y = ww_pos[1]
+    team = entities[ww_pos][0]
+    if team == 1:
+        team = 2
+    else :
+        team = 1
+    if team == 1:
+        ally = 1
+    else :
+        ally = 2
+    # Indicates wich team has to be attacked
+    enemy_wolf = []
+    allied_wolf = []
+    test = 1
+    while test != 4 :
+        if x - test > 0 and x + test < 21:
+            # Checks if the target is in boarder
+            if (x+test, y) in entities :
+                # Checks if the target exists
+                if entities[x+test, y][0] == team :
+                    # Verifies if the target is of the opposing team
+                    enemy_wolf.append((x+test, y))
+                    # Puts the target in the ennemy list
+                if entities[x+test, y][0] == ally :
+                    allied_wolf.append((x+test, y))
+                    # Puts the target in the ally list
+            if (x-test, y) in entities :
+                if entities[x-test, y][0] == team :
+                    enemy_wolf.append((x-test, y))
+                if entities[x-test, y][0] == ally :
+                    allied_wolf.append((x-test, y))
+        if y - test > 0 and y + test < 21:
+            if (x, y-test) in entities :
+                if entities[x, y-test][0] == team :
+                    enemy_wolf.append((x, y-test))
+                if entities[x, y-test][0] == ally :
+                    allied_wolf.append((x, y-test))
+            if (x, y+1) in entities :
+                if entities[x, y+test][0] == team :
+                    enemy_wolf.append((x, y+test))
+                if entities[x, y+test][0] == ally :
+                    allied_wolf.append((x, y+test))
+        if y - test > 0 and y + test < 21 and x - test > 0 and x + test < 21:
+            if (x+test, y+test) in entities :
+                if entities[x+test, y+test][0] == team :
+                    enemy_wolf.append((x+test, y+test))
+                if entities[x+test, y+test][0] == ally :
+                    allied_wolf.append((x+test, y+test))
+            if (x-test, y+test) in entities :
+                if entities[x-test, y+test][0] == team :
+                    enemy_wolf.append((x-test, y+test))
+                if entities[x-test, y+test][0] == ally :
+                    allied_wolf.append((x-test, y+test))
+            if (x-test, y-test) in entities :
+                if entities[x-test, y-test][0] == team :
+                    enemy_wolf.append((x-test, y-test))
+                if entities[x-test, y-test][0] == ally :
+                    allied_wolf.append((x-test, y-test))
+            if (x+test, y-test) == team :
+                if entities[x+test, y-test][0] in entities :
+                    enemy_wolf.append((x+test, y-test))
+                if entities[x+test, y-test][0] == ally :
+                    allied_wolf.append((x+test, y-test))
+        test += 1
+    return enemy_wolf, allied_wolf
+
+def move_wolves(Px):
+    moves_orders = ""
+    
     if Px == 1:
         ennemy = 2
     else:
@@ -470,162 +923,21 @@ def normal_wolves_orders(Px): # Seb
         #Get team of the player
         current_team = get_team(Px)
         for key in current_team:
-            current_ww_pos = [key[0], key[1]]
             #Check if current wolf flag is set to 1
             if current_team[key][0] == 0:
-                # --------------------------------------------------------------
-                # Check for fight
-
-                #Check if ennemy alpha is in range to attack
-                ww_in_range = in_range(1, key)
-                for key in ww_in_range:
-                    if key[1] == "alpha" and key[0] == ennemy:
-                        Ealpha_pos = target_Ealpha(ennemy)
-                        wolves_orders = " "+str(current_ww_pos[0])+"-"+str(current_ww_pos[1])+":*"+str(Ealpha_pos[0])+"-"+str(Ealpha_pos[1])+" "
-                        current_team[key][0] = 1
-                        nbr_flags += 1
-                #Check if other ennemy is in range to attack
-                for key in ww_in_range:
-                    if key[0] == ennemy:
-                        wolves_orders = " "+str(current_ww_pos[0])+"-"+str(current_ww_pos[1])+":*"+str(key[0])+"-"+str(key[1])+" "
-                        current_team[key][0] = 1
-                        nbr_flags += 1
-                # --------------------------------------------------
-                # Check for move
-
-                #Check if empty place is in range to move
+                #If Not, check if empty space around
                 current_empty_spaces = empty_places(key)
                 if current_empty_spaces != []:
                     #If empty space around, move to ennemy alpha
+                    Ealpha_pos = target_Ealpha(ennemy)
                     dir = direction(key, Ealpha_pos)
                     #Check if the move is possible
                     if dir in current_empty_spaces: #Cool, move, add the move to string
-                        wolves_orders = ""+str(key[0])+"-"+str(key[1])+":@"+str(dir[0])+"-"+str(dir[1])+" "
+                        move_orders = ""+str(key[0])+"-"+str(key[1])+":@"+str(dir[0])+"-"+str(dir[1])+" "
                         current_team[key][0] = 1
                         nbr_flags += 1
-                    else: # If not, check if another empty space is available in the "same" direction
-"""
-# --------------------------------------------------
-# PART 2
-"""
-Each type of entity has a different strategy.
-"""
-def smart_alpha(key, ennemy):
-    ennemies = ennemies_in_range(key)
-    # Check life of werewolf, if lower than 50, looking for food
-    if entities[key][2] < 50:
-        food_pos = looking_for_food(key)
-        if food_pos in in_range(1, key):
-            #eat
-            return ""+str(key[0])+"-"+str(key[1])+":<"+str(food_pos[0])+"-"+str(food_pos[1])+" "
-        else:
-            #move
-            destination = moveAI(key, food_pos)
-            return ""+str(key[0])+"-"+str(key[1])+":@"+str(destination[0])+"-"+str(destination[1])+" "
-    # Check if there is any ennemy in range, if not target ennemy alpha and move
-    elif ennemies == []:
-        #Move
-        target_alpha = target_Ealpha(ennemy)
-        destination = moveAI(key, target_alpha)
-        return " "+str(key[0])+"-"+str(key[1])+":@"+str(destination[0])+"-"+str(destination[1])+" "
-    # If there is an ennemy in range, target him and attack the lowest health one
-    else:
-        lowenemy = lowest_health(ennemies)
-        return " "+str(key[0])+"-"+str(key[1])+":*"+str(lowenemy[0])+"-"+str(lowenemy[1])+" "
-
-def smart_omega(key):
-    ...
-    return "Test omega"
-
-def smart_human(key):  # Seb - OK
-    food_pos = looking_for_food(key)
-    if food_pos in in_range(1, key):
-        #eat
-        return ""+str(key[0])+"-"+str(key[1])+":<"+str(food_pos[0])+"-"+str(food_pos[1])+" "
-    else:
-        #move
-        destination = moveAI(key, food_pos)
-        return ""+str(key[0])+"-"+str(key[1])+":@"+str(destination[0])+"-"+str(destination[1])+" "
-
-def smart_wolves(key):
-    danger_spaces = ww_danger(key)
-    # checks for any danger around the werewolf
-    if danger_spaces == []:
-        if entities[key][2] > 25:
-            Ealpha_pos = target_Ealpha(Px)
-            orig = key
-            #print(entities[key][0])
-            AI_orders = AI_orders + str(orig[0]) + "-" + str(orig[1]) + ":"
-            #rand an order and add to str
-            order_type = random.choice(["@", "<", "pacify "])
-            AI_orders = AI_orders + order_type
-            # for x
-            if order_type == "pacify ":
-                #print(AI_orders)
-                ...
-            else:
-                dest = [0, 0]
-                stepx = random.choice([+1, -1, 0])
-                dest[0] = orig[0] + stepx
-                stepy = random.choice([+1, -1, 0])
-                dest[1] = orig[1] + stepy
-                AI_orders = AI_orders + str(dest[0]) + "-" + str(dest[1]) + " "
-            return AI_orders
-    else:
-        #print(danger_spaces)
-        lowhealthwolf = lowest_health(danger_spaces)
-        if entities[key][2] > 25:
-            x1, y1 = key
-            x2, y2 = lowhealthwolf
-            AI_orders = AI_orders + str(x1) + "-" + str(y1) + ":"
-            order_type = "*"
-            AI_orders = AI_orders + order_type
-            AI_orders = AI_orders + str(x2) + "-" + str(y2) + " "
-            return AI_orders
-
-def smart_wolves2(key, ennemy):
-    ennemies = ennemies_in_range(key)
-    # Check life of werewolf, if lower than 30, looking for food
-    if entities[key][2] < 30:
-        food_pos = looking_for_food(key)
-        if food_pos in in_range(1, key):
-            #eat
-            return ""+str(key[0])+"-"+str(key[1])+":<"+str(food_pos[0])+"-"+str(food_pos[1])+" "
-        else:
-            #move
-            destination = moveAI(key, food_pos)
-            return ""+str(key[0])+"-"+str(key[1])+":@"+str(destination[0])+"-"+str(destination[1])+" "
-    # Check if there is any ennemy in range, if not target ennemy alpha and move
-    elif ennemies == []:
-        #Move
-        Ealpha_pos = target_Ealpha(ennemy)
-        destination = moveAI(key, Ealpha_pos)
-        return " "+str(key[0])+"-"+str(key[1])+":@"+str(destination[0])+"-"+str(destination[1])+" "
-    # If there is an ennemy in range, target him and attack the lowest health one
-    else:
-        lowenemy = lowest_health(ennemies)
-        return " "+str(key[0])+"-"+str(key[1])+":*"+str(lowenemy[0])+"-"+str(lowenemy[1])+" "
-
-# ----  Main smart AI function ----
-def SAI_orders_generator(Px):
-    if Px == 1:
-        ennemy = 2
-    else:
-        ennemy = 1
-    # Get the members of the team
-    current_team = get_team(Px)
-    SAI_orders = ""
-    for key in current_team.items():
-        if current_team[key][1] == "alpha":
-            SAI_orders += smart_alpha(key, ennemy)
-        elif current_team[key][1] == "omega":
-            SAI_orders += smart_omega(key)
-        elif current_team[key][1] == "normal":
-            SAI_orders += smart_wolves2(key, ennemy)
-        else:
-            # It's a human
-            SAI_orders += smart_human(key)
-    return SAI_orders
+                        print(nbr_flags, Ealpha_pos, dir, current_team)
+                        
 
 """
 ===================
@@ -710,7 +1022,7 @@ def entity_at(entity_coords): # Spec 100 % and Code 100%
             return [values[0], values[1], values[2]]
     return False
 
-def in_range(range, ww_coords):  # Spec 100 % and Code 100%
+def in_range(range, omega_coord):  # Spec 100 % and Code 100%
     """
    	Description of the function
     ---------------------------
@@ -730,16 +1042,23 @@ def in_range(range, ww_coords):  # Spec 100 % and Code 100%
     Specification: Sébastien Baudoux(v.1.0 - 21/02/2022)
     Code: Sébastien Baudoux(v.1.0 - 21/02/2022)
     """
+    nbr_entity = 0
     ww_in_range = {}
+    key = []
+    #print(omega_coord)
     for key, values in entities.items():
+        #Test if entity is a werewolf
         if values[0] != 0:
-            x = abs((key[0]) - (ww_coords[0]))
-            y = abs((key[1]) - (ww_coords[1]))
+            #print(omega_coord[0])
+            x = abs((key[0]) - (omega_coord[0]))
+            y = abs((key[1]) - (omega_coord[1]))
             if x == 0 and y == 0:
-                ...# current wolf
+                ...  # current = omega
             elif (x <= range) and (y <= range):
+                nbr_entity += 1
                 ww_in_range.update({key: values})
     return ww_in_range
+
 
 """
     **************
@@ -783,10 +1102,9 @@ def pacify(rayon, omega, pacified_werewolves):  # Spec 100 % and Code 100%
             print(" Omega don't have enough energy to pacify")
         #For each ww at range <= 6
         else:
-            entities[omega][2] -= 40
             for key in in_range(rayon, omega):
                 pacified_werewolves.append(key)
-                print(" These werewolves has been pacified for this turn " +
+            print(" These werewolves has been pacified for this turn " +
                   str(pacified_werewolves)+"")
     else:
         ...
@@ -822,14 +1140,14 @@ def bonus(ww_coords):# Spec 0 % and Code 1000%
     bonus = 0
     team = entities[ww_coords][0]
     #Check allied werewolf at range 2
-    wwat2 = in_range(2, ww_coords)
+    wwat2 = in_range(2,ww_coords)
     if len(wwat2) != 0:
         for key in wwat2:
             # Si team ==
             if (wwat2[key][0] == team):
                 bonus += 10
     #Check allied alpha at range 4
-    alphaat4 = in_range(4, ww_coords)
+    alphaat4 = in_range(4,ww_coords)
     if len(alphaat4) != 0:
         for key in alphaat4:
             # Si team == and alpha
@@ -1034,7 +1352,7 @@ def welcome_screen():  # Spec 100 % and Code 100%
     Description of the function
     ---------------------------
     Just a welcome screen to display the game name and the team members name.
-
+    
     Specification: Sébastien Baudoux(v.1.0 - 25/03/2022)
     Code: Sébastien Baudoux(v.1.0 - 25/03/2022)
     """
@@ -1200,7 +1518,7 @@ def get_orders(orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_typ
         orders_P1 = input(
             print("Player 1, could you please enter your orders for this turn : "))
     else:
-        orders_P1 = SAI_orders_generator(1)
+        orders_P1 = DAI_orders_generator(1)
     # Notify player 2, if remote, with P1 orders
     if P2_game_mode == "remote":
         notify_remote_orders(connection, orders_P1)
@@ -1212,7 +1530,7 @@ def get_orders(orders_P1, orders_P2, P1_game_mode, P2_game_mode, P1_type, P2_typ
         orders_P2 = input(
             print("Player 2, could you please enter your orders for this turn : "))
     else:
-        orders_P2 = SAI_orders_generator(2)
+        orders_P2 = DAI_orders_generator(2)
     # Notify player 1, if remote, with P2 orders
     if P1_game_mode == "remote":
         notify_remote_orders(connection, orders_P2)
@@ -1466,7 +1784,7 @@ def game_loop(game_turn, turn_without_damage, orders_P1, orders_P2, P1_game_mode
         fin = 1
         return check_alphas_life(fin)
     # (3) Check game turn - ONLY FOR TESTING PURPOSE
-    if game_turn == 31:
+    if game_turn == 201:
         fin = 1
         return check_alphas_life(fin)
     else:
@@ -1537,10 +1855,3 @@ def settings(path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_typ
 welcome_screen()
 # Display game settings
 settings(path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type)
-
-# Fonction finale de lancement du jeu =
-# play_game(numero_groupe, type_joueur, type_jeu, remote_IP_2=138.48.160.120)
-# exemple : play_game(20, 'IA', 'remote', remote_IP_2=138.48.160.120)
-
-
-#play_game(group_1, P1_type, P1_game_mode, remote_IP_2='127.0.0.1')
