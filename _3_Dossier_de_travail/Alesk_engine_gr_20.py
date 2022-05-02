@@ -98,7 +98,7 @@ Last things to do before submission
 """
 
 # Creation of all "global" variables required for the game
-path = "C:/Users/Seb/Documents/GitHub/UNamur_Q2_ProgProject/_3_Dossier_de_travail/example.ano"
+path = "D:/Cours/UNamur_Q2_ProgProject/_3_Dossier_de_travail/example.ano"
 #https://github.com/Nauorac/UNamur_Q2_ProgProject/blob/526bafbbaa287bad23a7efa7956b62999b42a00b/_0_Ennonce/example.ano
 
 P1_game_mode = "local"
@@ -281,8 +281,7 @@ beginlifeP2 = startlifePlayer(2)
 ===================
 """
 # DUMB A.I.
-
-def DAI_orders_generator(Px):  # Spec 100 % and Code 100%
+def DAI_orders_generator(Px): # Spec 100 % and Code 100%
     """
 	Description of the function
 	---------------------------
@@ -310,13 +309,13 @@ def DAI_orders_generator(Px):  # Spec 100 % and Code 100%
     AI_orders = ""
     for key, values in entities.items():
         if values[0] == Px:
-            if entities[key][1] == "alpha":
+            if entities[key][1] == "alpha" :
                 smart_alpha(Px, key)
-            if entities[key][1] == "omega":
+            if entities[key][1] == "omega" :
                 smart_omega(Px, key)
-            if entities[key][1] == "normal":
+            if entities[key][1] == "normal" :
                 AI_orders = smart_wolves(Px, key, AI_orders)
-            if entities[key][1] == "human":
+            if entities[key][1] == "human" :
                 smart_human(Px, key)
     return AI_orders
 
@@ -328,10 +327,9 @@ def DAI_orders_generator(Px):  # Spec 100 % and Code 100%
 # -------------------------------------------------------
 # PART 1
 
-# Next 2 dictionnaires are used to store cardinal directions and their coordinates modificators
-going_to = {"N": [-1, 0], "NE": [-1, +1], "E": [0, +1], "SE": [+1, +1], "S": [+1, 0], "SW": [+1, -1], "W": [0, -1], "NW": [-1, -1]}
-
-alt_dir = {"N": ["NW", "NE"], "S": ["SW", "SE"], "E": ["NE", "SE"], "W": ["NW", "SW"], "NE": ["N", "E"], "SE": ["S", "E"], "NW": ["N", "W"], "SW": ["S", "W"]}
+going_to = {"N": [-1, 0], "NE": [-1, +1], "E": [0, +1], "SE": [+1, +1], "S": [+1, 0], "SW": [+1, -1], "W": [-1, 0], "NW": [-1, -1]}
+alt_dir = {"N": ("NW", "NE"), "S": ("SW", "SE"), "E": ("NE", "SE"), "W": (
+    "NW", "SW"), "NE": ("N", "E"), "SE": ("S", "E"), "NW": ("N", "W"), "SW": ("S", "W")}
 
 def distance(position_x1, position_y1, position_x2, position_y2): # 
     if abs(position_x2 - position_x1) > abs(position_y2-position_y1):
@@ -348,61 +346,40 @@ def target_Ealpha(Px): #
             Ealpha_pos.append(cle[1])
     return Ealpha_pos
 
-def target_direction(ww_coords, target): # 
-	"""_summary_
-
-	Args:
-		ww_coords (_type_): _description_
-		target (_type_): _description_
-
-	Returns:
-		_type_: _description_
-	"""
-	xf = target[0] - ww_coords[0]  # x final
-	yf = target[1] - ww_coords[1]  # y final
-	if xf > 0:
-		if yf > 0:
-			return "SE"
-		elif yf < 0:
-			return "SW"
-		else:
-			return "S"
-	elif xf < 0:
-		if yf > 0:
-			return "NE"
-		elif yf < 0:
-			return "NW"
-		else:
-			return "N"
-	else:
-		if yf > 0:
-			return "E"
-		elif yf < 0:
-			return "W"
-	#Direction cible = direction de Y (N, S, nothing) + direction de X (W, E, nothing)
-	dirf = ""+Priory+""+Priorx+""
-	print("Direction cible : "+dirf)
-	return dirf
-
-temp_target_dir = target_direction(ww_coords, target)
-
-def test_move(ww_coords, temp_target_dir): # 
-	xtemp = ww_coords[0] + going_to[temp_target_dir][0]
-	ytemp = ww_coords[1] + going_to[temp_target_dir][1]
-	while (xtemp, ytemp) not in current_empty_spaces:
-		#print("Current target case = ("+str(xtemp)+","+str(ytemp)+")")
-		#print("----")
-		new_direction = random.choice(alt_dir[temp_target_dir])
-		print("New direction = "+new_direction)
-		xtemp = ww_coords[0] + going_to[new_direction][0]
-		ytemp = ww_coords[1] + going_to[new_direction][1]
-		print("New target case = ("+str(xtemp)+","+str(ytemp)+")")
-	#print("----")
-	print("Final direction = "+new_direction)
-	#Return final coordinates
-	return (xtemp, ytemp)
-
-test_move(ww_coords, temp_target_dir)
+def direction(ww_pos, Ealpha_pos): #
+    if Ealpha_pos[0] > ww_pos[0]:
+        x = 1 #To te South
+    elif Ealpha_pos[0] < ww_pos[0]:
+        x = -1 #To the North
+    elif Ealpha_pos[0] == ww_pos[0]:
+        x = 0 #No horizontal move
+    if Ealpha_pos[1] > ww_pos[1]:
+        y = 1 #To the East
+    elif Ealpha_pos[1] < ww_pos[1]:
+        y = -1 #To the West
+    elif Ealpha_pos[1] == ww_pos[1]:
+        y   = 0 #No vertical move
+    #Directions
+    if x == -1 and y == 0:
+        direct = "N"
+    elif x == -1 and y == 1:
+        direct = "NE"
+    elif x == 0 and y == 1:
+        direct = "E"
+    elif x == 1 and y == 1:
+        direct = "SE"
+    elif x == 1 and y == 0:
+        direct = "S"
+    elif x == 1 and y == -1:
+        direct = "SW"
+    elif x == 0 and y == -1:
+        direct = "W"
+    elif x == -1 and y == -1:
+        direct = "NW"
+    #return direct
+    ww_pos[0] += x
+    ww_pos[1] += y
+    return ww_pos
 
 def lowest_health(danger_spaces): # 
     """
@@ -552,7 +529,7 @@ def ww_danger(ww_pos): #
                 danger_spaces.append((x+1, y-1))
     return danger_spaces
 
-def move_wolves(Px): #
+def move_wolves(Px): # 
     moves_orders = ""
     if Px == 1:
         ennemy = 2
@@ -573,91 +550,22 @@ def move_wolves(Px): #
                     Ealpha_pos = target_Ealpha(ennemy)
                     dir = direction(key, Ealpha_pos)
                     #Check if the move is possible
-                    if dir in current_empty_spaces:  # Cool, move, add the move to string
-                        move_orders = "" + \
-                            str(key[0])+"-"+str(key[1])+":@" + \
-                            str(dir[0])+"-"+str(dir[1])+" "
+                    if dir in current_empty_spaces: #Cool, move, add the move to string
+                        move_orders = ""+str(key[0])+"-"+str(key[1])+":@"+str(dir[0])+"-"+str(dir[1])+" "
                         current_team[key][0] = 1
                         nbr_flags += 1
                         print(nbr_flags, Ealpha_pos, dir, current_team)
-
-    x = ww_pos[0]
-    y = ww_pos[1]
-    empty_spaces = []
-    if (x+1, y) not in entities:
-        empty_spaces.append((x+1, y))
-    if (x, y+1) not in entities:
-        empty_spaces.append((x, y+1))
-    if (x+1, y+1) not in entities:
-        empty_spaces.append((x+1, y+1))
-    if (x-1, y+1) not in entities:
-        empty_spaces.append((x-1, y+1))
-    if (x-1, y-1) not in entities:
-        empty_spaces.append((x-1, y-1))
-    if (x+1, y-1) not in entities:
-        empty_spaces.append((x+1, y-1))
-    if (x-1, y) not in entities:
-        empty_spaces.append((x-1, y))
-    if (x, y-1) not in entities:
-        empty_spaces.append((x, y-1))
-    return empty_spaces
-
-def normal_wolves_orders(Px): #
-    wolves_orders = ""
-    if Px == 1:
-        ennemy = 2
-    else:
-        ennemy = 1
-    #Flag representing if the werewolf has moved (1=yes, 0=no)
-    nbr_flags = 0
-    while nbr_flags != 7:
-        #Get team of the player
-        current_team = get_team(Px)
-        for key in current_team:
-            current_ww_pos = [key[0], key[1]]
-            #Check if current wolf flag is set to 1
-            if current_team[key][0] == 0:
-                # --------------------------------------------------------------
-                # Check for fight
-
-                #Check if ennemy alpha is in range to attack
-                ww_in_range = in_range(1, key)
-                for key in ww_in_range:
-                    if key[1] == "alpha" and key[0] == ennemy:
-                        Ealpha_pos = target_Ealpha(ennemy)
-                        wolves_orders = " "+str(current_ww_pos[0])+"-"+str(current_ww_pos[1])+":*"+str(Ealpha_pos[0])+"-"+str(Ealpha_pos[1])+" "
-                        current_team[key][0] = 1
-                        nbr_flags += 1
-                #Check if other ennemy is in range to attack
-                for key in ww_in_range:
-                    if key[0] == ennemy:
-                        wolves_orders = " "+str(current_ww_pos[0])+"-"+str(current_ww_pos[1])+":*"+str(key[0])+"-"+str(key[1])+" "
-                        current_team[key][0] = 1
-                        nbr_flags += 1
-                # --------------------------------------------------
-                # Check for move
-
-                #Check if empty place is in range to move
-                current_empty_spaces = empty_places(key)
-                if current_empty_spaces != []:
-                    #If empty space around, move to ennemy alpha
-                    dir = direction(key, Ealpha_pos)
-                    #Check if the move is possible
-                    if dir in current_empty_spaces: #Cool, move, add the move to string
-                        wolves_orders = ""+str(key[0])+"-"+str(key[1])+":@"+str(dir[0])+"-"+str(dir[1])+" "
-                        current_team[key][0] = 1
-                        nbr_flags += 1
-                    else: # If not, check if another empty space is available in the "same" direction
 
 # --------------------------------------------------
 # PART 2
 def smart_alpha(Px, key):
     ...
+
 def smart_omega(Px, key):
     ...
 
 def smart_wolves(Px, key, AI_orders):
-    danger_spaces = ww_danger(key)
+    danger_spaces=ww_danger(key)
     # checks for any danger around the werewolf
     if danger_spaces == []:
         if entities[key][2] > 25:
@@ -668,7 +576,7 @@ def smart_wolves(Px, key, AI_orders):
             #rand an order and add to str
             order_type = random.choice(["@", "<", "pacify "])
             AI_orders = AI_orders + order_type
-            # for x
+            # for x 
             if order_type == "pacify ":
                 #print(AI_orders)
                 ...
@@ -679,7 +587,7 @@ def smart_wolves(Px, key, AI_orders):
                 stepy = random.choice([+1, -1, 0])
                 dest[1] = orig[1] + stepy
                 AI_orders = AI_orders + str(dest[0]) + "-" + str(dest[1]) + " "
-            return AI_orders
+            return AI_orders  
     else:
         #print(danger_spaces)
         lowhealthwolf = lowest_health(danger_spaces)
@@ -689,7 +597,7 @@ def smart_wolves(Px, key, AI_orders):
             AI_orders = AI_orders + str(x1) + "-" + str(y1) + ":"
             order_type = "*"
             AI_orders = AI_orders + order_type
-            AI_orders = AI_orders + str(x2) + "-" + str(y2) + " "
+            AI_orders = AI_orders + str(x2) + "-" + str(y2) + " " 
             return AI_orders
 
 def smart_human(Px, key):
@@ -814,6 +722,7 @@ def in_range(range, omega_coord):  # Spec 100 % and Code 100%
                 nbr_entity += 1
                 ww_in_range.update({key: values})
     return ww_in_range
+
 
 """
     **************
@@ -1539,7 +1448,7 @@ def game_loop(game_turn, turn_without_damage, orders_P1, orders_P2, P1_game_mode
         fin = 1
         return check_alphas_life(fin)
     # (3) Check game turn - ONLY FOR TESTING PURPOSE
-    if game_turn == 31:
+    if game_turn == 201:
         fin = 1
         return check_alphas_life(fin)
     else:
@@ -1610,7 +1519,3 @@ def settings(path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_typ
 welcome_screen()
 # Display game settings
 settings(path, P1_game_mode, P2_game_mode, group_1, group_2, P1_type, P2_type)
-
-# Fonction finale de lancement du jeu =
-# play_game(numero_groupe, type_joeur, type_jeu, remote_IP_2=138.48.160.120)
-# exemple : play_game(20, 'IA', 'remote', remote_IP_2=138.48.160.120)
