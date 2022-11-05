@@ -1,0 +1,34 @@
+﻿Alpha et Omega
+	game_engine
+		mode_selection
+			Input : mode selection
+			Local
+				Human VS Human
+				Human VS I.A.
+				I.A. VS I.A.
+			Lan
+				Human VS Human
+				Human VS I.A.
+				I.A. VS I.A.
+		ui_engine
+			map creator
+				def_game_mode_selection_displayer
+			HUD manager
+				def_display_logs
+				def_update_players_totallife
+				def_turn_updater
+			map_updater
+				def_remove_death_entities
+		I.A. engine
+			def_orders_generator
+		Gamerules_cycle
+			Input : Orders Team1 & Team2
+				orders_engine
+					def_orders_cleaner
+					def_orders_manager
+			def pacifier
+			def_bonuses
+			def feeder
+			def fighter
+				def_being_human
+			def mover

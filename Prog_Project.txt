@@ -1,0 +1,23 @@
+1 Prog_Project
+	1.1 α & Ω
+		1.1.1 game_engine
+			1.1.1.1 def game_mode
+				* Note: Choix du mode de jeu :- Local ou réseau- Contre autre joueur (PVP) ou contre I.A. (PVE)
+				1.1.1.1.1 local
+					1.1.1.1.1.1 PVP
+					1.1.1.1.1.2 PVE
+				1.1.1.1.2 network - remote_play.py
+					1.1.1.1.2.1 PVP
+					1.1.1.1.2.2 PVE
+			1.1.1.2 game_manager
+		1.1.2 ui_engine
+			1.1.2.1 map_creation
+			1.1.2.2 map_update
+			1.1.2.3 HUD
+				* Note: (Head-up display)Affichage des informations de la partie.
+		1.1.3 orders_engine
+			1.1.3.1 orders_splitter
+				1.1.3.1.1 def attack
+				1.1.3.1.2 def move
+				1.1.3.1.3 def feed
+				1.1.3.1.4 def pacify

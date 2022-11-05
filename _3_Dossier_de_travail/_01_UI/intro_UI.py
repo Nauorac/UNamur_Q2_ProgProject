@@ -3,7 +3,7 @@ import blessed
 term = blessed.Terminal()
 
 # Creation of all "global" variables required for the game
-path = "C:/Users/Seb/Documents/GitHub/UNamur_Q2_ProgProject/_3_Dossier_de_travail/example.ano"
+path = "C:/Users/Seb/Documents/GitHub/UNamur_Q2_ProgProject/_3_Dossier_de_travail/vertical.ano"
 #https://github.com/Nauorac/UNamur_Q2_ProgProject/blob/526bafbbaa287bad23a7efa7956b62999b42a00b/_0_Ennonce/example.ano
 P1_game_mode = "local"
 P2_game_mode = "local"
